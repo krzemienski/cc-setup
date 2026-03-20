@@ -48,3 +48,32 @@ fi
 if ! $HAS_DIFF; then
     echo "  No differences found. Config is in sync."
 fi
+
+# Skills
+SKDIFF=$(diff -rq "$REPO_DIR/skills" "$HOME/.claude/skills" --exclude='.DS_Store' 2>/dev/null | grep -v "^Only in $HOME" || true)
+if [ -n "$SKDIFF" ]; then
+    echo "SKILLS:"
+    echo "$SKDIFF" | head -10
+    HAS_DIFF=true
+fi
+
+# MCP configs (compare after stripping secrets from live copy)
+if [ -f "$REPO_DIR/lib/secrets.sh" ]; then
+    source "$REPO_DIR/lib/secrets.sh"
+
+    if [ -f "$HOME/.mcp.json" ]; then
+        MCDIFF=$(diff <(jq -S . "$REPO_DIR/mcp/mcp.json.template" 2>/dev/null) <(strip_mcp_secrets "$HOME/.mcp.json" | jq -S . 2>/dev/null) 2>/dev/null || true)
+        if [ -n "$MCDIFF" ]; then
+            echo "MCP.JSON: differs (secrets excluded)"
+            HAS_DIFF=true
+        fi
+    fi
+
+    if [ -f "$HOME/.claude.json" ]; then
+        CJDIFF=$(diff <(jq -S . "$REPO_DIR/mcp/claude.json.template" 2>/dev/null) <(jq '{mcpServers: .mcpServers}' "$HOME/.claude.json" | strip_claude_secrets /dev/stdin | jq -S . 2>/dev/null) 2>/dev/null || true)
+        if [ -n "$CJDIFF" ]; then
+            echo "CLAUDE.JSON (mcpServers): differs (secrets excluded)"
+            HAS_DIFF=true
+        fi
+    fi
+fi

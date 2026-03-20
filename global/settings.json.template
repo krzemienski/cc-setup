@@ -191,23 +191,23 @@
     "command": "node /Users/nick/.claude/hud/omc-hud.mjs"
   },
   "enabledPlugins": {
-    "oh-my-claudecode@omc": true,
-    "everything-claude-code@everything-claude-code": true,
-    "claude-mem@thedotmack": true,
-    "code-review@claude-plugins-official": true,
-    "reflexion@context-engineering-kit": true,
-    "sadd@context-engineering-kit": true,
-    "kaizen@context-engineering-kit": true,
-    "skill-judge@agent-toolkit": true,
-    "skill-creator@claude-plugins-official": true,
-    "taches-cc-resources@taches-cc-resources": true,
-    "planning-with-files@planning-with-files": true,
-    "start@the-startup": true,
-    "plugin-dev@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
+    "claude-mem@thedotmack": true,
+    "claude-skills-troubleshooting@daymade-skills": true,
+    "code-review@claude-plugins-official": true,
+    "everything-claude-code@everything-claude-code": true,
+    "kaizen@context-engineering-kit": true,
+    "oh-my-claudecode@omc": true,
+    "planning-with-files@planning-with-files": true,
+    "plugin-dev@claude-plugins-official": true,
+    "reflexion@context-engineering-kit": true,
+    "sadd@context-engineering-kit": true,
+    "skill-creator@claude-plugins-official": true,
+    "skill-judge@agent-toolkit": true,
     "skills-search@daymade-skills": true,
-    "claude-skills-troubleshooting@daymade-skills": true
+    "start@the-startup": true,
+    "taches-cc-resources@taches-cc-resources": true
   },
   "extraKnownMarketplaces": {
     "vercel-vercel-plugin": {

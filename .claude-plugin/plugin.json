@@ -1,0 +1,11 @@
+{
+  "name": "cc-setup",
+  "version": "1.0.0",
+  "description": "Nick's Claude Code environment — unique agents, skills, and commands not provided by other plugins",
+  "author": {
+    "name": "Nick"
+  },
+  "repository": "https://github.com/krzemienski/cc-setup",
+  "license": "MIT",
+  "keywords": ["environment", "config", "agents", "workflow"]
+}

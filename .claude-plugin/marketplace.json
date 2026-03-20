@@ -1,0 +1,15 @@
+{
+  "name": "cc-setup-marketplace",
+  "owner": {
+    "name": "Nick"
+  },
+  "plugins": [
+    {
+      "name": "cc-setup",
+      "source": "./",
+      "description": "Nick's Claude Code environment with unique agents, skills, and commands",
+      "version": "1.0.0",
+      "strict": false
+    }
+  ]
+}
