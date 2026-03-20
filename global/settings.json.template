@@ -40,6 +40,10 @@
           {
             "type": "command",
             "command": "node \"$HOME/.claude/hooks/skill-invocation-tracker.js\""
+          },
+          {
+            "type": "command",
+            "command": "node \"$HOME/.claude/hooks/post-edit-simplify-reminder.cjs\""
           }
         ]
       }
@@ -95,6 +99,24 @@
           {
             "type": "command",
             "command": "node \"$HOME/.claude/hooks/evidence-gate-reminder.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$HOME/.claude/hooks/privacy-block.cjs\""
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Bash|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$HOME/.claude/hooks/scout-block.cjs\""
           }
         ]
       }
@@ -181,14 +203,24 @@
           {
             "type": "command",
             "command": "node \"$HOME/.claude/hooks/skill-activation-forced-eval.js\""
+          },
+          {
+            "type": "command",
+            "command": "node \"$HOME/.claude/hooks/documentation-context-check.js\""
+          },
+          {
+            "type": "command",
+            "command": "node \"$HOME/.claude/hooks/usage-context-awareness.cjs\"",
+            "timeout": 30
           }
         ]
       }
     ]
   },
+  "autoAllowedTools": [],
   "statusLine": {
     "type": "command",
-    "command": "node /Users/nick/.claude/hud/omc-hud.mjs"
+    "command": "node __HOME__/.claude/hud/omc-hud.mjs"
   },
   "enabledPlugins": {
     "claude-code-setup@claude-plugins-official": true,
@@ -213,7 +245,7 @@
     "vercel-vercel-plugin": {
       "source": {
         "source": "directory",
-        "path": "/Users/nick/.cache/plugins/github.com-vercel-vercel-plugin"
+        "path": "__HOME__/.cache/plugins/github.com-vercel-vercel-plugin"
       }
     },
     "visual-explainer-marketplace": {
