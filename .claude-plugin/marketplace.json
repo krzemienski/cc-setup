@@ -524,6 +524,12 @@
       "source": "./plugins/account-skills",
       "description": "Personal skills exported from claude.ai",
       "version": "1.0.0"
+    },
+    {
+      "name": "nick-core",
+      "source": "./plugins/nick-core",
+      "description": "Nick's operating directives, rules and Mac-local skills, so claude.ai, mobile, Claude Code and OMP all work the same way.",
+      "version": "1.0.0"
     }
   ]
 }

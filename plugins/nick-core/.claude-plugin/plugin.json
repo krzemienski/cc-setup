@@ -1,0 +1,6 @@
+{
+  "name": "nick-core",
+  "version": "1.0.0",
+  "description": "Nick's operating directives, rules and Mac-local skills, so claude.ai, mobile, Claude Code and OMP all work the same way.",
+  "author": { "name": "Nick" }
+}
