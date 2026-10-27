@@ -7084,5 +7084,381 @@
     "agents": [],
     "has_hooks": false,
     "has_mcp": false
+  },
+  {
+    "name": "codex",
+    "account_id": "codex",
+    "server_plugin_id": "plugin_01C9pbZHB8UU3Hnd58LpnqZg",
+    "origin": "My Uploads",
+    "version": "0.1.0",
+    "description": "MCP servers for Codex integration",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "explanatory-output-style",
+    "account_id": "explanatory-output-style",
+    "server_plugin_id": "plugin_01LZ5rqQvJxBJafynjcUJ6t6",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Adds educational insights about implementation choices and codebase patterns (mimics the deprecated Explanatory output style)",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": true,
+    "has_mcp": false
+  },
+  {
+    "name": "fakechat",
+    "account_id": "fakechat",
+    "server_plugin_id": "plugin_01LSMzzvabipQcvuZx9ev6iV",
+    "origin": "My Uploads",
+    "version": "0.0.1",
+    "description": "Localhost iMessage-style web chat for Claude Code \u2014 test surface with file upload and edits. No tokens, no access control.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "firebase",
+    "account_id": "firebase",
+    "server_plugin_id": "plugin_01FfCr49u5Cyy6Bq3MSUErs6",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Google Firebase MCP integration. Manage Firestore databases, authentication, cloud functions, hosting, and storage. Build and manage your Firebase backend directly from your development workflow.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "github",
+    "account_id": "github",
+    "server_plugin_id": "plugin_019ihYsqTvR46k8iDL4JkyKv",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Official GitHub MCP server for repository management. Create issues, manage pull requests, review code, search repositories, and interact with GitHub's full API directly from Claude Code.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "gitlab",
+    "account_id": "gitlab",
+    "server_plugin_id": "plugin_01TJvwQSwvbDCD4BeeCBpazB",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "GitLab DevOps platform integration. Manage repositories, merge requests, CI/CD pipelines, issues, and wikis. Full access to GitLab's comprehensive DevOps lifecycle tools.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "greptile",
+    "account_id": "greptile",
+    "server_plugin_id": "plugin_01JfWuwvCQTg6ZgybvXcBgAK",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "AI code review agent for GitHub and GitLab. View and resolve Greptile's PR review comments directly from Claude Code.",
+    "repository": "https://greptile.com/docs",
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "laravel-boost",
+    "account_id": "laravel-boost",
+    "server_plugin_id": "plugin_01TMJJYiocjSdQAoEQc69vec",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Laravel development toolkit MCP server. Provides intelligent assistance for Laravel applications including Artisan commands, Eloquent queries, routing, migrations, and framework-specific code generation.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "linear",
+    "account_id": "linear",
+    "server_plugin_id": "plugin_01BZZpXVv4gNjbngZNzM61N8",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Linear issue tracking integration. Create issues, manage projects, update statuses, search across workspaces, and streamline your software development workflow with Linear's modern issue tracker.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "neon",
+    "account_id": "neon",
+    "server_plugin_id": "plugin_012EopUNjBxUDwrcNzjPMYWW",
+    "origin": "My Uploads",
+    "version": "1.0.0",
+    "description": "Manage your Neon projects and databases with the neon-postgres agent skill and the Neon MCP Server",
+    "repository": "https://github.com/neondatabase/agent-skills",
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "neon-postgres-egress-optimizer",
+        "description": "- Diagnose and fix excessive Postgres egress (network data transfer) in a codebase. Use when a user mentions high database bills, unexpected data transfer costs, network transfer charges, egress spikes, \"why is my Neon bill so high\", \"database costs jumped\", SELECT * optimization, query overfetching, reduce Neon costs, optimize database usage, or wants to reduce data sent from their database to th",
+        "path": "plugins/neon/skills/neon-postgres-egress-optimizer/SKILL.md"
+      },
+      {
+        "name": "neon-postgres",
+        "description": "Guides and best practices for working with Neon Serverless Postgres. Covers getting started, local development with Neon, choosing a connection method, Neon features, authentication (@neondatabase/auth), PostgREST-style data API (@neondatabase/neon-js), Neon CLI, and Neon's Platform API/SDKs. Use for any Neon-related questions.",
+        "path": "plugins/neon/skills/neon-postgres/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "notification",
+    "account_id": "notification",
+    "server_plugin_id": "plugin_01TXRLfWpC2taWh1W1RoKjYi",
+    "origin": "My Uploads",
+    "version": "1.0.0",
+    "description": "macOS notifications for Claude Code events",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": true,
+    "has_mcp": false
+  },
+  {
+    "name": "planning-with-files",
+    "account_id": "planning-with-files",
+    "server_plugin_id": "plugin_01CgZNr7pXcTU83pXD5ZHZKr",
+    "origin": "My Uploads",
+    "version": "2.23.0",
+    "description": "Manus-style persistent markdown files for planning, progress tracking, and knowledge storage. Works with Claude Code, Kiro, Clawd CLI, Gemini CLI, Cursor, Continue, and 11+ AI coding assistants.",
+    "repository": "https://github.com/OthmanAdi/planning-with-files",
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "planning-with-files-zh",
+        "description": "\u57fa\u4e8e Manus \u98ce\u683c\u7684\u6587\u4ef6\u89c4\u5212\u7cfb\u7edf\uff0c\u7528\u4e8e\u7ec4\u7ec7\u548c\u8ddf\u8e2a\u590d\u6742\u4efb\u52a1\u7684\u8fdb\u5ea6\u3002\u521b\u5efa task_plan.md\u3001findings.md \u548c progress.md \u4e09\u4e2a\u6587\u4ef6\u3002\u5f53\u7528\u6237\u8981\u6c42\u89c4\u5212\u3001\u62c6\u89e3\u6216\u7ec4\u7ec7\u591a\u6b65\u9aa4\u9879\u76ee\u3001\u7814\u7a76\u4efb\u52a1\u6216\u9700\u8981\u8d85\u8fc75\u6b21\u5de5\u5177\u8c03\u7528\u7684\u5de5\u4f5c\u65f6\u4f7f\u7528\u3002\u652f\u6301 /clear \u540e\u7684\u81ea\u52a8\u4f1a\u8bdd\u6062\u590d\u3002\u89e6\u53d1\u8bcd\uff1a\u4efb\u52a1\u89c4\u5212\u3001\u9879\u76ee\u8ba1\u5212\u3001\u5236\u5b9a\u8ba1\u5212\u3001\u5206\u89e3\u4efb\u52a1\u3001\u591a\u6b65\u9aa4\u89c4\u5212\u3001\u8fdb\u5ea6\u8ddf\u8e2a\u3001\u6587\u4ef6\u89c4\u5212\u3001\u5e2e\u6211\u89c4\u5212\u3001\u62c6\u89e3\u9879\u76ee",
+        "path": "plugins/planning-with-files/skills/planning-with-files-zh/SKILL.md"
+      },
+      {
+        "name": "planning-with-files",
+        "description": "Implements Manus-style file-based planning to organize and track progress on complex tasks. Creates task_plan.md, findings.md, and progress.md. Use when asked to plan out, break down, or organize a multi-step project, research task, or any work requiring >5 tool calls. Supports automatic session recovery after /clear.",
+        "path": "plugins/planning-with-files/skills/planning-with-files/SKILL.md"
+      }
+    ],
+    "commands": [
+      "commands/plan-zh.md",
+      "commands/plan.md",
+      "commands/start.md",
+      "commands/status.md"
+    ],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "playwright",
+    "account_id": "playwright",
+    "server_plugin_id": "plugin_01G8mk53EwsevyrffRegnqgU",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Browser automation and end-to-end testing MCP server by Microsoft. Enables Claude to interact with web pages, take screenshots, fill forms, click elements, and perform automated browser testing workflows.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "ralph-loop",
+    "account_id": "ralph-loop",
+    "server_plugin_id": "plugin_01TgruKECtNyszVqwQjs2oUn",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Continuous self-referential AI loops for interactive iterative development, implementing the Ralph Wiggum technique. Run Claude in a while-true loop with the same prompt until task completion.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [
+      "commands/cancel-ralph.md",
+      "commands/help.md",
+      "commands/ralph-loop.md"
+    ],
+    "agents": [],
+    "has_hooks": true,
+    "has_mcp": false
+  },
+  {
+    "name": "ralph-speckit",
+    "account_id": "ralph-speckit",
+    "server_plugin_id": "plugin_01G4Grh767qB6FfZj7tAUDxx",
+    "origin": "My Uploads",
+    "version": "0.5.2",
+    "description": "Spec-driven development using GitHub spec-kit methodology. Constitution-first approach with specify, plan, tasks, and implement phases.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "communication-style",
+        "description": "Output rules for all agents - concise, scannable, actionable. Based on Matt Pocock's planning principles.",
+        "path": "plugins/ralph-speckit/skills/communication-style/SKILL.md"
+      },
+      {
+        "name": "delegation-principle",
+        "description": "Core principle that the main agent is a coordinator, not an implementer. All work must be delegated to subagents.",
+        "path": "plugins/ralph-speckit/skills/delegation-principle/SKILL.md"
+      },
+      {
+        "name": "smart-ralph",
+        "description": "Core Smart Ralph skill defining common arguments, execution modes, and shared behaviors across all Ralph plugins.",
+        "path": "plugins/ralph-speckit/skills/smart-ralph/SKILL.md"
+      },
+      {
+        "name": "speckit-workflow",
+        "description": "Comprehensive understanding of the spec-kit methodology. Constitution-driven feature development with specify, plan, tasks, and implement phases.",
+        "path": "plugins/ralph-speckit/skills/speckit-workflow/SKILL.md"
+      }
+    ],
+    "commands": [
+      "commands/cancel.md",
+      "commands/implement.md",
+      "commands/start.md",
+      "commands/status.md",
+      "commands/switch.md"
+    ],
+    "agents": [
+      "constitution-architect",
+      "plan-architect",
+      "qa-engineer",
+      "spec-analyst",
+      "spec-executor",
+      "task-planner"
+    ],
+    "has_hooks": true,
+    "has_mcp": false
+  },
+  {
+    "name": "safety-hooks",
+    "account_id": "safety-hooks",
+    "server_plugin_id": "plugin_012vcHYkwyPjatNzpS2hC25A",
+    "origin": "My Uploads",
+    "version": "1.10.5",
+    "description": "Safety hooks to block or require user approval for dangerous commands (rm, git operations, .env access, file size limits)",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": true,
+    "has_mcp": false
+  },
+  {
+    "name": "serena",
+    "account_id": "serena",
+    "server_plugin_id": "plugin_0121HJnbCCr1VsECDNxac4Qy",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Semantic code analysis MCP server providing intelligent code understanding, refactoring suggestions, and codebase navigation through language server protocol integration.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "slack",
+    "account_id": "slack",
+    "server_plugin_id": "plugin_014qor9Dw1LhvrYKDWWqaEYJ",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Slack workspace integration. Search messages, access channels, read threads, and stay connected with your team's communications while coding. Find relevant discussions and context quickly.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "supabase",
+    "account_id": "supabase",
+    "server_plugin_id": "plugin_013tn5iFuTnxjwDvLqpHoCxD",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Supabase MCP integration for database operations, authentication, storage, and real-time subscriptions. Manage your Supabase projects, run SQL queries, and interact with your backend directly.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
+  },
+  {
+    "name": "telegram",
+    "account_id": "telegram",
+    "server_plugin_id": "plugin_01MCs5JBFD399AHVxeWoADZA",
+    "origin": "My Uploads",
+    "version": "0.0.1",
+    "description": "Telegram channel for Claude Code \u2014 messaging bridge with built-in access control. Manage pairing, allowlists, and policy via /telegram:access.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "access",
+        "description": "Manage Telegram channel access \u2014 approve pairings, edit allowlists, set DM/group policy. Use when the user asks to pair, approve someone, check who's allowed, or change policy for the Telegram channel.",
+        "path": "plugins/telegram/skills/access/SKILL.md"
+      },
+      {
+        "name": "configure",
+        "description": "Set up the Telegram channel \u2014 save the bot token and review access policy. Use when the user pastes a Telegram bot token, asks to configure Telegram, asks \"how do I set this up\" or \"who can reach me,\" or wants to check channel status.",
+        "path": "plugins/telegram/skills/configure/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": true
   }
 ]

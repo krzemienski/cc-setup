@@ -674,6 +674,126 @@
       "source": "./plugins/youtube-transcribe-skill",
       "description": "Extract subtitles/transcripts from YouTube videos via CLI or browser automation",
       "version": "1.0.2"
+    },
+    {
+      "name": "codex",
+      "source": "./plugins/codex",
+      "description": "MCP servers for Codex integration",
+      "version": "0.1.0"
+    },
+    {
+      "name": "explanatory-output-style",
+      "source": "./plugins/explanatory-output-style",
+      "description": "Adds educational insights about implementation choices and codebase patterns (mimics the deprecated Explanatory output style)",
+      "version": "0.0.0"
+    },
+    {
+      "name": "fakechat",
+      "source": "./plugins/fakechat",
+      "description": "Localhost iMessage-style web chat for Claude Code \u2014 test surface with file upload and edits. No tokens, no access control.",
+      "version": "0.0.1"
+    },
+    {
+      "name": "firebase",
+      "source": "./plugins/firebase",
+      "description": "Google Firebase MCP integration. Manage Firestore databases, authentication, cloud functions, hosting, and storage. Build and manage your Firebase backend directly from your development workflow.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "github",
+      "source": "./plugins/github",
+      "description": "Official GitHub MCP server for repository management. Create issues, manage pull requests, review code, search repositories, and interact with GitHub's full API directly from Claude Code.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "gitlab",
+      "source": "./plugins/gitlab",
+      "description": "GitLab DevOps platform integration. Manage repositories, merge requests, CI/CD pipelines, issues, and wikis. Full access to GitLab's comprehensive DevOps lifecycle tools.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "greptile",
+      "source": "./plugins/greptile",
+      "description": "AI code review agent for GitHub and GitLab. View and resolve Greptile's PR review comments directly from Claude Code.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "laravel-boost",
+      "source": "./plugins/laravel-boost",
+      "description": "Laravel development toolkit MCP server. Provides intelligent assistance for Laravel applications including Artisan commands, Eloquent queries, routing, migrations, and framework-specific code generation.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "linear",
+      "source": "./plugins/linear",
+      "description": "Linear issue tracking integration. Create issues, manage projects, update statuses, search across workspaces, and streamline your software development workflow with Linear's modern issue tracker.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "neon",
+      "source": "./plugins/neon",
+      "description": "Manage your Neon projects and databases with the neon-postgres agent skill and the Neon MCP Server",
+      "version": "1.0.0"
+    },
+    {
+      "name": "notification",
+      "source": "./plugins/notification",
+      "description": "macOS notifications for Claude Code events",
+      "version": "1.0.0"
+    },
+    {
+      "name": "planning-with-files",
+      "source": "./plugins/planning-with-files",
+      "description": "Manus-style persistent markdown files for planning, progress tracking, and knowledge storage. Works with Claude Code, Kiro, Clawd CLI, Gemini CLI, Cursor, Continue, and 11+ AI coding assistants.",
+      "version": "2.23.0"
+    },
+    {
+      "name": "playwright",
+      "source": "./plugins/playwright",
+      "description": "Browser automation and end-to-end testing MCP server by Microsoft. Enables Claude to interact with web pages, take screenshots, fill forms, click elements, and perform automated browser testing workflows.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "ralph-loop",
+      "source": "./plugins/ralph-loop",
+      "description": "Continuous self-referential AI loops for interactive iterative development, implementing the Ralph Wiggum technique. Run Claude in a while-true loop with the same prompt until task completion.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "ralph-speckit",
+      "source": "./plugins/ralph-speckit",
+      "description": "Spec-driven development using GitHub spec-kit methodology. Constitution-first approach with specify, plan, tasks, and implement phases.",
+      "version": "0.5.2"
+    },
+    {
+      "name": "safety-hooks",
+      "source": "./plugins/safety-hooks",
+      "description": "Safety hooks to block or require user approval for dangerous commands (rm, git operations, .env access, file size limits)",
+      "version": "1.10.5"
+    },
+    {
+      "name": "serena",
+      "source": "./plugins/serena",
+      "description": "Semantic code analysis MCP server providing intelligent code understanding, refactoring suggestions, and codebase navigation through language server protocol integration.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "slack",
+      "source": "./plugins/slack",
+      "description": "Slack workspace integration. Search messages, access channels, read threads, and stay connected with your team's communications while coding. Find relevant discussions and context quickly.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "supabase",
+      "source": "./plugins/supabase",
+      "description": "Supabase MCP integration for database operations, authentication, storage, and real-time subscriptions. Manage your Supabase projects, run SQL queries, and interact with your backend directly.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "telegram",
+      "source": "./plugins/telegram",
+      "description": "Telegram channel for Claude Code \u2014 messaging bridge with built-in access control. Manage pairing, allowlists, and policy via /telegram:access.",
+      "version": "0.0.1"
     }
   ]
 }
