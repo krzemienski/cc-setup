@@ -530,6 +530,150 @@
       "source": "./plugins/nick-core",
       "description": "Nick's operating directives, rules and Mac-local skills, so claude.ai, mobile, Claude Code and OMP all work the same way.",
       "version": "1.0.0"
+    },
+    {
+      "name": "axiom",
+      "source": "./plugins/axiom",
+      "description": "Axiom marketplace plugin with tools, scripts, and MCP server integration",
+      "version": "0.1.0"
+    },
+    {
+      "name": "codex-skill",
+      "source": "./plugins/codex-skill",
+      "description": "Leverage OpenAI Codex (GPT-5/GPT-5.1) for non-interactive automation mode and hands-off task execution",
+      "version": "1.0.2"
+    },
+    {
+      "name": "coding-tutor",
+      "source": "./plugins/coding-tutor",
+      "description": "Personalized coding tutorials that use your actual codebase for examples with spaced repetition quizzes",
+      "version": "1.2.1"
+    },
+    {
+      "name": "commit-commands",
+      "source": "./plugins/commit-commands",
+      "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests",
+      "version": "0.0.0"
+    },
+    {
+      "name": "ddd",
+      "source": "./plugins/ddd",
+      "description": "Introduces command to update CLAUDE.md with best practices for domain-driven development, focused on quality of code, includes Clean Architecture, SOLID principles, and other design patterns.",
+      "version": "2.0.0"
+    },
+    {
+      "name": "debug",
+      "source": "./plugins/debug",
+      "description": "Systematic debugging and root cause analysis framework - four-phase investigation process ensuring understanding before fixes",
+      "version": "0.1.0"
+    },
+    {
+      "name": "dig",
+      "source": "./plugins/dig",
+      "description": "Dig into library source code - clone and explore repos to answer API questions",
+      "version": "0.1.0"
+    },
+    {
+      "name": "dotai",
+      "source": "./plugins/dotai",
+      "description": "Complete development toolkit - documentation, PRDs, design docs, debugging, PR workflows, and planning",
+      "version": "1.0.0"
+    },
+    {
+      "name": "expo-app-design",
+      "source": "./plugins/expo-app-design",
+      "description": "Build robust, productivity apps with Expo",
+      "version": "1.0.0"
+    },
+    {
+      "name": "expo-deployment",
+      "source": "./plugins/expo-deployment",
+      "description": "Deploying Expo apps to iOS App Store, Android Play Store, web hosting, and CI/CD workflows",
+      "version": "1.0.0"
+    },
+    {
+      "name": "fpf",
+      "source": "./plugins/fpf",
+      "description": "First Principles Framework (FPF) for structured reasoning using workflow command pattern. Implements ADI (Abduction-Deduction-Induction) cycle via propose-hypotheses workflow with fpf-agent for hypothesis generation, logical verification, empirical validation, and auditable decision-making. Includes",
+      "version": "1.1.1"
+    },
+    {
+      "name": "kiro-skill",
+      "source": "./plugins/kiro-skill",
+      "description": "Interactive feature development workflow from idea to implementation (Requirements \u2192 Design \u2192 Tasks \u2192 Execute)",
+      "version": "1.0.2"
+    },
+    {
+      "name": "langroid",
+      "source": "./plugins/langroid",
+      "description": "Design patterns for the Langroid multi-agent LLM framework",
+      "version": "1.8.4"
+    },
+    {
+      "name": "learn",
+      "source": "./plugins/learn",
+      "description": "Continuous learning system - extracts reusable knowledge from work sessions into Claude Code skills",
+      "version": "3.0.0"
+    },
+    {
+      "name": "math-olympiad",
+      "source": "./plugins/math-olympiad",
+      "description": "Solve competition math (IMO, Putnam, USAMO) with adversarial verification that catches what self-verification misses. Fresh-context verifiers attack proofs with specific failure patterns. Calibrated abstention over bluffing.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "mcp",
+      "source": "./plugins/mcp",
+      "description": "Commands for setup well known MCP server integration if needed and update CLAUDE.md file with requirement to use this MCP server for current project.",
+      "version": "1.2.1"
+    },
+    {
+      "name": "meta-cc",
+      "source": "./plugins/meta-cc",
+      "description": "Meta Claude Code marketplace with experiments, knowledge, and internal tools",
+      "version": "0.1.0"
+    },
+    {
+      "name": "spec-kit-skill",
+      "source": "./plugins/spec-kit-skill",
+      "description": "GitHub Spec-Kit integration for constitution-based spec-driven development (7-phase workflow)",
+      "version": "1.0.2"
+    },
+    {
+      "name": "tdd",
+      "source": "./plugins/tdd",
+      "description": "Introduces commands for test-driven development, common anti-patterns and skills for testing using subagents.",
+      "version": "1.1.0"
+    },
+    {
+      "name": "team",
+      "source": "./plugins/team",
+      "description": "Engineering team consisting of specialized agents for software development",
+      "version": "3.2.1"
+    },
+    {
+      "name": "tech-stack",
+      "source": "./plugins/tech-stack",
+      "description": "Commands for setup or update of CLAUDE.md file with best practices for specific language or framework.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "test",
+      "source": "./plugins/test",
+      "description": "Test-driven development workflow for writing tests before implementation - red-green-refactor cycle with deterministic unit tests",
+      "version": "0.1.0"
+    },
+    {
+      "name": "upgrading-expo",
+      "source": "./plugins/upgrading-expo",
+      "description": "Guidelines for upgrading Expo SDK versions and fixing dependency issues",
+      "version": "1.0.0"
+    },
+    {
+      "name": "youtube-transcribe-skill",
+      "source": "./plugins/youtube-transcribe-skill",
+      "description": "Extract subtitles/transcripts from YouTube videos via CLI or browser automation",
+      "version": "1.0.2"
     }
   ]
 }

@@ -1,0 +1,135 @@
+# Commands
+
+Quick automated scans to identify issues in your codebase. Type `/command-name` in Claude Code to run.
+
+## Start Here
+
+**Not sure which command to use?** Start with `/axiom:ask`:
+
+```bash
+/axiom:ask "My build is failing"
+/axiom:ask "How do I optimize SwiftUI performance?"
+/axiom:ask "Check my code for memory leaks"
+```
+
+This routes your question to the right Axiom skill or agent automatically.
+
+---
+
+## Available Commands
+
+| Command | What It Checks | Output |
+|---------|----------------|--------|
+| [**`/axiom:ask`**](./utility/ask) | Natural language entry point to all Axiom skills | Triggers the right skill or agent |
+| [**`/axiom:audit`**](./utility/audit) | Unified audit command - smart selector or direct area targeting | Suggestions or specific audit execution |
+| [**`/axiom:analyze-crash`**](./debugging/analyze-crash) | Parse and analyze crash logs (.ips, .crash) to identify root cause | Crash pattern categorization and actionable diagnostics |
+| [**`/axiom:console`**](./debugging/console) | Simulator console output — print(), os_log(), Logger — as structured JSON | Guided capture with bounded defaults |
+| [**`/axiom:fix-build`**](./build/fix-build) | Xcode build failures, environment issues, zombie processes, Derived Data, SPM cache, simulator state | Automatic diagnostics and fixes with verification |
+| [**`/axiom:health-check`**](./health-check) | Auto-detect relevant auditors, run in parallel, deduplicate findings | Prioritized report with executive summary + per-domain details |
+| [**`/axiom:optimize-build`**](./build/optimize-build) | Build performance bottlenecks, compilation settings, build phase scripts, type checking issues | Optimization recommendations with time savings estimates |
+| [**`/axiom:profile`**](./debugging/profile) | Automated performance profiling via xctrace CLI (CPU, memory, leaks, SwiftUI) | Trace recording, export, and analysis summary |
+| [**`/axiom:run-tests`**](./testing/run-tests) | Run XCUITests and parse .xcresult bundles for structured results | Test results with failure analysis and attachment export |
+| [**`/axiom:screenshot`**](./testing/screenshot) | Quick screenshot capture from booted iOS Simulator | Screenshot file path + visual analysis |
+| [**`/axiom:status`**](./utility/status) | Environment health, zombie processes, Derived Data size, simulator status, project stats | Dashboard with quick health metrics |
+| [**`/axiom:test-simulator`**](./testing/test-simulator) | Automated simulator testing with visual verification (screenshots, location, push, permissions, logs) | Test results with evidence (screenshots, logs) |
+
+## Usage
+
+```bash
+# Utility commands
+/axiom:ask "My build is failing"
+/axiom:audit                    # Smart mode - analyze and suggest audits
+/axiom:health-check             # Run all relevant auditors in parallel
+/axiom:status                   # Check health
+
+# Audit commands (unified syntax)
+/axiom:audit accessibility      # VoiceOver, Dynamic Type, WCAG
+/axiom:audit concurrency        # Swift 6 data races, actor isolation
+/axiom:audit memory             # Retain cycles, leaks
+/axiom:audit swiftui-performance # Expensive body, missing lazy
+/axiom:audit swiftui-architecture # Logic in view, testability
+/axiom:audit swiftui-nav        # Navigation architecture
+/axiom:audit swift-performance  # ARC issues, allocation
+/axiom:audit core-data          # Thread safety, migrations
+/axiom:audit networking         # Deprecated APIs
+/axiom:audit codable            # JSON serialization
+/axiom:audit icloud             # iCloud sync reliability
+/axiom:audit storage            # File storage safety
+/axiom:audit liquid-glass       # iOS 26 adoption
+/axiom:audit textkit            # TextKit modernization
+
+# Build commands
+/axiom:fix-build                # Diagnose and fix build failures
+/axiom:optimize-build           # Optimize build performance
+
+# Testing commands
+/axiom:screenshot               # Quick screenshot
+/axiom:test-simulator           # Full simulator testing
+```
+
+Commands output results with `file:line` references and link to relevant skills for deeper analysis.
+
+## Command Categories
+
+### Utility
+- `/axiom:ask` — Natural language helper
+- `/axiom:audit` — Unified audit command (smart selector or direct area targeting)
+- `/axiom:health-check` — Run all relevant auditors in parallel with unified report
+- `/axiom:status` — Project health dashboard
+
+### Build & Environment
+- `/axiom:fix-build` — Automatic build failure diagnosis and fixes
+- `/axiom:optimize-build` — Build performance optimization
+
+### Debugging
+- `/axiom:analyze-crash` — Parse and analyze crash logs
+- `/axiom:console` — Capture simulator console output (print + os_log) as structured JSON
+- `/axiom:profile` — Automated performance profiling via xctrace CLI
+
+### Testing
+- `/axiom:run-tests` — Run XCUITests and parse results
+- `/axiom:screenshot` — Quick simulator screenshot
+- `/axiom:test-simulator` — Full simulator testing capabilities
+
+## Audit Areas
+
+The `/axiom:audit` command supports these areas:
+
+### UI & Design
+- `accessibility` — VoiceOver, Dynamic Type, WCAG compliance
+- `liquid-glass` — Liquid Glass adoption opportunities
+- `swiftui-architecture` — SwiftUI architecture and testability
+- `swiftui-layout` — GeometryReader misuse, deprecated screen APIs, hardcoded breakpoints
+- `swiftui-nav` — Navigation architecture
+- `swiftui-performance` — SwiftUI performance anti-patterns
+- `textkit` — TextKit 1 vs 2 modernization
+- `ux-flow` — Dead ends, dismiss traps, missing states
+
+### Code Quality
+- `codable` — JSON serialization anti-patterns
+- `concurrency` — Swift 6 strict concurrency
+- `energy` — Battery drain, timer abuse, polling
+- `memory` — Memory leak detection
+- `security` / `privacy` — Hardcoded credentials, Privacy Manifests, ATS
+- `swift-performance` — ARC and allocation issues
+- `testing` — Flaky tests, missing assertions, Swift Testing migration
+
+### Persistence & Storage
+- `core-data` — Core Data safety and migrations
+- `database-schema` — Unsafe ALTER TABLE, DROP operations, migration safety
+- `icloud` — iCloud sync reliability
+- `storage` — File storage safety
+- `swiftdata` — SwiftData models, relationships, N+1 patterns
+
+### Integration
+- `camera` — Camera capture issues, deprecated APIs
+- `foundation-models` — Foundation Models availability, session lifecycle
+- `networking` — Deprecated networking APIs
+- `spritekit` — Physics bitmask issues, draw call waste
+
+### Shipping
+- `screenshots` — App Store screenshot validation
+- `modernization` — Legacy pattern migration (ObservableObject → @Observable)
+
+### Project-Wide
+- `all` — Run all relevant auditors via `/axiom:health-check`

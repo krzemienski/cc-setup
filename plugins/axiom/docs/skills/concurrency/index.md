@@ -1,0 +1,75 @@
+# Concurrency & Async
+
+Master Swift's concurrency model and catch data races at compile time with strict concurrency patterns.
+
+```mermaid
+flowchart LR
+    classDef router fill:#6f42c1,stroke:#5a32a3,color:#fff
+    classDef discipline fill:#d4edda,stroke:#28a745,color:#1b4332
+    classDef reference fill:#cce5ff,stroke:#0d6efd,color:#003366
+    classDef agent fill:#f8d7da,stroke:#dc3545,color:#58151c
+
+    axiom_ios_concurrency["ios-concurrency router"]:::router
+
+    subgraph skills_d["Skills"]
+        swift_concurrency["swift-concurrency"]:::discipline
+        swift_performance["swift-performance"]:::discipline
+        swift_modern["swift-modern"]:::discipline
+        assume_isolated["assume-isolated"]:::discipline
+        synchronization["synchronization"]:::discipline
+        ownership_conventions["ownership-conventions"]:::discipline
+        concurrency_profiling["concurrency-profiling"]:::discipline
+        combine_patterns["combine-patterns"]:::discipline
+    end
+    axiom_ios_concurrency --> skills_d
+
+    subgraph skills_r["References"]
+        swift_concurrency_ref["swift-concurrency-ref"]:::reference
+    end
+    axiom_ios_concurrency --> skills_r
+
+    subgraph agents_sg["Agents"]
+        agent_ca["concurrency-auditor"]:::agent
+    end
+    axiom_ios_concurrency --> agents_sg
+```
+
+## Skills
+
+- **[Swift Concurrency](/skills/concurrency/swift-concurrency)** – Swift 6 strict concurrency patterns, async/await, MainActor, Sendable, and actor isolation
+  - *"I'm getting 'Main actor-isolated property accessed from nonisolated context' errors everywhere."*
+  - *"My code is throwing 'Type does not conform to Sendable' warnings when passing data between threads."*
+  - *"I have a stored task causing memory leaks. How do I write it correctly with weak self?"*
+
+- **[Swift Concurrency Reference](/reference/swift-concurrency-ref)** – API reference for actors, Sendable, Task/TaskGroup, AsyncStream, continuations, migration patterns
+  - *"How do I create a TaskGroup?"*
+  - *"What's the AsyncStream continuation API?"*
+  - *"How do I convert completion handlers to async?"*
+
+- **[Swift Performance](/skills/concurrency/swift-performance)** – Optimizing Swift code performance: ARC overhead, unspecialized generics, collection inefficiencies, actor isolation costs
+  - *"My Swift code is allocating too much memory"*
+  - *"How do I reduce ARC overhead in hot loops?"*
+
+- **[Modern Swift Idioms](/skills/concurrency/swift-modern)** – Corrects outdated Swift patterns: legacy APIs, pre-5.5 syntax, Foundation modernization, Claude hallucination fixes
+  - *"Review my Swift code for outdated patterns"*
+  - *"Why am I using DateFormatter when I could use FormatStyle?"*
+
+- **[assumeIsolated](/skills/concurrency/assume-isolated)** – Synchronous actor access for tests, legacy callbacks, and performance-critical code
+  - *"How do I access MainActor state from a delegate callback that runs on main thread?"*
+  - *"What's the difference between Task { @MainActor in } and MainActor.assumeIsolated?"*
+
+- **[Synchronization](/skills/concurrency/synchronization)** – Thread-safe primitives: Mutex (iOS 18+), OSAllocatedUnfairLock, Atomic types
+  - *"Should I use Mutex or actor for this hot path?"*
+  - *"What's the difference between os_unfair_lock and OSAllocatedUnfairLock?"*
+
+- **[Ownership Conventions](/skills/concurrency/ownership-conventions)** – borrowing/consuming modifiers for performance and noncopyable types
+  - *"What does borrowing do in Swift?"*
+  - *"How do I use ~Copyable types?"*
+
+- **[Combine Patterns](/skills/concurrency/combine-patterns)** – Combine reactive programming: publisher lifecycle, operators, @Published traps, async/await bridging
+  - *"Should I use Combine or async/await for this?"*
+  - *"My Combine pipeline silently stops producing values"*
+
+- **[Concurrency Profiling](/skills/concurrency/concurrency-profiling)** – Instruments workflows for async/await performance
+  - *"My async code is slow, how do I profile it?"*
+  - *"I think I have actor contention, how do I diagnose it?"*

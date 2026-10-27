@@ -1,0 +1,57 @@
+{
+  "name": "axiom-mcp",
+  "version": "2.35.0",
+  "description": "MCP server for Axiom development skills, agents, and commands",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "axiom-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:bundle": "tsc && node dist/scripts/bundle.js",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build:bundle",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "mcp",
+    "ios",
+    "swift",
+    "swiftui",
+    "xcode",
+    "development",
+    "axiom"
+  ],
+  "author": "Charles Wiltgen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CharlesWiltgen/Axiom.git",
+    "directory": "mcp-server"
+  },
+  "homepage": "https://charleswiltgen.github.io/Axiom/guide/mcp-install",
+  "bugs": {
+    "url": "https://github.com/CharlesWiltgen/Axiom/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "gray-matter": "^4.0.3",
+    "minisearch": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.17"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

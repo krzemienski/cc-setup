@@ -6377,5 +6377,712 @@
     "agents": [],
     "has_hooks": false,
     "has_mcp": false
+  },
+  {
+    "name": "axiom",
+    "account_id": "axiom",
+    "server_plugin_id": "plugin_01XptgjT6XBzp7hWTopLeiDv",
+    "origin": "My Uploads",
+    "version": "0.1.0",
+    "description": "Axiom marketplace plugin with tools, scripts, and MCP server integration",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [
+      "docs/commands/accessibility/audit-accessibility.md",
+      "docs/commands/build/fix-build.md",
+      "docs/commands/build/optimize-build.md",
+      "docs/commands/concurrency/audit-concurrency.md",
+      "docs/commands/concurrency/index.md",
+      "docs/commands/debugging/analyze-crash.md",
+      "docs/commands/debugging/audit-codable.md",
+      "docs/commands/debugging/audit-core-data.md",
+      "docs/commands/debugging/audit-memory.md",
+      "docs/commands/debugging/console.md",
+      "docs/commands/debugging/profile.md",
+      "docs/commands/health-check.md",
+      "docs/commands/index.md",
+      "docs/commands/integration/audit-networking.md",
+      "docs/commands/storage/audit-icloud.md",
+      "docs/commands/storage/audit-storage.md",
+      "docs/commands/testing/run-tests.md",
+      "docs/commands/testing/screenshot.md",
+      "docs/commands/testing/test-simulator.md",
+      "docs/commands/ui-design/audit-liquid-glass.md",
+      "docs/commands/ui-design/audit-swiftui-architecture.md",
+      "docs/commands/ui-design/audit-swiftui-nav.md",
+      "docs/commands/ui-design/audit-swiftui-performance.md",
+      "docs/commands/ui-design/audit-textkit.md",
+      "docs/commands/utility/ask.md",
+      "docs/commands/utility/audit.md",
+      "docs/commands/utility/status.md"
+    ],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "codex-skill",
+    "account_id": "codex-skill",
+    "server_plugin_id": "plugin_01U7X41AxZz7PfYe1r9gq1pG",
+    "origin": "My Uploads",
+    "version": "1.0.2",
+    "description": "Leverage OpenAI Codex (GPT-5/GPT-5.1) for non-interactive automation mode and hands-off task execution",
+    "repository": "https://github.com/feiskyer/claude-code-settings",
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "codex-skill",
+        "description": "Leverage OpenAI Codex/GPT models for autonomous code implementation. Triggers: \"codex\", \"use gpt\", \"gpt-5\", \"let openai\", \"full-auto\", \"\u7528codex\", \"\u8ba9gpt\u5b9e\u73b0\". Use this skill whenever the user wants to delegate coding tasks to OpenAI models, run code reviews via codex, or execute tasks in a sandboxed environment.",
+        "path": "plugins/codex-skill/skills/codex-skill/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "coding-tutor",
+    "account_id": "coding-tutor",
+    "server_plugin_id": "plugin_01Po1rkTSToMhD7mVvQsWckU",
+    "origin": "My Uploads",
+    "version": "1.2.1",
+    "description": "Personalized coding tutorials that use your actual codebase for examples with spaced repetition quizzes",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "coding-tutor",
+        "description": "Personalized coding tutorials that build on your existing knowledge and use your actual codebase for examples. Creates a persistent learning trail that compounds over time using the power of AI, spaced repetition and quizes.",
+        "path": "plugins/coding-tutor/skills/coding-tutor/SKILL.md"
+      }
+    ],
+    "commands": [
+      "commands/quiz-me.md",
+      "commands/sync-tutorials.md",
+      "commands/teach-me.md"
+    ],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "commit-commands",
+    "account_id": "commit-commands",
+    "server_plugin_id": "plugin_01TnhScadY9SZmfQJrJNp7BR",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [
+      "commands/clean_gone.md",
+      "commands/commit-push-pr.md",
+      "commands/commit.md"
+    ],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "ddd",
+    "account_id": "ddd",
+    "server_plugin_id": "plugin_014kWokV4pD7q4MjMpp36Peo",
+    "origin": "My Uploads",
+    "version": "2.0.0",
+    "description": "Introduces command to update CLAUDE.md with best practices for domain-driven development, focused on quality of code, includes Clean Architecture, SOLID principles, and other design patterns.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "ddd:setup-code-formating",
+        "description": "Sets up code formatting rules and style guidelines in CLAUDE.md",
+        "path": "plugins/ddd/skills/setup-code-formating/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "debug",
+    "account_id": "debug",
+    "server_plugin_id": "plugin_01N6zHyUPZ45ua6RQ5kBr1DC",
+    "origin": "My Uploads",
+    "version": "0.1.0",
+    "description": "Systematic debugging and root cause analysis framework - four-phase investigation process ensuring understanding before fixes",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "debug",
+        "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes - four-phase framework (root cause investigation, pattern analysis, hypothesis testing, implementation) that ensures understanding before attempting solutions",
+        "path": "plugins/debug/skills/debug/SKILL.md"
+      },
+      {
+        "name": "trace",
+        "description": "Use when errors occur deep in execution and you need to trace back to find the original trigger - systematically traces bugs backward through call stack, adding instrumentation when needed, to identify source of invalid data or incorrect behavior",
+        "path": "plugins/debug/skills/trace/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "dig",
+    "account_id": "dig",
+    "server_plugin_id": "plugin_015ZnogVQEwPFKbPXU9Zg48c",
+    "origin": "My Uploads",
+    "version": "0.1.0",
+    "description": "Dig into library source code - clone and explore repos to answer API questions",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "dig",
+        "description": "Look up documentation and source code for libraries and packages. Use when the user asks a question about a library, needs to understand a library's API, or when you need information about a library that you don't know about. Triggers on questions like \"How do I use X library?\", \"What's the API for Y?\", \"Show me how Z library handles this\", or when encountering unfamiliar library usage.",
+        "path": "plugins/dig/skills/dig/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "dotai",
+    "account_id": "dotai",
+    "server_plugin_id": "plugin_014SzBXAMqj32WkJT6m8hAsC",
+    "origin": "My Uploads",
+    "version": "1.0.0",
+    "description": "Complete development toolkit - documentation, PRDs, design docs, debugging, PR workflows, and planning",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [
+      "commands/create-app-design.md",
+      "commands/create-tech-stack.md",
+      "commands/install.md",
+      "commands/update-app-design.md",
+      "commands/update-tech-stack.md"
+    ],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "expo-app-design",
+    "account_id": "expo-app-design",
+    "server_plugin_id": "plugin_01SU3oDcGNEtfpUqZdPpDesf",
+    "origin": "My Uploads",
+    "version": "1.0.0",
+    "description": "Build robust, productivity apps with Expo",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "building-native-ui",
+        "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
+        "path": "plugins/expo-app-design/skills/building-native-ui/SKILL.md"
+      },
+      {
+        "name": "expo-api-routes",
+        "description": "Guidelines for creating API routes in Expo Router with EAS Hosting",
+        "path": "plugins/expo-app-design/skills/expo-api-routes/SKILL.md"
+      },
+      {
+        "name": "expo-dev-client",
+        "description": "Build and distribute Expo development clients locally or via TestFlight",
+        "path": "plugins/expo-app-design/skills/expo-dev-client/SKILL.md"
+      },
+      {
+        "name": "expo-tailwind-setup",
+        "description": "Set up Tailwind CSS v4 in Expo with react-native-css and NativeWind v5 for universal styling",
+        "path": "plugins/expo-app-design/skills/expo-tailwind-setup/SKILL.md"
+      },
+      {
+        "name": "native-data-fetching",
+        "description": "Use when implementing or debugging ANY network request, API call, or data fetching. Covers fetch API, axios, React Query, SWR, error handling, caching strategies, offline support.",
+        "path": "plugins/expo-app-design/skills/native-data-fetching/SKILL.md"
+      },
+      {
+        "name": "use-dom",
+        "description": "Use Expo DOM components to run web code in a webview on native and as-is on web. Migrate web code to native incrementally.",
+        "path": "plugins/expo-app-design/skills/use-dom/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "expo-deployment",
+    "account_id": "expo-deployment",
+    "server_plugin_id": "plugin_01FnQMui6jxrA2hxGbBQHYX8",
+    "origin": "My Uploads",
+    "version": "1.0.0",
+    "description": "Deploying Expo apps to iOS App Store, Android Play Store, web hosting, and CI/CD workflows",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "expo-cicd-workflows",
+        "description": "Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS context, mentions .eas/workflows/, or wants help with EAS build pipelines or deployment automation.",
+        "path": "plugins/expo-deployment/skills/expo-cicd-workflows/SKILL.md"
+      },
+      {
+        "name": "expo-deployment",
+        "description": "Deploying Expo apps to iOS App Store, Android Play Store, web hosting, and API routes",
+        "path": "plugins/expo-deployment/skills/expo-deployment/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "fpf",
+    "account_id": "fpf",
+    "server_plugin_id": "plugin_01AThr2ZCAinS7XHZuaHj2En",
+    "origin": "My Uploads",
+    "version": "1.1.1",
+    "description": "First Principles Framework (FPF) for structured reasoning using workflow command pattern. Implements ADI (Abduction-Deduction-Induction) cycle via propose-hypotheses workflow with fpf-agent for hypothesis generation, logical verification, empirical validation, and auditable decision-making. Includes utility commands for status, query, decay, actualize, and reset.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "fpf:actualize",
+        "description": "Reconcile the project's FPF state with recent repository changes",
+        "path": "plugins/fpf/skills/actualize/SKILL.md"
+      },
+      {
+        "name": "fpf:decay",
+        "description": "Manage evidence freshness by identifying stale decisions and providing governance actions",
+        "path": "plugins/fpf/skills/decay/SKILL.md"
+      },
+      {
+        "name": "fpf:propose-hypotheses",
+        "description": "Execute complete FPF cycle from hypothesis generation to decision",
+        "path": "plugins/fpf/skills/propose-hypotheses/SKILL.md"
+      },
+      {
+        "name": "fpf:query",
+        "description": "Search the FPF knowledge base and display hypothesis details with assurance information",
+        "path": "plugins/fpf/skills/query/SKILL.md"
+      },
+      {
+        "name": "fpf:reset",
+        "description": "Reset the FPF reasoning cycle to start fresh",
+        "path": "plugins/fpf/skills/reset/SKILL.md"
+      },
+      {
+        "name": "fpf:status",
+        "description": "Display the current state of the FPF knowledge base",
+        "path": "plugins/fpf/skills/status/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [
+      "fpf-agent"
+    ],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "kiro-skill",
+    "account_id": "kiro-skill",
+    "server_plugin_id": "plugin_01BddXetZAWB9AWgpAU6JpZu",
+    "origin": "My Uploads",
+    "version": "1.0.2",
+    "description": "Interactive feature development workflow from idea to implementation (Requirements \u2192 Design \u2192 Tasks \u2192 Execute)",
+    "repository": "https://github.com/feiskyer/claude-code-settings",
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "kiro-skill",
+        "description": "Interactive feature development workflow from idea to implementation. Creates requirements (EARS format), design documents, and task lists. Triggers: \"kiro\", \".kiro/specs/\", \"feature spec\", \"\u9700\u6c42\u6587\u6863\", \"\u8bbe\u8ba1\u6587\u6863\", \"\u5b9e\u73b0\u8ba1\u5212\".",
+        "path": "plugins/kiro-skill/skills/kiro-skill/SKILL.md"
+      }
+    ],
+    "commands": [
+      "commands/kiro/design.md",
+      "commands/kiro/execute.md",
+      "commands/kiro/spec.md",
+      "commands/kiro/task.md",
+      "commands/kiro/vibe.md"
+    ],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "langroid",
+    "account_id": "langroid",
+    "server_plugin_id": "plugin_01LsMKuKKNWXaSZv5mxs67Lc",
+    "origin": "My Uploads",
+    "version": "1.8.4",
+    "description": "Design patterns for the Langroid multi-agent LLM framework",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "add-pattern",
+        "description": "Use this skill when you learn one or more design pattern(s) in the Langroid (multi) agent framework, and want to make a note for future reference for yourself. Use this either autonomously, or when asked by the user to record a new pattern.",
+        "path": "plugins/langroid/skills/add-pattern/SKILL.md"
+      },
+      {
+        "name": "patterns",
+        "description": "Design patterns for the Langroid multi-agent LLM framework. Covers agent configuration, tools, task control, and integrations.",
+        "path": "plugins/langroid/skills/patterns/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "learn",
+    "account_id": "learn",
+    "server_plugin_id": "plugin_014xExKfuf9Rv8uaJtyPn27Y",
+    "origin": "My Uploads",
+    "version": "3.0.0",
+    "description": "Continuous learning system - extracts reusable knowledge from work sessions into Claude Code skills",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "learn",
+        "description": "Continuous learning system that extracts reusable knowledge from work sessions. Triggers: (1) /learn command to review session learnings, (2) \"save this as a skill\" or \"extract a skill from this\", (3) \"what did we learn?\", (4) After any task involving non-obvious debugging, workarounds, or trial-and-error discovery. Creates new Claude Code skills when valuable, reusable knowledge is identified.",
+        "path": "plugins/learn/skills/learn/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "math-olympiad",
+    "account_id": "math-olympiad",
+    "server_plugin_id": "plugin_012co3JGSEucEuYPNtitswzE",
+    "origin": "My Uploads",
+    "version": null,
+    "description": "Solve competition math (IMO, Putnam, USAMO) with adversarial verification that catches what self-verification misses. Fresh-context verifiers attack proofs with specific failure patterns. Calibrated abstention over bluffing.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "math-olympiad",
+        "description": "Solve competition math problems (IMO, Putnam, USAMO, AIME) with adversarial verification that catches the errors self-verification misses. Activates when asked to 'solve this IMO problem', 'prove this olympiad inequality', 'verify this competition proof', 'find a counterexample', 'is this proof correct', or for any problem with 'IMO', 'Putnam', 'USAMO', 'olympiad', or 'competition math' in it. Use",
+        "path": "plugins/math-olympiad/skills/math-olympiad/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "mcp",
+    "account_id": "mcp",
+    "server_plugin_id": "plugin_016VZY7nSStSKXFvY1yjcF35",
+    "origin": "My Uploads",
+    "version": "1.2.1",
+    "description": "Commands for setup well known MCP server integration if needed and update CLAUDE.md file with requirement to use this MCP server for current project.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "mcp:build-mcp",
+        "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).",
+        "path": "plugins/mcp/skills/build-mcp/SKILL.md"
+      },
+      {
+        "name": "mcp:setup-arxiv-mcp",
+        "description": "Guide for setup arXiv paper search MCP server using Docker MCP",
+        "path": "plugins/mcp/skills/setup-arxiv-mcp/SKILL.md"
+      },
+      {
+        "name": "mcp:setup-codemap-cli",
+        "description": "Guide for setup Codemap CLI for intelligent codebase visualization and navigation",
+        "path": "plugins/mcp/skills/setup-codemap-cli/SKILL.md"
+      },
+      {
+        "name": "mcp:setup-context7-mcp",
+        "description": "Guide for setup Context7 MCP server to load documentation for specific technologies.",
+        "path": "plugins/mcp/skills/setup-context7-mcp/SKILL.md"
+      },
+      {
+        "name": "mcp:setup-serena-mcp",
+        "description": "Guide for setup Serena MCP server for semantic code retrieval and editing capabilities",
+        "path": "plugins/mcp/skills/setup-serena-mcp/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "meta-cc",
+    "account_id": "meta-cc",
+    "server_plugin_id": "plugin_013Zr1SYusc5gPHFydqz2hfy",
+    "origin": "My Uploads",
+    "version": "0.1.0",
+    "description": "Meta Claude Code marketplace with experiments, knowledge, and internal tools",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [],
+    "commands": [
+      "tests/fixtures/capabilities/commands/another-capability.md",
+      "tests/fixtures/capabilities/commands/invalid-frontmatter.md",
+      "tests/fixtures/capabilities/commands/meta-errors.md",
+      "tests/fixtures/capabilities/commands/missing-name.md",
+      "tests/fixtures/capabilities/commands/no-frontmatter.md",
+      "tests/fixtures/capabilities/commands/valid-capability.md"
+    ],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "spec-kit-skill",
+    "account_id": "spec-kit-skill",
+    "server_plugin_id": "plugin_01RCPWjtYjkJyqdgpTnKrATi",
+    "origin": "My Uploads",
+    "version": "1.0.2",
+    "description": "GitHub Spec-Kit integration for constitution-based spec-driven development (7-phase workflow)",
+    "repository": "https://github.com/feiskyer/claude-code-settings",
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "spec-kit-skill",
+        "description": "GitHub Spec-Kit integration for constitution-based spec-driven development. 7-phase workflow. Triggers: \"spec-kit\", \"speckit\", \"constitution\", \"specify\", \".specify/\", \"\u89c4\u683c\u9a71\u52a8\u5f00\u53d1\", \"\u9700\u6c42\u89c4\u683c\".",
+        "path": "plugins/spec-kit-skill/skills/spec-kit-skill/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "tdd",
+    "account_id": "tdd",
+    "server_plugin_id": "plugin_01MZsn6sLixpTivbH322SJhb",
+    "origin": "My Uploads",
+    "version": "1.1.0",
+    "description": "Introduces commands for test-driven development, common anti-patterns and skills for testing using subagents.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "tdd:fix-tests",
+        "description": "Systematically fix all failing tests after business logic changes or refactoring",
+        "path": "plugins/tdd/skills/fix-tests/SKILL.md"
+      },
+      {
+        "name": "tdd:test-driven-development",
+        "description": "Use when implementing any feature or bugfix, before writing implementation code - write the test first, watch it fail, write minimal code to pass; ensures tests actually verify behavior by requiring failure first",
+        "path": "plugins/tdd/skills/test-driven-development/SKILL.md"
+      },
+      {
+        "name": "tdd:write-tests",
+        "description": "Systematically add test coverage for all local code changes using specialized review and development agents. Add tests for uncommitted changes (including untracked files), or if everything is commited, then will cover latest commit.",
+        "path": "plugins/tdd/skills/write-tests/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "team",
+    "account_id": "team",
+    "server_plugin_id": "plugin_019MXnMsFqZLB7PbYQS3EfMY",
+    "origin": "My Uploads",
+    "version": "3.2.1",
+    "description": "Engineering team consisting of specialized agents for software development",
+    "repository": "https://github.com/rsmdt/the-startup",
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "feature-prioritization",
+        "description": "RICE, MoSCoW, Kano, and value-effort prioritization frameworks with scoring methodologies and decision documentation. Use when prioritizing features, evaluating competing initiatives, creating roadmaps, or making build vs defer decisions.",
+        "path": "plugins/team/skills/cross-cutting/feature-prioritization/SKILL.md"
+      },
+      {
+        "name": "pattern-detection",
+        "description": "Identify existing codebase patterns (naming conventions, architectural patterns, testing patterns) to maintain consistency. Use when generating code, reviewing changes, or understanding established practices.",
+        "path": "plugins/team/skills/cross-cutting/pattern-detection/SKILL.md"
+      },
+      {
+        "name": "project-discovery",
+        "description": "Unified codebase discovery across structure navigation, tech-stack detection, and documentation extraction. Use when onboarding to a project, locating implementation paths, identifying frameworks/tooling, or validating docs against code reality.",
+        "path": "plugins/team/skills/cross-cutting/project-discovery/SKILL.md"
+      },
+      {
+        "name": "requirements-elicitation",
+        "description": "Requirement gathering techniques, stakeholder analysis, user story patterns, and specification validation. Use when clarifying vague requirements, resolving conflicting needs, documenting specifications, or validating requirements with stakeholders.",
+        "path": "plugins/team/skills/cross-cutting/requirements-elicitation/SKILL.md"
+      },
+      {
+        "name": "user-research",
+        "description": "User research and insight synthesis for interviews, usability testing, personas, journey mapping, and actionable product/design recommendations. Use when planning studies, collecting evidence, synthesizing patterns, or converting findings into prioritized decisions.",
+        "path": "plugins/team/skills/design/user-research/SKILL.md"
+      },
+      {
+        "name": "agentic-patterns",
+        "description": "Context enrichment for agentic AI application development using LangChain, Vercel AI SDK, and assistant-ui. Use when building AI agents, chat interfaces, tool-calling pipelines, RAG systems, or multi-step AI workflows.",
+        "path": "plugins/team/skills/development/agentic-patterns/SKILL.md"
+      },
+      {
+        "name": "api-contract-design",
+        "description": "REST and GraphQL API design patterns, OpenAPI/Swagger specifications, versioning strategies, and authentication patterns. Use when designing APIs, reviewing API contracts, evaluating API technologies, or implementing API endpoints.",
+        "path": "plugins/team/skills/development/api-contract-design/SKILL.md"
+      },
+      {
+        "name": "architecture-selection",
+        "description": "System architecture patterns including monolith, microservices, event-driven, and serverless, with C4 modeling, scalability strategies, and technology selection criteria. Use when designing system architectures, evaluating patterns, or planning scalability.",
+        "path": "plugins/team/skills/development/architecture-selection/SKILL.md"
+      },
+      {
+        "name": "domain-modeling",
+        "description": "Unified domain and data modeling for business entities, invariants, schema design, aggregate boundaries, and evolution strategy. Use when designing business models, schema changes, bounded contexts, or consistency rules.",
+        "path": "plugins/team/skills/development/domain-modeling/SKILL.md"
+      },
+      {
+        "name": "frontend-patterns",
+        "description": "Context enrichment for frontend UI development using shadcn/ui and Tailwind CSS. Use when building component libraries, implementing UI designs, theming, or working with accessible React components.",
+        "path": "plugins/team/skills/development/frontend-patterns/SKILL.md"
+      },
+      {
+        "name": "technical-writing",
+        "description": "Create architectural decision records (ADRs), system documentation, API documentation, and operational runbooks. Use when capturing design decisions, documenting system architecture, creating API references, or writing operational procedures.",
+        "path": "plugins/team/skills/development/technical-writing/SKILL.md"
+      },
+      {
+        "name": "testing",
+        "description": "Writing effective tests and running them successfully. Covers layer-specific mocking rules, test design principles, debugging failures, and flaky test management. Use when writing tests, reviewing test quality, or debugging test failures.",
+        "path": "plugins/team/skills/development/testing/SKILL.md"
+      },
+      {
+        "name": "platform-operations",
+        "description": "Unified platform operations guidance for CI/CD pipeline design, deployment strategies, observability, SLI/SLOs, and incident-ready rollouts. Use when building release workflows, production monitoring, or reliability controls.",
+        "path": "plugins/team/skills/infrastructure/platform-operations/SKILL.md"
+      },
+      {
+        "name": "code-quality-review",
+        "description": "Unified code review skill for correctness, design, readability, security, performance, testability, accessibility, and error-handling conventions. Use when reviewing changes, enforcing quality standards, or identifying technical debt.",
+        "path": "plugins/team/skills/quality/code-quality-review/SKILL.md"
+      },
+      {
+        "name": "performance-analysis",
+        "description": "Measurement approaches, profiling patterns, bottleneck identification, and optimization guidance. Use when diagnosing performance issues, establishing baselines, identifying bottlenecks, or planning for scale. Always measure before optimizing.",
+        "path": "plugins/team/skills/quality/performance-analysis/SKILL.md"
+      },
+      {
+        "name": "security-assessment",
+        "description": "Vulnerability review, threat modeling, OWASP patterns, and secure coding assessment. Use when reviewing code security, designing secure systems, performing threat analysis, or validating security implementations.",
+        "path": "plugins/team/skills/quality/security-assessment/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "tech-stack",
+    "account_id": "tech-stack",
+    "server_plugin_id": "plugin_01NfStkhm8MGCHnUMFDSgoFU",
+    "origin": "My Uploads",
+    "version": "1.0.0",
+    "description": "Commands for setup or update of CLAUDE.md file with best practices for specific language or framework.",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "tech-stack:add-typescript-best-practices",
+        "description": "Setup TypeScript best practices and code style rules in CLAUDE.md",
+        "path": "plugins/tech-stack/skills/add-typescript-best-practices/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "test",
+    "account_id": "test",
+    "server_plugin_id": "plugin_01Et4EtgbYCRtiqT7U8snqPQ",
+    "origin": "My Uploads",
+    "version": "0.1.0",
+    "description": "Test-driven development workflow for writing tests before implementation - red-green-refactor cycle with deterministic unit tests",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "tdd",
+        "description": "Test-driven development with red-green-refactor loop. Use when user wants to build features or fix bugs using TDD, mentions \"red-green-refactor\", wants integration tests, or asks for test-first development.",
+        "path": "plugins/test/skills/tdd/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "upgrading-expo",
+    "account_id": "upgrading-expo",
+    "server_plugin_id": "plugin_01FZKDTE5C7bZyWQGJoGYUFu",
+    "origin": "My Uploads",
+    "version": "1.0.0",
+    "description": "Guidelines for upgrading Expo SDK versions and fixing dependency issues",
+    "repository": null,
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "upgrading-expo",
+        "description": "Guidelines for upgrading Expo SDK versions and fixing dependency issues",
+        "path": "plugins/upgrading-expo/skills/upgrading-expo/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
+  },
+  {
+    "name": "youtube-transcribe-skill",
+    "account_id": "youtube-transcribe-skill",
+    "server_plugin_id": "plugin_01VMz5EREFSCeUjdcGmMovwd",
+    "origin": "My Uploads",
+    "version": "1.0.2",
+    "description": "Extract subtitles/transcripts from YouTube videos via CLI or browser automation",
+    "repository": "https://github.com/feiskyer/claude-code-settings",
+    "enabled_on_account": false,
+    "skills": [
+      {
+        "name": "youtube-transcribe-skill",
+        "description": "Extract subtitles/transcripts from YouTube videos. Triggers: \"youtube transcript\", \"extract subtitles\", \"video captions\", \"\u89c6\u9891\u5b57\u5e55\", \"\u5b57\u5e55\u63d0\u53d6\", \"YouTube\u8f6c\u6587\u5b57\", \"\u63d0\u53d6\u5b57\u5e55\".",
+        "path": "plugins/youtube-transcribe-skill/skills/youtube-transcribe-skill/SKILL.md"
+      }
+    ],
+    "commands": [],
+    "agents": [],
+    "has_hooks": false,
+    "has_mcp": false
   }
 ]

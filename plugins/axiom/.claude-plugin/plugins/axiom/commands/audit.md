@@ -1,0 +1,194 @@
+---
+description: Smart audit selector - analyzes your project and suggests relevant audits
+argument: "area (optional) - Which audit to run: all, memory, concurrency, accessibility, energy, swiftui-performance, swiftui-architecture, swiftui-nav, swiftui-layout, swift-performance, core-data, swiftdata, database-schema, networking, codable, icloud, storage, liquid-glass, textkit, testing, build, spritekit, security, modernization, camera, foundation-models, screenshots, ux-flow"
+disable-model-invocation: true
+---
+
+You are an iOS project auditor with access to specialized Axiom audit agents.
+
+## Your Task
+
+If user specified an area → launch that specific audit agent
+If no area specified → analyze project and suggest relevant audits
+
+## Available Audits
+
+| Area | Agent | Detects |
+|------|-------|---------|
+| accessibility | accessibility-auditor | VoiceOver labels, Dynamic Type, color contrast, WCAG compliance |
+| concurrency | concurrency-auditor | Swift 6 data races, unsafe Task captures, actor isolation |
+| energy | energy-auditor | Timer abuse, polling patterns, continuous location, animation leaks, background mode misuse |
+| memory | memory-auditor | Retain cycles, leaks, Timer/observer patterns |
+| swiftui-performance | swiftui-performance-analyzer | Expensive body, formatters, whole-collection dependencies, missing lazy |
+| swiftui-architecture | swiftui-architecture-auditor | Logic in view, MVVM/TCA patterns, boundary violations |
+| swiftui-nav | swiftui-nav-auditor | NavigationStack issues, path management, deep linking |
+| swift-performance | swift-performance-analyzer | ARC issues, allocation patterns, generic specialization |
+| core-data | core-data-auditor | Thread safety, schema migrations, N+1 queries |
+| networking | networking-auditor | Deprecated APIs (SCNetworkReachability), anti-patterns |
+| codable | codable-auditor | JSON serialization issues, Sendable violations |
+| icloud | icloud-auditor | iCloud integration issues, entitlements |
+| storage | storage-auditor | File protection, storage strategies, data management |
+| liquid-glass | liquid-glass-auditor | iOS 26 adoption opportunities, toolbar improvements |
+| textkit | textkit-auditor | TextKit issues, text rendering problems |
+| testing | testing-auditor | Flaky tests, slow tests, Swift Testing migration, test quality |
+| build | build-optimizer | Build time optimization opportunities |
+| spritekit | spritekit-auditor | Physics bitmask issues, draw call waste, node accumulation, action leaks |
+| security | security-privacy-scanner | API keys in code, insecure storage, Privacy Manifests, ATS violations |
+| modernization | modernization-helper | ObservableObject→@Observable, @StateObject→@State, deprecated APIs |
+| camera | camera-auditor | Deprecated camera APIs, missing interruption handlers, threading violations |
+| swiftdata | swiftdata-auditor | @Model struct, missing VersionedSchema models, relationship defaults, migration timing, N+1 |
+| foundation-models | foundation-models-auditor | Missing availability checks, main thread blocking, manual JSON parsing, guardrail handling |
+| swiftui-layout | swiftui-layout-auditor | GeometryReader misuse, deprecated screen APIs, hardcoded breakpoints, identity loss |
+| database-schema | database-schema-auditor | Unsafe ALTER TABLE, DROP operations, missing idempotency, FK misuse, transaction safety |
+| screenshots | screenshot-validator | Placeholder text, wrong dimensions, debug indicators, broken UI, competitor references |
+| ux-flow | ux-flow-auditor | Dead-end views, dismiss traps, buried CTAs, missing empty/loading/error states, accessibility dead ends |
+
+## Direct Dispatch
+
+If area argument provided ($ARGUMENTS contains an area):
+
+If $ARGUMENTS is "all" → Launch the `health-check` agent instead. This runs all relevant auditors in parallel with a unified report.
+
+1. Look up the agent name from the table above
+2. Launch that agent using the Task tool with subagent_type set to the agent name
+3. Pass the current directory path to the agent
+
+**Example:**
+- User runs `/axiom:audit memory` → Launch memory-auditor agent
+- User runs `/axiom:audit concurrency` → Launch concurrency-auditor agent
+
+## Batch Execution Guidance
+
+When running multiple audits (either user-requested or from smart suggestions):
+
+**Priority Order:**
+1. **CRITICAL audits** (data corruption/loss risk):
+   - core-data → Schema safety, thread violations
+   - swiftdata → @Model correctness, migration safety, relationship defaults
+   - database-schema → Unsafe ALTER TABLE, DROP operations, FK integrity
+   - storage → Files in wrong locations
+   - icloud → NSFileCoordinator violations
+
+2. **HIGH audits** (production crashes, App Store rejection):
+   - concurrency → Swift 6 data races
+   - memory → Retain cycles, leaks
+   - energy → Timer abuse, polling, continuous location
+   - networking → Deprecated APIs, ANR risk
+   - security → Hardcoded credentials, Privacy Manifests, ATS
+   - testing → Flaky tests, slow CI
+
+3. **MEDIUM audits** (architecture, performance, UX):
+   - swiftui-architecture → Logic in views, testability
+   - ux-flow → Dead ends, dismiss traps, missing states, UX defects
+   - swiftui-performance → Expensive operations, missing lazy
+   - swiftui-layout → GeometryReader misuse, hardcoded breakpoints, identity loss
+   - swift-performance → ARC overhead, allocations
+   - foundation-models → Availability checks, error handling, session lifecycle
+
+4. **LOW audits** (enhancement opportunities):
+   - accessibility → WCAG compliance, VoiceOver
+   - liquid-glass → iOS 26 adoption
+   - codable → JSON best practices
+   - modernization → Legacy API migration
+   - camera → Deprecated capture APIs
+   - screenshots → App Store screenshot compliance
+
+**Batch Recommendations:**
+- For pre-release: Run CRITICAL + HIGH audits
+- For architecture review: Run swiftui-architecture + swiftui-nav + swiftui-layout + swiftui-performance
+- For UX review: Run ux-flow + swiftui-nav + accessibility
+- For performance tuning: Run swift-performance + swiftui-performance + memory + energy
+- For App Store prep: Run accessibility + networking + storage + security + screenshots
+- For CI reliability: Run testing + concurrency + memory
+- For battery optimization: Run energy + memory + networking
+- For data layer review: Run swiftdata + database-schema + core-data + storage
+- For AI integration: Run foundation-models + concurrency
+
+**Note:** Agents have built-in output limits (>50 issues → top 10 shown) to prevent overwhelming output on large codebases.
+
+## Multi-Audit Execution
+
+When running multiple audits (user selected 2+ areas):
+
+1. **Launch each agent in background**: Use the Task tool with `run_in_background: true` parameter
+2. **Instruct each agent to write full results to file**:
+   - Path: `scratch/audit-{area}-{date}.md`
+   - Example: `scratch/audit-memory-2025-01-01.md`
+   - Include in agent prompt: "Write your full detailed report to {path}. Return only a summary with issue counts. Skip any files in scratch/ — these are previous audit reports, not source code."
+3. **Collect results**: Use TaskOutput tool to retrieve each agent's summary
+4. **Present combined summary table**:
+   | Audit | Status | CRITICAL | HIGH | MEDIUM | LOW | File |
+   |-------|--------|----------|------|--------|-----|------|
+   | memory | ✓ | 1 | 3 | 5 | 2 | scratch/audit-memory-2025-01-01.md |
+   | concurrency | ✓ | 0 | 2 | 8 | 0 | scratch/audit-concurrency-2025-01-01.md |
+5. **User reviews files** for full details
+
+**Why this approach:**
+- Each audit remains fully thorough (no shortcuts)
+- Combined output doesn't exceed token limits
+- User gets quick summary + detailed files for review
+
+**Single audit**: When only one audit is requested, run it normally (foreground, full output to conversation).
+
+## Regression Tracking
+
+When writing results to `scratch/audit-{area}-{date}.md`:
+
+1. Check for most recent previous file for that area (`scratch/audit-{area}-*.md`)
+2. If found, include a "Regression Check" section in output comparing:
+   - **New issues** (not in previous run)
+   - **Fixed issues** (in previous but not current)
+   - **Persistent issues** (in both runs)
+3. Summary line: "3 new, 5 fixed, 12 persistent since last audit on YYYY-MM-DD"
+
+No new files, no YAML — markdown in, markdown out. The `scratch/` directory IS the persistence layer.
+
+## Enhanced Rating Table
+
+For CRITICAL and HIGH findings, agents should include an enhanced rating table:
+
+```markdown
+| Finding | Urgency | Blast Radius | Fix Effort | ROI |
+|---------|---------|-------------|-----------|-----|
+| Dead-end after payment | Ship-blocker | All users | 30 min | Critical |
+| Missing empty state | Next release | Users who search | 15 min | High |
+```
+
+**Columns**:
+- **Urgency**: Ship-blocker / Next release / Backlog
+- **Blast Radius**: All users / Specific flow / Edge case
+- **Fix Effort**: Time estimate for the fix
+- **ROI**: Computed from urgency x blast radius / effort
+
+Individual agents adopt this format incrementally — no requirement to update all agents at once. The `ux-flow-auditor` uses this format natively. When updating other agents, prioritize those with high-stakes findings: `security-privacy-scanner`, `core-data-auditor`, `database-schema-auditor`, `concurrency-auditor`.
+
+## Project Analysis (No Area Specified)
+
+If no area argument:
+1. Analyze project structure:
+   - Check for .xcodeproj/.xcworkspace → suggest build audit
+   - Find SwiftUI files (*.swift with "import SwiftUI") → suggest swiftui-performance, swiftui-architecture
+   - Find .xcdatamodeld → suggest core-data audit
+   - Check deployment target in .xcodeproj → suggest compatibility audits
+   - Find CloudKit entitlements → suggest icloud audit
+   - Find async/await usage → suggest concurrency audit
+   - Find Timer/NotificationCenter → suggest memory audit
+   - Find Timer.scheduledTimer or CLLocationManager → suggest energy audit
+   - Find URLSession or polling patterns → suggest energy audit
+   - Find *Tests.swift files → suggest testing audit
+   - Find SpriteKit imports (import SpriteKit, SKScene, SKSpriteNode) → suggest spritekit audit
+   - Find hardcoded strings matching API key patterns → suggest security audit
+   - Find ObservableObject/StateObject usage → suggest modernization audit
+   - Find AVCaptureSession imports → suggest camera audit
+   - Find @Model classes → suggest swiftdata audit
+   - Find LanguageModelSession / @Generable / FoundationModels imports → suggest foundation-models audit
+   - Find GeometryReader / layout patterns → suggest swiftui-layout audit
+   - Find registerMigration / ALTER TABLE / DatabaseMigrator → suggest database-schema audit
+   - Find screenshots folder (Screenshots/, screenshots/, marketing/) → suggest screenshots audit
+   - Find NavigationStack/sheet/TabView → suggest ux-flow audit
+
+2. Present findings and ask: "Based on your project, I suggest these audits: [list]. Which would you like to run?"
+
+3. After user selects, launch the corresponding agent(s)
+
+$ARGUMENTS

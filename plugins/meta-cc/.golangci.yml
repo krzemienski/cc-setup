@@ -1,0 +1,102 @@
+# golangci-lint configuration
+# Only lints that are critical for production code
+
+run:
+  timeout: 5m
+  tests: true
+  go: '1.24'
+
+linters:
+  enable:
+    - govet
+    - ineffassign
+    - unused
+    - depguard
+  disable:
+    - errcheck     # Too many pre-existing issues
+    - staticcheck  # Too many style suggestions
+    - goconst      # Too noisy for test files
+    - gocognit     # Complex test functions are acceptable
+    - gocyclo      # Complex test functions are acceptable
+  settings:
+    depguard:
+      rules:
+        main:
+          list-mode: lax
+          allow:
+            - "$gostd"
+            - "github.com"
+            - "golang.org"
+        no-query-files-imports-query:
+          list-mode: lax
+          files:
+            - "**/internal/query/files/**"
+          deny:
+            - pkg: "github.com/yaleh/meta-cc/internal/query"
+              desc: "internal/query/files must not import its parent package internal/query"
+        no-query-jq-imports-query:
+          list-mode: lax
+          files:
+            - "**/internal/query/jq/**"
+          deny:
+            - pkg: "github.com/yaleh/meta-cc/internal/query"
+              desc: "internal/query/jq must not import its parent package internal/query"
+    errcheck:
+      check-blank: false  # Allow error assignment to _
+      exclude-functions:
+        # Allow ignoring errors in test code for brevity
+        - (io.Closer).Close
+        - (*os.File).Close
+        - (*bytes.Buffer).Write
+        - (*bytes.Buffer).WriteString
+        - fmt.Fprintln
+        - fmt.Fprintf
+        - os.RemoveAll
+        - os.Unsetenv
+        - os.Setenv
+    staticcheck:
+      checks:
+        - "all"
+        - "-QF1001"  # De Morgan's law - code clarity preference
+        - "-QF1003"  # Tagged switch - code clarity preference
+        - "-ST1005"  # Error capitalization - pre-existing style
+    goconst:
+      min-occurrences: 5  # Require at least 5 occurrences before flagging
+    gocognit:
+      min-complexity: 30  # Allow complex test setup functions
+    gocyclo:
+      min-complexity: 20  # Allow moderately complex functions
+    govet:
+      disable:
+        - fieldalignment  # Struct optimization not critical for correctness
+
+issues:
+  exclude-rules:
+    # Disable err check for test files - tests often use _ for brevity
+    - path: _test\.go
+      linters:
+        - errcheck
+    # Disable shadow checks for test files - common pattern in table tests
+    - path: _test\.go
+      linters:
+        - govet
+      text: "shadow:"
+    # Disable fieldalignment for test structs
+    - path: _test\.go
+      linters:
+        - govet
+      text: "fieldalignment:"
+    # Disable goconst for test files - hardcoded strings are common
+    - path: _test\.go
+      linters:
+        - goconst
+    # Disable staticcheck quickfix suggestions (QF codes)
+    - linters:
+        - staticcheck
+      text: "QF"
+    # Disable staticcheck style suggestions (ST codes)
+    - linters:
+        - staticcheck
+      text: "ST1005"
+  max-same-issues: 0
+  max-issues-per-linter: 0

@@ -1,0 +1,88 @@
+@startuml
+!theme amiga
+title BAIME Methodology - Bootstrapping Loop with Dual Objectives
+
+start
+
+partition "Initial State" {
+    split
+        partition "Dual Objectives" {
+            split
+                :**Instance Objectives**
+                (Achieve Task T);
+            split again
+                :**Meta Objectives**
+                (Improve the Methodology);
+            end split
+        }
+    split again
+        partition "Initial System" {
+            split
+                :Meta-Agent Set (M₀);
+                note right: Governs Agent Set (A₀)
+            split again
+                :Agent Set (A₀);
+            end split
+        }
+    end split
+}
+
+repeat
+    partition "Iteration" {
+        :Observe
+        (Gather data from environment and history);
+
+        :Plan
+        (Formulate strategy);
+
+        :Execute;
+        note right: Meta-Agent Set invokes Agent Set (Aᵢ)
+
+        partition "Reflect" {
+            split
+                :Meta Objective Reflection
+                (Assess improvement of Methodology);
+            split again
+                :Instance Objective Reflection
+                (Assess performance on Task T);
+            end split
+        }
+
+        partition "Evolve System" {
+            split
+                :Evolve Meta-Agent Set
+                (Update Mᵢ -> Mᵢ₊₁);
+            split again
+                :Evolve Agent Set
+                (Update Aᵢ -> Aᵢ₊₁);
+            end split
+        }
+    }
+repeat while (is converged?
+
+      - ‖Aₙ - Aₙ₋₁‖ < ε
+      - ‖Mₙ - Mₙ₋₁‖ < ε
+      - V(Aₙ) ≥ threshold
+      - V(Mₙ) ≥ threshold
+) is (**no**
+)
+-> **yes**;
+
+partition "Final Output" {
+    split
+        :**Instance Objective Output**
+        (Output **O**);
+    split again
+        partition "Evolved System" {
+            split
+                :Meta-Agent Set (Mₙ);
+            split again
+                :Agent Set (Aₙ);
+            end split
+        }
+    end split
+}
+
+stop
+
+@enduml
