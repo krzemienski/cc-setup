@@ -1,0 +1,17 @@
+{
+  "name": "northstar",
+  "version": "0.1.0",
+  "description": "Turn any prompt, doc, bug report, or backlog into a rigorous Claude Code /goal completion condition, then run it across hand-off, headless, and self-orchestrated execution modes.",
+  "author": {
+    "name": "Nick Krzemienski"
+  },
+  "license": "MIT",
+  "keywords": [
+    "goal",
+    "orchestration",
+    "autonomous",
+    "claude-code",
+    "automation",
+    "completion-condition"
+  ]
+}

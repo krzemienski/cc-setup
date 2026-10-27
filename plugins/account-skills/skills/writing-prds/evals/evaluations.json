@@ -1,0 +1,34 @@
+[
+  {
+    "skills": ["writing-prds"],
+    "query": "Write a PRD for this idea.",
+    "files": ["evals/files/idea.txt"],
+    "expected_behavior": [
+      "Produces all seven sections in order, with a goals table where each goal has a measure",
+      "Gives every screen Purpose, Layout, States, Controls, and APIs called",
+      "States the choices it made for missing facts (for example the payment timing edge cases) in the Overview instead of leaving placeholders",
+      "Runs prd_lint.py and reports exit 0",
+      "Writes requirements literally, with units on numbers"
+    ]
+  },
+  {
+    "skills": ["writing-prds"],
+    "query": "Review this PRD and tell me what's missing.",
+    "files": ["evals/files/weak-prd.md"],
+    "expected_behavior": [
+      "Runs prd_lint.py and reports the failures it finds (TODO/TBD placeholders, missing States and APIs called, empty default and set-in cells, unmeasured goals, missing sections, no sources)",
+      "Lists fixes by section, each concrete enough to apply",
+      "Does not invent product facts; asks or marks decisions where the author must choose"
+    ]
+  },
+  {
+    "skills": ["writing-prds"],
+    "query": "Generate the PRD with a model instead of by hand, as a draft-review-refine chain on Opus 5.5.",
+    "files": ["evals/files/idea.txt"],
+    "expected_behavior": [
+      "Uses the prompting-opus-5-5 kit.py to build three separate requests (draft, review, refine)",
+      "Audits each request before sending",
+      "Lints the final PRD with prd_lint.py"
+    ]
+  }
+]

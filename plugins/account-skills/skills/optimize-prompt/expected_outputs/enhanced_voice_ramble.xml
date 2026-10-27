@@ -1,0 +1,323 @@
+<enhanced_prompt>
+
+<task_summary>
+Optimize dashboard loading performance when displaying large datasets by
+implementing caching strategies and query optimization to reduce load times
+and improve user experience.
+</task_summary>
+
+<context>
+<domain>Web Application Performance Optimization</domain>
+<technical_context>
+- Component: Dashboard with data visualization
+- Issue: Slow loading with large datasets
+- User impact: Extended wait times causing frustration
+- Suspected causes: Database queries, frontend rendering, lack of caching
+</technical_context>
+<constraints>
+- Must maintain data accuracy and consistency
+- Should achieve sub-2-second load time
+- Solution must be scalable to handle growing data
+- Cannot break existing dashboard functionality
+</constraints>
+</context>
+
+<skills_inventory>
+**MANDATORY: Complete this inventory before starting ANY task**
+
+Step 1: List Available Skills
+List all skills you have access to in your current session.
+
+Step 2: Identify Matching Skills
+Relevant skills for this optimization task:
+- systematic-debugging: For structured root cause analysis
+- serena: For code analysis of dashboard and query implementations
+
+Step 3: Load Skills
+Use the Skill tool for each relevant skill:
+- Skill: systematic-debugging
+- Skill: serena
+
+Step 4: Follow Guidance
+Execute the loaded skills' instructions exactly as specified.
+</skills_inventory>
+
+<mcp_tools_inventory>
+**MANDATORY: Complete this inventory before using ANY tools**
+
+Step 1: Check Available MCP Servers
+List MCP servers connected to your session.
+
+Step 2: Identify Specialized Tools
+Recommended MCP tools for this task:
+- mcp__sequential-thinking__sequentialthinking: For systematic optimization analysis
+- mcp__serena__get_symbols_overview: To understand dashboard code structure
+- mcp__serena__find_symbol: To locate query functions and rendering logic
+- mcp__serena__search_for_pattern: To find caching patterns or identify bottlenecks
+
+Step 3: Prefer MCP Over Bash
+Use Serena MCP instead of grep/find for code analysis.
+Use sequential-thinking for complex reasoning.
+
+Avoid:
+- grep for code search (use mcp__serena__* instead)
+- cat for file reading (use mcp__serena__get_symbols_overview instead)
+</mcp_tools_inventory>
+
+<thinking_framework>
+**Use for complex multi-step problems requiring systematic reasoning**
+
+WHEN TO USE:
+- Performance optimization requires multiple investigation paths
+- Multiple valid optimization approaches exist
+- Trade-offs must be evaluated systematically
+
+HOW TO USE:
+1. Call mcp__sequential-thinking__sequentialthinking tool
+2. Set thoughtNumber=1, estimate totalThoughts (likely 8-12 for this task)
+3. Think through investigation incrementally:
+   - Thought 1: Analyze current implementation
+   - Thought 2: Identify bottleneck (database vs frontend)
+   - Thought 3: Evaluate caching strategy options
+   - Thought 4: Evaluate query optimization options
+   - Thought 5: Consider trade-offs of each approach
+   - Thought 6: Generate hypothesis for best solution
+   - Thought 7: Verify solution meets constraints
+   - Continue as needed
+4. Revise if needed (set isRevision=true, revisesThought=N)
+5. Set nextThoughtNeeded=false only when confident solution is identified
+</thinking_framework>
+
+<mandatory_rules>
+<rule id="1" priority="CRITICAL">
+**NEVER write unit tests unless explicitly requested by the user**
+
+Reason: Tests are often unnecessary overhead; user will ask if needed.
+
+Violation Detection: If you find yourself writing test files (.test.*, .spec.*, *_test.*)
+without explicit user request, STOP and ask for confirmation.
+
+Application to this task: Focus on optimization implementation, not test creation.
+</rule>
+
+<rule id="2" priority="CRITICAL">
+**NEVER propose code changes without reading the existing code first**
+
+Tools to Use:
+- mcp__serena__get_symbols_overview: Understand dashboard file structure
+- mcp__serena__find_symbol: Locate query and rendering functions
+- mcp__serena__search_for_pattern: Find existing caching or optimization patterns
+
+Reason: Proposing changes without understanding creates bugs and breaks things.
+
+Violation Detection: Before suggesting any optimization, you MUST have read:
+1. Dashboard component code
+2. Data fetching/query code
+3. Any existing caching implementation
+
+Application to this task: Read all dashboard and query code BEFORE proposing optimizations.
+</rule>
+
+<rule id="3" priority="HIGH">
+**ALWAYS use Serena MCP for code analysis when available**
+
+Preferred Tools:
+- find_symbol: Find dashboard components, query functions
+- get_symbols_overview: Understand code structure
+- find_referencing_symbols: Trace data flow
+- search_for_pattern: Find performance patterns
+
+Reason: Serena MCP provides symbol-level understanding far superior to grep/find.
+
+Application to this task: Use Serena exclusively for all code analysis.
+</rule>
+
+<rule id="4" priority="HIGH">
+**ALWAYS complete the skills inventory before starting tasks**
+
+Process:
+1. List available skills
+2. Identify: systematic-debugging, serena
+3. Load both skills with Skill tool
+4. Follow their systematic approaches
+
+Reason: Skills contain proven patterns that prevent mistakes and save time.
+
+Application to this task: Load systematic-debugging for investigation framework,
+serena for code analysis capabilities.
+</rule>
+
+<rule id="5" priority="HIGH">
+**ALWAYS complete MCP tools inventory before using tools**
+
+Process:
+1. Check available MCP servers
+2. Identify: sequential-thinking, Serena tools
+3. Prefer MCP over bash equivalents
+
+Reason: MCP tools are more reliable and powerful than bash equivalents.
+
+Application to this task: Use sequential-thinking for optimization analysis,
+Serena tools for code understanding.
+</rule>
+
+<rule id="6" priority="MEDIUM">
+**ALWAYS use ultrathinking for complex problems**
+
+Triggers:
+- Performance optimization (THIS TASK)
+- Multiple optimization strategies to evaluate
+- Trade-offs to analyze
+
+Tool: mcp__sequential-thinking__sequentialthinking
+
+Reason: Complex problems need structured multi-step reasoning.
+
+Application to this task: REQUIRED - Use sequential thinking to systematically
+evaluate caching vs query optimization vs frontend improvements.
+</rule>
+
+<rule id="7" priority="MEDIUM">
+**ALWAYS use sequential thinking for debugging and root cause analysis**
+
+Process:
+1. State the performance problem clearly
+2. Generate hypotheses for bottleneck location
+3. Test each hypothesis with evidence
+4. Identify root cause
+5. Design solution
+
+Reason: Debugging requires systematic hypothesis generation and testing.
+
+Application to this task: Use to identify whether bottleneck is database,
+network, or frontend rendering.
+</rule>
+</mandatory_rules>
+
+<workflow>
+<phase_1>
+**Investigation & Root Cause Analysis**
+
+1. Complete skills inventory:
+   - Use Skill tool to load: systematic-debugging
+   - Use Skill tool to load: serena
+   - Follow their investigation workflows
+
+2. Complete MCP tools inventory
+
+3. Start sequential thinking session (mcp__sequential-thinking__sequentialthinking):
+   - thoughtNumber=1: Understand current dashboard implementation
+   - thoughtNumber=2: Identify potential bottlenecks (database, network, rendering)
+   - thoughtNumber=3: Generate hypothesis #1 - Database queries are slow
+   - thoughtNumber=4: Generate hypothesis #2 - Frontend rendering is inefficient
+   - thoughtNumber=5: Generate hypothesis #3 - No caching layer exists
+   - Continue systematically testing each hypothesis
+
+4. Use Serena MCP to understand code:
+   - mcp__serena__get_symbols_overview for dashboard component files
+   - mcp__serena__find_symbol to locate data fetching functions
+   - mcp__serena__find_symbol to locate query definitions
+   - mcp__serena__search_for_pattern to find any existing caching
+
+5. Gather evidence:
+   - Analyze query complexity and execution time (if logs available)
+   - Examine data volume being fetched
+   - Check for N+1 query problems
+   - Identify rendering bottlenecks (large lists, complex calculations)
+
+6. Identify actual bottleneck with evidence (don't assume)
+</phase_1>
+
+<phase_2>
+**Solution Design**
+
+1. Continue sequential thinking to evaluate solutions:
+   - thoughtNumber=N: Based on root cause, what optimization strategies apply?
+   - thoughtNumber=N+1: Evaluate caching strategy (Redis, in-memory, browser cache)
+   - thoughtNumber=N+2: Evaluate query optimization (indexes, query rewrite, pagination)
+   - thoughtNumber=N+3: Evaluate frontend optimization (virtualization, lazy loading)
+   - thoughtNumber=N+4: Consider trade-offs of each approach
+
+2. Choose solution based on:
+   - Root cause identified in Phase 1
+   - Simplest solution that meets performance goal (avoid overengineering)
+   - Constraints (scalability, maintainability, cost)
+
+3. Design implementation:
+   - If database bottleneck: Query optimization + caching strategy
+   - If rendering bottleneck: Virtual scrolling or pagination
+   - If both: Layered approach (query optimization + caching + frontend optimization)
+
+4. Verify design meets constraints:
+   - Will it achieve sub-2-second load time?
+   - Is it scalable?
+   - Does it maintain data accuracy?
+   - Does it break existing functionality?
+</phase_2>
+
+<phase_3>
+**Implementation & Validation**
+
+1. Read existing code thoroughly with Serena MCP (Rule #2):
+   - Understand current patterns
+   - Identify integration points
+   - Note any dependencies
+
+2. Implement optimization incrementally:
+   - Start with smallest change that provides benefit
+   - Test after each increment
+   - Measure performance improvement
+
+3. If implementing caching:
+   - Define cache invalidation strategy
+   - Implement cache key generation
+   - Add cache hit/miss logging
+   - Document caching behavior
+
+4. If optimizing queries:
+   - Rewrite inefficient queries
+   - Add appropriate indexes (if database access available)
+   - Implement pagination if fetching too much data
+   - Add query performance logging
+
+5. If optimizing frontend:
+   - Implement virtual scrolling for large lists
+   - Add lazy loading for expensive components
+   - Optimize rendering logic
+
+6. Validate solution:
+   - Test with small dataset (baseline)
+   - Test with large dataset (original problem scenario)
+   - Measure load time improvement
+   - Verify no functional regression
+
+7. DO NOT write tests unless user explicitly asks (Rule #1)
+
+8. Document optimization:
+   - What was the bottleneck
+   - What solution was implemented
+   - Performance improvement achieved
+   - Any configuration or maintenance notes
+</phase_3>
+</workflow>
+
+<success_criteria>
+- Root cause of performance issue identified with evidence
+- Dashboard load time reduced to under 2 seconds with large datasets
+- Solution implemented without breaking existing functionality
+- Performance improvement verified with measurements (before/after metrics)
+- Optimization follows existing code patterns and conventions
+- Solution is scalable to handle data growth
+- Implementation is documented for future maintenance
+</success_criteria>
+
+<execution_trigger>
+You are now configured to optimize dashboard performance following all
+guidelines, mandatory workflows, and rules specified above.
+
+Begin by completing the skills inventory (load systematic-debugging and serena),
+then complete the MCP tools inventory, and finally start a sequential thinking
+session to systematically investigate the performance bottleneck.
+</execution_trigger>
+
+</enhanced_prompt>

@@ -1,0 +1,26 @@
+{
+  "vendor": "openai",
+  "model": "gpt-6-astra",
+  "url": "https://api.openai.com/v1/responses",
+  "headers": {
+    "Authorization": "Bearer ${OPENAI_API_KEY}",
+    "content-type": "application/json"
+  },
+  "body": {
+    "model": "gpt-6-astra",
+    "instructions": "You write research briefs.",
+    "input": [
+      {
+        "role": "user",
+        "content": "Brief me on voice-capture apps."
+      }
+    ],
+    "reasoning": {
+      "effort": "minimal"
+    },
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "max_output_tokens": 4000,
+    "prompt_cache_retention": "24h"
+  }
+}

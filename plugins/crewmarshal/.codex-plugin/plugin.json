@@ -1,0 +1,32 @@
+{
+  "name": "crewmarshal",
+  "version": "0.24.0",
+  "description": "Multi-agent delivery discipline: the coordinator architects and reviews while external executors implement, under adversarial review-to-GO and real-runtime verification.",
+  "author": {
+    "name": "Nguyễn Gia Tâm"
+  },
+  "homepage": "https://github.com/nguyengiatam/CrewMarshal",
+  "repository": "https://github.com/nguyengiatam/CrewMarshal",
+  "license": "MIT",
+  "keywords": [
+    "orchestration",
+    "multi-agent",
+    "code-review",
+    "verification",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "CrewMarshal",
+    "shortDescription": "Delegate implementation, keep the review discipline",
+    "longDescription": "A delivery discipline for work where the coordinator designs, reviews, and verifies while external coding agents implement. Covers system profiling, request tiering, phased roadmaps, workforce management, per-task checkpoints, adversarial review, and session handoff.",
+    "developerName": "Nguyễn Gia Tâm",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "Set up a system profile for this project before we design anything.",
+      "Plan this rebuild as phases from the foundation up.",
+      "Hand this task to an executor and verify the result properly."
+    ]
+  }
+}

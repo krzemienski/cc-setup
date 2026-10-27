@@ -1,0 +1,116 @@
+{
+  "vendor": "openai",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "auth": {
+    "header": "authorization",
+    "scheme": "Bearer",
+    "env": "OPENAI_API_KEY",
+    "base_url_env": "KIT_OPENAI_BASE_URL"
+  },
+  "fixed_headers": {
+    "content-type": "application/json"
+  },
+  "context_tokens": 1050000,
+  "max_output_tokens": 128000,
+  "long_context_surcharge": {
+    "over_input_tokens": 272000,
+    "input_multiplier": 2.0,
+    "output_multiplier": 1.5
+  },
+  "sampling_params": {
+    "keys": [
+      "temperature",
+      "top_p",
+      "top_logprobs",
+      "logprobs"
+    ],
+    "allowed_only_at_effort": "none"
+  },
+  "cache": {
+    "param": "prompt_cache_options",
+    "value": {
+      "ttl": "30m"
+    },
+    "replaced": "prompt_cache_retention"
+  },
+  "max_output_defaults": {
+    "chat": 8000,
+    "long": 32000,
+    "agent": 64000
+  },
+  "_max_output_why": "Luna's jobs are short; 8K covers reasoning at low effort plus a short reply. The 25K reserve warning still applies at medium and above.",
+  "blocks": {
+    "instructions_when_input": [
+      "gpt6-pasted-content-note"
+    ],
+    "working_chat": [
+      "gpt6-instruction-precedence"
+    ],
+    "working_action": [
+      "gpt6-initiative",
+      "gpt6-act-on-requests",
+      "gpt6-reviewable-result",
+      "gpt6-instruction-precedence"
+    ],
+    "working_agent_extra": [
+      "gpt6-skill-debug",
+      "gpt6-delegation",
+      "gpt6-testing"
+    ],
+    "writing_prose": [
+      "gpt6-writing-style",
+      "gpt6-stock-phrases"
+    ],
+    "writing_technical": [
+      "gpt6-technical-communication"
+    ],
+    "harness_continuation": "continuation-open-items"
+  },
+  "sources": {
+    "guide": "https://developers.openai.com/api/docs/guides/latest-model/gpt-6-astra.md",
+    "reasoning": "https://developers.openai.com/api/docs/guides/reasoning",
+    "skills": "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+    "model_page": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+    "announcement": "https://openai.com/index/introducing-gpt-6-sol-and-luna/"
+  },
+  "verified": "2026-09-28",
+  "id": "gpt-6-luna",
+  "display": "GPT-6 Luna",
+  "efforts": [
+    "none",
+    "low",
+    "medium",
+    "high",
+    "xhigh",
+    "max"
+  ],
+  "default_effort": "medium",
+  "effort_guidance": {
+    "start": "low",
+    "try_lower": "none",
+    "reserve": [
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "_why": "Model page default is medium; for Luna's intended high-volume work (titles, cleanup, classification, short messages) start at low and use none for pure formatting, where sampling parameters are also allowed."
+  },
+  "knowledge_cutoff": "2026-05-18",
+  "pricing_usd_per_mtok": {
+    "input": 0.1,
+    "cached_input": 0.01,
+    "cache_write": 0.125,
+    "output": 0.5
+  },
+  "chat_completions_tools": "only_at_none",
+  "use_for": "cheapest tier: high-volume everyday tasks, titles, cleanup, classification, extraction, short messages",
+  "max_output_warn": {
+    "below": 25000,
+    "at_efforts": [
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ]
+  }
+}

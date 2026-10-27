@@ -1,0 +1,15 @@
+{
+  "name": "ykdojo",
+  "owner": {
+    "name": "YK",
+    "email": "yoyoyosss@wearehackerone.com"
+  },
+  "plugins": [
+    {
+      "name": "superdevflow",
+      "source": "./",
+      "description": "Claude Code plugin for GitHub Actions debugging, conversation cloning/half-cloning, context handoffs, and CLAUDE.md review",
+      "version": "0.1.0"
+    }
+  ]
+}

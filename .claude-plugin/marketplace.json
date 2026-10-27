@@ -1,0 +1,529 @@
+{
+  "name": "claude-account",
+  "owner": {
+    "name": "Nick",
+    "email": "krzemienski@gmail.com"
+  },
+  "metadata": {
+    "description": "Every enabled plugin and personal skill on Nick's claude.ai account, exported 2026-10-27",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "job-hunt-hq",
+      "source": "./plugins/job-hunt-hq",
+      "description": "A complete local-first job-hunt system: a kanban tracker app that lives in your own folder, plus skills that find matching openings, monitor your email for replies, tailor your resume and cover letter per role, and keep your application materials organized.",
+      "version": "0.2.0"
+    },
+    {
+      "name": "agentic-harness",
+      "source": "./plugins/agentic-harness",
+      "description": "Stand up, assess, and maintain an agentic harness in an existing repo. A meta-tool that generates project-specific agent teams and the skills they use, then assesses how effectively they are used. When a spec-driven development system or an issue tracker is present, the generated orchestrator coordi",
+      "version": "0.9.2"
+    },
+    {
+      "name": "superdevflow",
+      "source": "./plugins/superdevflow",
+      "description": "Claude Code plugin for GitHub Actions debugging, conversation cloning/half-cloning, context handoffs, and CLAUDE.md review",
+      "version": "0.1.0"
+    },
+    {
+      "name": "zizi-skills",
+      "source": "./plugins/zizi-skills",
+      "description": "A skill library for disciplined software work: planning, test-first implementation, code and security review, git hygiene, and session handoff. Invoked as zizi-skills:<skill> once installed.",
+      "version": "0.5.0"
+    },
+    {
+      "name": "wave-planning",
+      "source": "./plugins/wave-planning",
+      "description": "Plan software as dependency-ordered waves, then execute each wave's phases in parallel subagents in git worktrees, with automatic model routing and validation gates.",
+      "version": "0.1.1"
+    },
+    {
+      "name": "agent-smith",
+      "source": "./plugins/agent-smith",
+      "description": "Analyze, validate, and optimize Claude Code configurations with a 7-pillar evaluation system",
+      "version": "2.5.1"
+    },
+    {
+      "name": "instant",
+      "source": "./plugins/instant",
+      "description": "Find available domains and brandable names with instant.ai. Check names across extensions, verify domains in bulk, generate alternatives, and search USPTO trademark records. Free, with no account or API key required. Instant may earn referral fees on registrations completed on instantdomainsearch.co",
+      "version": "2.0.6"
+    },
+    {
+      "name": "token-shield",
+      "source": "./plugins/token-shield",
+      "description": "A playbook skill that cuts Claude Code token spend: sourced prompt cache rules, session boundary decisions, model tier routing, plugin and MCP pruning, output discipline, and a durable-memory pattern. Ships opt-in tools that read the API usage counters from local transcripts: a measurement script, a",
+      "version": "1.8.0"
+    },
+    {
+      "name": "setup-audit",
+      "source": "./plugins/setup-audit",
+      "description": "Audit Claude Code configuration, usage, and common setup risks against current docs. Get evidence-backed security, cost, learning, and optional readiness findings, readable reports, and approved fixes with backups and verification.",
+      "version": "0.10.0"
+    },
+    {
+      "name": "claude-md-composer",
+      "source": "./plugins/claude-md-composer",
+      "description": "Audit, compose, and refactor CLAUDE.md files using the 'recipe book, not filing cabinet' pattern \u2014 keep memory files scannable, token-lean, and organized across the 4-level hierarchy (enterprise \u2192 project \u2192 user \u2192 local).",
+      "version": "1.0.2"
+    },
+    {
+      "name": "cv-skills",
+      "source": "./plugins/cv-skills",
+      "description": "Skills for performing classical image processing operations: format conversion, SVG rendering, resize/crop/rotate, color adjustment, filters, segmentation/morphology, and compositing/blending",
+      "version": "1.0.3"
+    },
+    {
+      "name": "anti-ai-writing",
+      "source": "./plugins/anti-ai-writing",
+      "description": "Edits any piece of writing to remove AI tells. Strips banned words, banned phrases, and banned structures (em dashes, the default rule of three, bullet lists with bold titles, formulaic transitions) at the sentence level, plus discourse-level tells that survive a surface edit (stated takeaways, sing",
+      "version": "2.1.0"
+    },
+    {
+      "name": "claude-context-optimizer",
+      "source": "./plugins/claude-context-optimizer",
+      "description": "Cuts wasted context in Claude Code and shows what each session really costs. Model-aware for the Claude 5 lineup (Opus 5.5, Sonnet 5.5, Fable 5.1) with 1-hour-cache pricing and cache-break warnings; read dedup and file digests; auto .contextignore; a ru/en prompt coach; task state that survives /com",
+      "version": "4.12.1"
+    },
+    {
+      "name": "crewmarshal",
+      "source": "./plugins/crewmarshal",
+      "description": "Multi-agent delivery discipline: Claude architects and reviews while external executors implement, under adversarial review-to-GO and real-runtime verification. Works standalone or alongside superpowers.",
+      "version": "0.24.0"
+    },
+    {
+      "name": "agent-context-kit",
+      "source": "./plugins/agent-context-kit",
+      "description": "Four Agent Skills (directives, how-tos, scripts, context-refactor) that give a coding agent persistent, discoverable context about a codebase, instead of re-deriving it every session.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "mattpocock-skills",
+      "source": "./plugins/mattpocock-skills",
+      "description": "Matt Pocock's agent skills for real engineering: grilling, spec/ticket flows, TDD, code review, domain modelling and more. Plug-and-play, not vibe coding.",
+      "version": "1.2.3"
+    },
+    {
+      "name": "content-studio",
+      "source": "./plugins/content-studio",
+      "description": "Content studio for managing thought leadership content with a visual editor, Claude Code skills, and utility scripts.",
+      "version": "1.1.1"
+    },
+    {
+      "name": "task-observer",
+      "source": "./plugins/task-observer",
+      "description": "Turn your corrections into lasting rules in CLAUDE.md, so Claude Code remembers your package manager, style and conventions in every session.",
+      "version": "1.3.2"
+    },
+    {
+      "name": "github-portfolio-builder",
+      "source": "./plugins/github-portfolio-builder",
+      "description": "Reviews a GitHub profile or repository as portfolio evidence. Returns up to five ranked improvements, each with a direct evidence link and a verified, reported, inferred, or unresolved label.",
+      "version": "1.1.0"
+    },
+    {
+      "name": "partnerimpact",
+      "source": "./plugins/partnerimpact",
+      "description": "Partner management for Claude: research, qualify, onboard, co-sell, QBR, strategy, program design and partner comms workflows, eight role agents, the Partner Program Maturity Assessment, partner health, and every PartnerImpact calculator through the hosted connector. Free. By Bart Dirksen.",
+      "version": "1.1.2"
+    },
+    {
+      "name": "sdlc-kit",
+      "source": "./plugins/sdlc-kit",
+      "description": "Spec-Driven Development vault for Claude Code \u2014 core (11 skills for daily delivery: init, sync, status, dash, prd, adr, spec, task, worktree, review, retro).",
+      "version": "0.8.0"
+    },
+    {
+      "name": "prompt-fixer",
+      "source": "./plugins/prompt-fixer",
+      "description": "Turns a rough prompt into a precise one by asking a few targeted questions first. Works for code in Claude Code and for everyday writing: emails, posts, reports, plans and slides.",
+      "version": "1.3.0"
+    },
+    {
+      "name": "cc-bootstrapper",
+      "source": "./plugins/cc-bootstrapper",
+      "description": "Automation bootstrap for Claude Code. Analyzes any project and generates a complete .claude/ structure with agents, pipelines, skills, memory, hooks, and settings.",
+      "version": "9.2.0"
+    },
+    {
+      "name": "meta-dev",
+      "source": "./plugins/meta-dev",
+      "description": "Single authority for Claude-config artifacts: modular standards (core + skill/agent/hook/plugin/instruction-files) with right-sized lifecycles for each, two-tier guard + md-format enforcement hooks, shared judge agents, vendored eval harness, and an on-demand docs-currency check (sync-docs).",
+      "version": "0.6.0"
+    },
+    {
+      "name": "diagrams",
+      "source": "./plugins/diagrams",
+      "description": "Generate professional diagrams from natural language descriptions using Kroki.io. Supports 20+ diagram types including PlantUML, Mermaid, GraphViz, D2, C4, ERD, and more. Automatically selects the optimal diagram type, generates styled scripts, and renders PNG and SVG images.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "plugin-manager",
+      "source": "./plugins/plugin-manager",
+      "description": "Visual web UI for managing, toggling, and browsing Claude Code plugins. Opens as a standalone app window with Anthropic-styled interface.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "claude-code-setup",
+      "source": "./plugins/claude-code-setup",
+      "description": "Analyze codebases and recommend tailored Claude Code automations such as hooks, skills, MCP servers, and subagents.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "skillquiver",
+      "source": "./plugins/skillquiver",
+      "description": "Twenty-four Agent Skills shared by ChatGPT, Claude Code, and Codex.",
+      "version": "2.2.0"
+    },
+    {
+      "name": "please-optimize-my-claude",
+      "source": "./plugins/please-optimize-my-claude",
+      "description": "Optimize your CLAUDE.md hierarchy \u2014 deduplicate, detect misplacement, compress bloat, and visualize token usage across global/project/repo levels",
+      "version": "1.0.0"
+    },
+    {
+      "name": "agent-sdk-dev",
+      "source": "./plugins/agent-sdk-dev",
+      "description": "Claude Agent SDK Development Plugin",
+      "version": "0.0.0"
+    },
+    {
+      "name": "agent-toolkit",
+      "source": "./plugins/agent-toolkit",
+      "description": "Agent toolkit with specialized agents, skills, and commands for UI mockups, codebase patterns, mermaid diagrams, and more",
+      "version": "0.1.0"
+    },
+    {
+      "name": "ai-firstify",
+      "source": "./plugins/ai-firstify",
+      "description": "AI-first project auditor and re-engineer based on the 9 design principles and 7 design patterns from the TechWolf AI-First Bootcamp",
+      "version": "1.1.0"
+    },
+    {
+      "name": "autonomous-skill",
+      "source": "./plugins/autonomous-skill",
+      "description": "Use when user wants to execute long-running tasks that require multiple sessions to complete. This skill manages task decomposition, progress tracking, and autonomous execution using Claude Code headless mode with auto-continuation. Trigger phrases: autonomous, long-running task, multi-session, \u81ea\u4e3b\u6267\u884c",
+      "version": "1.0.2"
+    },
+    {
+      "name": "claude-performance",
+      "source": "./plugins/claude-performance",
+      "description": "Weekly performance digest for Claude Code. Reads JSONL session data, computes six effectiveness metrics (activity mix, one-shot edit rate, subagent turn count, model mix, project allocation, hookify firings), fires diagnostic rules, and writes behavioral rules into CLAUDE.md so future sessions adapt",
+      "version": "1.0.0"
+    },
+    {
+      "name": "megapowers",
+      "source": "./plugins/megapowers",
+      "description": "Native-first workflow plugin for Claude Code and Codex: 16 task skills for planning, test-first implementation, debugging, verification, safe effects, cross-provider review, and orchestration, plus an optional concise output style, a destructive-command tripwire, and a self-diagnosis doctor.",
+      "version": "0.34.0"
+    },
+    {
+      "name": "brand-voice",
+      "source": "./plugins/brand-voice",
+      "description": "Brand Voice transforms scattered brand materials into enforceable AI guardrails \u2014 automatically. It searches across Notion, Google Drive, Confluence, Gong, Slack, and meeting transcripts to distill your strongest brand signals into a single source of truth, then applies them to every piece of AI-gen",
+      "version": "1.1.0"
+    },
+    {
+      "name": "brewcode",
+      "source": "./plugins/brewcode",
+      "description": "Brewcode - full-featured development platform for Claude Code: infinite focus tasks, prompt optimization, skill/agent creation, quorum reviews, rules management",
+      "version": "3.4.6"
+    },
+    {
+      "name": "brewdoc",
+      "source": "./plugins/brewdoc",
+      "description": "Brewdoc - Claude Code documentation tools: auto-sync for skills/agents/rules, my-claude installation docs, memory optimization",
+      "version": "3.4.6"
+    },
+    {
+      "name": "claude-reflect",
+      "source": "./plugins/claude-reflect",
+      "description": "Self-learning system for Claude Code that captures corrections and updates CLAUDE.md automatically",
+      "version": "3.0.1"
+    },
+    {
+      "name": "claude-skillz",
+      "source": "./plugins/claude-skillz",
+      "description": "Collection of Claude skills including architect, code review, data visualization, and more",
+      "version": "0.1.0"
+    },
+    {
+      "name": "code-review",
+      "source": "./plugins/code-review",
+      "description": "Introduce codebase and PR review commands and skills using multiple specialized agents.",
+      "version": "1.1.0"
+    },
+    {
+      "name": "code-simplifier",
+      "source": "./plugins/code-simplifier",
+      "description": "Agent that simplifies and refines code for clarity, consistency, and maintainability while preserving functionality",
+      "version": "1.0.0"
+    },
+    {
+      "name": "compound-engineering",
+      "source": "./plugins/compound-engineering",
+      "description": "AI-powered development tools. 29 agents, 22 commands, 20 skills, 1 MCP server for code review, research, design, and workflow automation.",
+      "version": "2.38.1"
+    },
+    {
+      "name": "cowork-plugin-management",
+      "source": "./plugins/cowork-plugin-management",
+      "description": "Create, customize, and manage plugins tailored to your organization's tools and workflows. Configure MCP servers, adjust plugin behavior, and adapt templates to match how your team works.",
+      "version": "0.2.2"
+    },
+    {
+      "name": "customaize-agent",
+      "source": "./plugins/customaize-agent",
+      "description": "Commands and skills for writing and refining commands, hooks, skills for Claude Code, includes Anthropic Best Practices and Agent Persuasion Principles that can be useful for sub-agent workflows.",
+      "version": "1.4.0"
+    },
+    {
+      "name": "goal-composer",
+      "source": "./plugins/goal-composer",
+      "description": "Interviews you, explores 2-3 approaches, designs the work section by section and writes a transcript-verifiable mandate for Claude Code's /goal command, with red-team, baseline and an independent recheck.",
+      "version": "1.3.1"
+    },
+    {
+      "name": "data",
+      "source": "./plugins/data",
+      "description": "Write SQL, explore datasets, and generate insights faster. Build visualizations and dashboards, and turn raw data into clear stories for stakeholders.",
+      "version": "1.1.0"
+    },
+    {
+      "name": "design",
+      "source": "./plugins/design",
+      "description": "Accelerate design workflows \u2014 critique, design system management, UX writing, accessibility audits, research synthesis, and dev handoff. From exploration to pixel-perfect specs.",
+      "version": "1.2.0"
+    },
+    {
+      "name": "discord",
+      "source": "./plugins/discord",
+      "description": "Discord channel for Claude Code \u2014 messaging bridge with built-in access control. Manage pairing, allowlists, and policy via /discord:access.",
+      "version": "0.0.1"
+    },
+    {
+      "name": "prompt-brain",
+      "source": "./plugins/prompt-brain",
+      "description": "Optimize and migrate prompts \u2014 analyze weaknesses, apply best practices, and migrate a prompt from one model to another, each with a changelog.",
+      "version": "0.7.0"
+    },
+    {
+      "name": "engineering",
+      "source": "./plugins/engineering",
+      "description": "Streamline engineering workflows \u2014 standups, code review, architecture decisions, incident response, and technical documentation. Works with your existing tools or standalone.",
+      "version": "1.2.0"
+    },
+    {
+      "name": "essentials-claude-code",
+      "source": "./plugins/essentials-claude-code",
+      "description": "Essential Claude Code skills and workflows",
+      "version": "0.1.0"
+    },
+    {
+      "name": "rankedin",
+      "source": "./plugins/rankedin",
+      "description": "Understand where you stand professionally and decide what to do next. Get direction on your next career move, a job search that isn't working, changing careers, AI changing your job, or building your professional reputation \u2014 right away, with no upload. Add your own LinkedIn data export for personal",
+      "version": "0.1.1"
+    },
+    {
+      "name": "frontend-design",
+      "source": "./plugins/frontend-design",
+      "description": "Frontend design skill for UI/UX implementation",
+      "version": "0.0.0"
+    },
+    {
+      "name": "fullstack-dev-skills",
+      "source": "./plugins/fullstack-dev-skills",
+      "description": "Comprehensive skill pack with 66 specialized skills for full-stack developers: 12 language experts (Python, TypeScript, Go, Rust, C++, Swift, Kotlin, C#, PHP, Java, SQL, JavaScript), 10 backend frameworks, 6 frontend/mobile, plus infrastructure, DevOps, security, and testing. Features progressive di",
+      "version": "0.4.10"
+    },
+    {
+      "name": "git",
+      "source": "./plugins/git",
+      "description": "Git and GitHub workflow automation - streamlined PR creation, draft management, and code review workflows",
+      "version": "0.1.0"
+    },
+    {
+      "name": "hookify",
+      "source": "./plugins/hookify",
+      "description": "Easily create hooks to prevent unwanted behaviors by analyzing conversation patterns",
+      "version": "0.0.0"
+    },
+    {
+      "name": "hooks",
+      "source": "./plugins/hooks",
+      "description": "Claude Code hooks for workflow tracing, session management, and observability. Capture multi-agent workflow traces in JSONL format for analysis and debugging.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "kaizen",
+      "source": "./plugins/kaizen",
+      "description": "Inspired by Japanese continuous improvement philosophy, Agile and Lean development practices. Introduces commands for analysis of root cause of issues and problems, including 5 Whys, Cause and Effect Analysis, and other techniques.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "legal",
+      "source": "./plugins/legal",
+      "description": "Speed up contract review, NDA triage, and compliance workflows for in-house legal teams. Draft legal briefs, organize precedent research, and manage institutional knowledge.",
+      "version": "1.3.0"
+    },
+    {
+      "name": "marketing",
+      "source": "./plugins/marketing",
+      "description": "Create content, plan campaigns, and analyze performance across marketing channels. Maintain brand voice consistency, track competitors, and report on what's working.",
+      "version": "1.2.0"
+    },
+    {
+      "name": "media",
+      "source": "./plugins/media",
+      "description": "Auto-play/pause media on prompt submit/stop",
+      "version": "1.0.0"
+    },
+    {
+      "name": "nanobanana-skill",
+      "source": "./plugins/nanobanana-skill",
+      "description": "Generate or edit images using Google Gemini API via nanobanana",
+      "version": "1.0.2"
+    },
+    {
+      "name": "northstar",
+      "source": "./plugins/northstar",
+      "description": "Turn any prompt, doc, bug report, or backlog into a rigorous Claude Code /goal completion condition, then run it across hand-off, headless, and self-orchestrated execution modes.",
+      "version": "0.1.0"
+    },
+    {
+      "name": "oh-my-claudecode",
+      "source": "./plugins/oh-my-claudecode",
+      "description": "Multi-agent orchestration system for Claude Code",
+      "version": "4.9.0"
+    },
+    {
+      "name": "operations",
+      "source": "./plugins/operations",
+      "description": "Optimize business operations \u2014 vendor management, process documentation, change management, capacity planning, and compliance tracking. Keep your organization running efficiently.",
+      "version": "1.3.0"
+    },
+    {
+      "name": "pdf-viewer",
+      "source": "./plugins/pdf-viewer",
+      "description": "View, annotate, and sign PDFs in a live interactive viewer. Mark up contracts, fill forms with visual feedback, stamp approvals, and place signatures \u2014 then download the annotated copy.",
+      "version": "0.2.0"
+    },
+    {
+      "name": "pr-review-toolkit",
+      "source": "./plugins/pr-review-toolkit",
+      "description": "Comprehensive PR review agents specializing in comments, tests, error handling, type design, code quality, and code simplification",
+      "version": "0.0.0"
+    },
+    {
+      "name": "product-management",
+      "source": "./plugins/product-management",
+      "description": "Write feature specs, plan roadmaps, and synthesize user research faster. Keep stakeholders updated and stay ahead of the competitive landscape.",
+      "version": "1.2.0"
+    },
+    {
+      "name": "product-tracking-skills",
+      "source": "./plugins/product-tracking-skills",
+      "description": "AI agent skills that make SaaS products data-ready for product analytics \u2014 from codebase scan to tracking plan to working instrumentation code.",
+      "version": "1.2.3"
+    },
+    {
+      "name": "productivity",
+      "source": "./plugins/productivity",
+      "description": "Manage tasks, plan your day, and build up memory of important context about your work. Syncs with your calendar, email, and chat to keep everything organized and on track.",
+      "version": "1.3.1"
+    },
+    {
+      "name": "proficiently",
+      "source": "./plugins/proficiently",
+      "description": "AI-powered job search, resume tailoring, and cover letter writing",
+      "version": "1.1.0"
+    },
+    {
+      "name": "promptkit",
+      "source": "./plugins/promptkit",
+      "description": "Model-correct prompts and requests for Claude Opus 5.5, Claude Fable 5.1, and GPT-6 Astra, Sol, and Luna: turn any ramble or existing prompt into a ready prompt, build and audit API requests, run unattended agents; plus PRD writing and the Speakwright build loop.",
+      "version": "0.2.0"
+    },
+    {
+      "name": "ralph-specum",
+      "source": "./plugins/ralph-specum",
+      "description": "Spec-driven development with task-by-task execution. Research, requirements, design, tasks, autonomous implementation, and epic triage for multi-spec feature decomposition.",
+      "version": "4.9.0"
+    },
+    {
+      "name": "ralph-wiggum-marketer",
+      "source": "./plugins/ralph-wiggum-marketer",
+      "description": "Autonomous AI copywriter agent that creates SaaS marketing content while you sleep. Uses the Ralph Wiggum pattern for iterative content creation from trends, research, and communications.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "reflexion",
+      "source": "./plugins/reflexion",
+      "description": "Collection of commands that force LLM to reflect on previous response and output. Based on papers like Self-Refine and Reflexion. These techniques improve the output of large language models by introducing feedback and refinement loops.",
+      "version": "1.1.4"
+    },
+    {
+      "name": "sadd",
+      "source": "./plugins/sadd",
+      "description": "Introduces skills for subagent-driven development, dispatches fresh subagent for each task with code review between tasks, enabling fast iteration with quality gates.",
+      "version": "1.3.0"
+    },
+    {
+      "name": "sdd",
+      "source": "./plugins/sdd",
+      "description": "Specification Driven Development workflow commands and agents, based on Github Spec Kit and OpenSpec. Uses specialized agents for effective context management and quality review.",
+      "version": "2.1.1"
+    },
+    {
+      "name": "security-guidance",
+      "source": "./plugins/security-guidance",
+      "description": "Security reminder hook that warns about potential security issues when editing files, including command injection, XSS, and unsafe code patterns",
+      "version": "0.0.0"
+    },
+    {
+      "name": "skill-creator",
+      "source": "./plugins/skill-creator",
+      "description": "Create new skills, improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, update or optimize an existing skill, run evals to test a skill, or benchmark skill performance with variance analysis.",
+      "version": "0.0.0"
+    },
+    {
+      "name": "small-business",
+      "source": "./plugins/small-business",
+      "description": "Pre-built small business workflows to help you run and grow your business. Supports a majority of the tools you already use. You approve every step that touches money or customers. Install and then ask Claude to help you get onboarded.",
+      "version": "1.35.1"
+    },
+    {
+      "name": "taches-cc-resources",
+      "source": "./plugins/taches-cc-resources",
+      "description": "Curated Claude Code skills and commands for prompt engineering, MCP servers, subagents, hooks, and productivity workflows",
+      "version": "1.0.0"
+    },
+    {
+      "name": "ui-design-system",
+      "source": "./plugins/ui-design-system",
+      "description": "Complete UI/UX design system for React Native & Next.js with 4 core skills",
+      "version": "1.0.0"
+    },
+    {
+      "name": "visual-explainer",
+      "source": "./plugins/visual-explainer",
+      "description": "Generate beautiful HTML pages for diagrams, diff reviews, plan reviews, and data tables",
+      "version": "0.6.2"
+    },
+    {
+      "name": "xclaude-plugin",
+      "source": "./plugins/xclaude-plugin",
+      "description": "Modular iOS development automation suite. 8 workflow-specific MCP servers (600-3500 tokens) with 23 tools across Xcode, Simulator, and IDB. Enable only what you need!",
+      "version": "0.4.0"
+    },
+    {
+      "name": "account-skills",
+      "source": "./plugins/account-skills",
+      "description": "Personal skills exported from claude.ai",
+      "version": "1.0.0"
+    }
+  ]
+}

@@ -1,0 +1,478 @@
+{
+  "client": {
+    "name": "Get Path",
+    "initial": "G"
+  },
+  "provider": {
+    "name": "WithAgents",
+    "wordmark": "withagents",
+    "positioning": "build with agents",
+    "tagline": "Timely delivery, pay-as-you-go weekly rates."
+  },
+  "meta": {
+    "title": "Project Proposal",
+    "subtitle": "Get Path \u2014 initial build",
+    "generated_date": "2026-06-17",
+    "generated_label": "June 17, 2026",
+    "proposal_id": "WA-GETPATH-20260617",
+    "valid_until": "2026-07-17",
+    "valid_until_label": "July 17, 2026"
+  },
+  "overview": {
+    "summary": "Get Path partners with WithAgents to design and build their product, delivered with agents \u2014 a working product shipped fast on transparent, pay-as-you-go weekly terms.",
+    "product_summary": "Get Path is an AI-powered career and learning-pathway web app that turns a person's current skills and target role into a personalized, step-by-step skill roadmap. It serves early-career professionals and career-changers who know where they want to go but not how to get there.",
+    "goals": [
+      {
+        "title": "Personalized roadmaps",
+        "detail": "Let any user go from a target role to a concrete, ordered skill roadmap in under five minutes."
+      },
+      {
+        "title": "Trustworthy AI recommendations",
+        "detail": "Generate roadmap steps grounded in a curated skills graph so suggestions feel credible rather than generic."
+      },
+      {
+        "title": "Visible progress",
+        "detail": "Give users a clear way to track which roadmap milestones they have completed and what comes next."
+      },
+      {
+        "title": "Validated v1 launch",
+        "detail": "Ship a lean, production-deployed MVP that real users can sign up for and complete an end-to-end roadmap flow."
+      }
+    ]
+  },
+  "scope": {
+    "deliverables": [
+      {
+        "id": "D1",
+        "name": "Foundation & Project Setup",
+        "description": "Stand up the application skeleton, repository, environments, and CI so all later work lands on a stable, deployable base.",
+        "tasks": [
+          {
+            "name": "Scaffold Next.js app, repo, linting, and folder conventions",
+            "hours": 5,
+            "phase": "Foundation"
+          },
+          {
+            "name": "Provision Postgres + hosting and wire staging/production environments",
+            "hours": 4,
+            "phase": "Foundation"
+          },
+          {
+            "name": "Set up CI pipeline, env-var management, and preview deploys",
+            "hours": 4,
+            "phase": "Foundation"
+          }
+        ]
+      },
+      {
+        "id": "D2",
+        "name": "Authentication & User Profiles",
+        "description": "Email-based account creation and a profile that captures the user's current skills and target role, which feed the recommendation engine.",
+        "tasks": [
+          {
+            "name": "Implement email/password auth with sessions and password reset",
+            "hours": 6,
+            "phase": "Foundation"
+          },
+          {
+            "name": "Build profile data model (current skills, target role, experience level)",
+            "hours": 5,
+            "phase": "Core Features"
+          },
+          {
+            "name": "Create profile onboarding UI and skill/role input flow",
+            "hours": 6,
+            "phase": "Core Features"
+          }
+        ]
+      },
+      {
+        "id": "D3",
+        "name": "Skills Graph & Roadmap Data Model",
+        "description": "The curated skills/role knowledge graph and roadmap schema that the AI grounds its recommendations against, plus seed content for launch.",
+        "tasks": [
+          {
+            "name": "Design skills/roles graph schema and roadmap/milestone tables",
+            "hours": 6,
+            "phase": "Core Features"
+          },
+          {
+            "name": "Seed curated skills graph for 3 launch career tracks",
+            "hours": 7,
+            "phase": "Core Features"
+          },
+          {
+            "name": "Build roadmap CRUD + persistence and milestone status tracking",
+            "hours": 5,
+            "phase": "Polish & UX"
+          }
+        ]
+      },
+      {
+        "id": "D4",
+        "name": "AI Roadmap Recommendation Engine",
+        "description": "The core differentiator: an LLM/agent integration that reads the user's profile and the skills graph to assemble a personalized, ordered roadmap.",
+        "tasks": [
+          {
+            "name": "Define prompt + retrieval flow that grounds the LLM in the skills graph",
+            "hours": 7,
+            "phase": "AI Integration"
+          },
+          {
+            "name": "Implement agent orchestration to assemble and order roadmap steps",
+            "hours": 8,
+            "phase": "AI Integration"
+          },
+          {
+            "name": "Add output validation, guardrails, and graceful fallbacks",
+            "hours": 5,
+            "phase": "AI Integration"
+          },
+          {
+            "name": "Tune ranking and add caching to control latency and token cost",
+            "hours": 3,
+            "phase": "AI Integration"
+          }
+        ]
+      },
+      {
+        "id": "D5",
+        "name": "Roadmap UI & Progress Experience",
+        "description": "The interactive roadmap view where users explore their generated path, mark milestones complete, and regenerate or refine their roadmap.",
+        "tasks": [
+          {
+            "name": "Build interactive roadmap visualization with milestone detail panels",
+            "hours": 7,
+            "phase": "Polish & UX"
+          },
+          {
+            "name": "Implement progress tracking, completion state, and dashboard",
+            "hours": 5,
+            "phase": "Polish & UX"
+          },
+          {
+            "name": "Add roadmap regeneration/refine flow and responsive polish",
+            "hours": 3,
+            "phase": "Polish & UX"
+          }
+        ]
+      },
+      {
+        "id": "D6",
+        "name": "Testing, Launch & Handoff",
+        "description": "End-to-end validation of the core flow, production deployment, and a clean handoff so the client can operate and extend Get Path.",
+        "tasks": [
+          {
+            "name": "End-to-end validation of signup-to-roadmap flow on staging",
+            "hours": 5,
+            "phase": "Launch & Handoff"
+          },
+          {
+            "name": "Production deploy, monitoring, and analytics instrumentation",
+            "hours": 5,
+            "phase": "Launch & Handoff"
+          },
+          {
+            "name": "Handoff: docs, runbook, and walkthrough session",
+            "hours": 4,
+            "phase": "Launch & Handoff"
+          }
+        ]
+      }
+    ],
+    "assumptions": [
+      "Client provides brand assets (logo, colors, fonts) and approved copy for the three launch career tracks.",
+      "Scope is a single responsive web platform; no native mobile app.",
+      "Client supplies or approves an LLM provider API key and accepts usage-based AI costs.",
+      "A single English-language locale is sufficient for v1.",
+      "Subject-matter input for the curated skills graph is available from the client or a designated expert.",
+      "One staging and one production environment are sufficient for launch."
+    ],
+    "constraints": [
+      "v1 is web-only and English-only.",
+      "Recommendations are limited to the three seeded career tracks at launch.",
+      "Email/password authentication only; no third-party SSO in this build.",
+      "AI roadmap generation is grounded in the curated skills graph rather than open-ended web browsing.",
+      "Fixed five-week timeline aligned to the five delivery phases."
+    ],
+    "out_of_scope": [
+      "Native iOS and Android applications.",
+      "Single sign-on (Google/GitHub/SAML) and enterprise identity integration.",
+      "Payments, subscriptions, or billing.",
+      "Integrations with external course catalogs or job boards.",
+      "Multi-language / localization support.",
+      "Admin CMS for non-technical editing of the skills graph."
+    ]
+  },
+  "estimations": {
+    "total_hours": 100,
+    "by_deliverable": [
+      {
+        "id": "D1",
+        "name": "Foundation & Project Setup",
+        "hours": 13,
+        "pct": 13.0
+      },
+      {
+        "id": "D2",
+        "name": "Authentication & User Profiles",
+        "hours": 17,
+        "pct": 17.0
+      },
+      {
+        "id": "D3",
+        "name": "Skills Graph & Roadmap Data Model",
+        "hours": 18,
+        "pct": 18.0
+      },
+      {
+        "id": "D4",
+        "name": "AI Roadmap Recommendation Engine",
+        "hours": 23,
+        "pct": 23.0
+      },
+      {
+        "id": "D5",
+        "name": "Roadmap UI & Progress Experience",
+        "hours": 15,
+        "pct": 15.0
+      },
+      {
+        "id": "D6",
+        "name": "Testing, Launch & Handoff",
+        "hours": 14,
+        "pct": 14.0
+      }
+    ],
+    "by_phase": [
+      {
+        "phase": "Foundation",
+        "hours": 19,
+        "pct": 19.0
+      },
+      {
+        "phase": "Core Features",
+        "hours": 24,
+        "pct": 24.0
+      },
+      {
+        "phase": "AI Integration",
+        "hours": 23,
+        "pct": 23.0
+      },
+      {
+        "phase": "Polish & UX",
+        "hours": 20,
+        "pct": 20.0
+      },
+      {
+        "phase": "Launch & Handoff",
+        "hours": 14,
+        "pct": 14.0
+      }
+    ]
+  },
+  "timeline": {
+    "start_date": "2026-06-22",
+    "start_label": "Monday, June 22, 2026",
+    "recommended_weeks": 5,
+    "core_weeks": 5,
+    "range": {
+      "min_weeks": 5,
+      "max_weeks": 10
+    },
+    "range_label": "5\u201310 weeks",
+    "weeks": [
+      {
+        "n": 1,
+        "label": "Week 1",
+        "focus": "Foundation",
+        "deliverable_ids": [
+          "D1",
+          "D2"
+        ],
+        "hours": 19,
+        "start": "2026-06-22",
+        "end": "2026-06-26",
+        "dates_label": "Jun 22 \u2013 Jun 26"
+      },
+      {
+        "n": 2,
+        "label": "Week 2",
+        "focus": "Core Features",
+        "deliverable_ids": [
+          "D2",
+          "D3"
+        ],
+        "hours": 24,
+        "start": "2026-06-29",
+        "end": "2026-07-03",
+        "dates_label": "Jun 29 \u2013 Jul 3"
+      },
+      {
+        "n": 3,
+        "label": "Week 3",
+        "focus": "AI Integration",
+        "deliverable_ids": [
+          "D4"
+        ],
+        "hours": 23,
+        "start": "2026-07-06",
+        "end": "2026-07-10",
+        "dates_label": "Jul 6 \u2013 Jul 10"
+      },
+      {
+        "n": 4,
+        "label": "Week 4",
+        "focus": "Polish & UX",
+        "deliverable_ids": [
+          "D3",
+          "D5"
+        ],
+        "hours": 20,
+        "start": "2026-07-13",
+        "end": "2026-07-17",
+        "dates_label": "Jul 13 \u2013 Jul 17"
+      },
+      {
+        "n": 5,
+        "label": "Week 5",
+        "focus": "Launch & Handoff",
+        "deliverable_ids": [
+          "D6"
+        ],
+        "hours": 14,
+        "start": "2026-07-20",
+        "end": "2026-07-24",
+        "dates_label": "Jul 20 \u2013 Jul 24"
+      }
+    ]
+  },
+  "costs": {
+    "currency": "USD",
+    "hourly_rate": 100,
+    "weekly_hours": 20,
+    "weekly_rate": 2000,
+    "headline": {
+      "label": "Full build",
+      "amount": 15000,
+      "weeks": 8,
+      "weekly_hours": 20,
+      "hourly_rate": 100,
+      "note": "20 hrs/week @ $100/hr over 8 weeks. AI/agent costs included."
+    },
+    "recommended": {
+      "label": "Recommended initial build",
+      "amount": 10000,
+      "core_weeks": 5,
+      "range_weeks": "5\u201310 weeks",
+      "total_hours": 100,
+      "note": "Lean 5-week core (100 hrs), flexible across a 5\u201310 weeks range as scope evolves."
+    },
+    "line_items": [
+      {
+        "label": "Foundation & Project Setup",
+        "detail": "13 hrs @ $100/hr",
+        "amount": 1300,
+        "kind": "build"
+      },
+      {
+        "label": "Authentication & User Profiles",
+        "detail": "17 hrs @ $100/hr",
+        "amount": 1700,
+        "kind": "build"
+      },
+      {
+        "label": "Skills Graph & Roadmap Data Model",
+        "detail": "18 hrs @ $100/hr",
+        "amount": 1800,
+        "kind": "build"
+      },
+      {
+        "label": "AI Roadmap Recommendation Engine",
+        "detail": "23 hrs @ $100/hr",
+        "amount": 2300,
+        "kind": "build"
+      },
+      {
+        "label": "Roadmap UI & Progress Experience",
+        "detail": "15 hrs @ $100/hr",
+        "amount": 1500,
+        "kind": "build"
+      },
+      {
+        "label": "Testing, Launch & Handoff",
+        "detail": "14 hrs @ $100/hr",
+        "amount": 1400,
+        "kind": "build"
+      },
+      {
+        "label": "AI / agent runtime + tooling",
+        "detail": "Model usage, agent orchestration, and dev tooling",
+        "amount": 0,
+        "kind": "included"
+      }
+    ],
+    "down_payment": {
+      "amount": 4000,
+      "covers": "First 2 weeks of work"
+    },
+    "remediation_rate": {
+      "amount": 100,
+      "unit": "hour",
+      "note": "Post-build changes and fixes billed hourly, only as used."
+    },
+    "change_budget": {
+      "amount": 5000,
+      "note": "Reserve for product evolution after the initial build ships."
+    },
+    "schedule": [
+      {
+        "week": "Wk 1\u20132",
+        "milestone": "Kickoff \u00b7 Foundation + Core Features",
+        "amount": 4000,
+        "kind": "down_payment",
+        "running_total": 4000
+      },
+      {
+        "week": "Wk 3",
+        "milestone": "AI Integration",
+        "amount": 2000,
+        "kind": "weekly",
+        "running_total": 6000
+      },
+      {
+        "week": "Wk 4",
+        "milestone": "Polish & UX",
+        "amount": 2000,
+        "kind": "weekly",
+        "running_total": 8000
+      },
+      {
+        "week": "Wk 5",
+        "milestone": "Launch & Handoff",
+        "amount": 2000,
+        "kind": "weekly",
+        "running_total": 10000
+      }
+    ]
+  },
+  "terms": [
+    {
+      "title": "Down payment",
+      "body": "A $4,000 down payment kicks off the engagement and covers the first 2 weeks of work."
+    },
+    {
+      "title": "Weekly billing",
+      "body": "After the down payment, work is billed at $2,000/week (20 hrs @ $100/hr) as it progresses \u2014 pay-as-you-go, pause or adjust between weeks."
+    },
+    {
+      "title": "Remediation",
+      "body": "Post-build changes and fixes are billed at $100/hour, only as used \u2014 no retainer."
+    },
+    {
+      "title": "Change budget",
+      "body": "A $5,000 reserve is set aside for product evolution after the initial build ships, drawn down only against agreed work."
+    }
+  ]
+}

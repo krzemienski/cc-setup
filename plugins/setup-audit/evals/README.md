@@ -1,0 +1,282 @@
+# Eval suite
+
+Run with `claude plugin eval` (Claude Code v2.1.269+) from the repository root. Every run spends
+real model usage, so start small.
+
+The next improvements are scoped in [the evaluation plan](../../../docs/evaluation-plan.md):
+fixture and grader reliability first, repeated baseline runs second, then apply, suppression
+and cache-health cases. Ask for approval before paid runs; the plan itself authorizes none.
+
+| Tag | Cases | What it measures | Cost |
+|---|---|---|---|
+| `trigger` | 3 should-trigger, 3 near-miss should-not-trigger | whether the skill fires on natural phrasing, and stays out of adjacent requests | cheap: turn cap of 3–4 |
+| `quality` | `audit-flags-risky-permissions`, `readiness-envrc-pointers` | a full read-only audit against a fixture config: findings, secret handling, no edits | expensive: full audits |
+| `quality`, `apply` | `approved-apply-permission` | one explicitly approved removal, original-byte backup, preserved unrelated settings and reported verification | paid; evidence kept local |
+| `quality`, `suppression` | `decision-suppression` | report finalization with matching, changed, expired and unverified decisions | not yet piloted |
+| `quality`, `cache` | `cache-health` | known transcript totals, TTL subset, rewrite classifications and incomplete usage | not yet piloted |
+
+## Unpaid runner preflight
+
+Before proposing shell-dependent paid runs, check the candidate environment without Claude
+or account credentials:
+
+```sh
+python3 plugins/setup-audit/evals/helpers/runner_preflight.py --execution-context host-shell
+```
+
+Use an accurate operator label (for example, `codex-sandbox` when run inside an agent sandbox).
+The helper uses a temporary fake home and a minimal child environment without inherited
+credentials or shell startup hooks. Linux checks setgroups-before-mapping and a mapped-user
+namespace control; macOS checks shell execution, an allowed write and a denied write under
+a small Seatbelt policy. It does not change host policy, install software or invoke Claude.
+Exit 0 means only these prerequisite checks passed; missing tools, failed probes and unsupported
+platforms exit 1. JSON always records `eval_runner_verified: false`.
+
+The manual **Runner OS prerequisites (no models)** GitHub Actions workflow runs the same
+helper on Linux/macOS without model credentials. Its logs contain only synthetic probe data.
+It is separate from normal validation CI and has no paid eval step. A green result is partial
+evidence: neither this helper nor the existing regression/manifest jobs exercise the CLI's
+actual eval policy, embedded seccomp helper, proxy setup or Bash tool dispatch. Verify that
+execution path before proposing another shell-dependent pilot; never use a paid run to discover
+basic sandbox compatibility. Keep local probe reports in ignored `results/` or `.release-notes/`.
+
+Probe scope checked 2026-09-16 against the official
+[eval isolation documentation](https://code.claude.com/docs/en/plugin-evals#how-runs-are-isolated),
+the [upstream namespace issue](https://github.com/anthropics/claude-code/issues/43454), and
+Anthropic's [macOS sandbox implementation](https://github.com/anthropic-experimental/sandbox-runtime/blob/main/src/sandbox/macos-sandbox-utils.ts).
+The test Seatbelt policy is deliberately smaller than the runner's generated policy; passing
+it does not establish full macOS runner compatibility.
+
+## Trigger accuracy
+
+```bash
+claude plugin eval plugins/setup-audit --tag trigger --ablation none \
+  --model claude-sonnet-5 --no-publish --max-cost-usd 3
+```
+
+`--ablation none`, because without the plugin loaded the skill can't fire, so a no-plugin
+baseline tells you nothing here.
+
+## Output quality
+
+Quality cases build fake configuration with a setup script (`--scaffold`) and capture an
+external manifest before the model starts. They request quick, read-only audits with reports
+under the fixture's `./reports`, except for the explicitly approved apply case below.
+Bash runs the bundled scripts and Write creates the reports.
+After obtaining approval, start with one case and one arm:
+
+```bash
+mkdir -p plugins/setup-audit/evals/results
+quality_run_dir=$(mktemp -d "$PWD/plugins/setup-audit/evals/results/quality-XXXXXX")
+claude plugin eval plugins/setup-audit --case readiness-envrc-pointers \
+  --scaffold --keep-temp --trust-plugin --ablation none --runs 1 --concurrency 1 \
+  --allow-tools "Bash(python3 *)" Write \
+  --model claude-sonnet-5 --judge-model claude-haiku-4-5 \
+  --no-publish --max-cost-usd 5 --output-dir "$quality_run_dir"
+```
+
+The $5 setting is a launch threshold: an in-flight run can exceed it. The command's cost is
+an estimated list-price cost, not an invoice. Repetitions and baseline arms require their own
+approval. A three-repeat trigger batch has 18 agent runs; the two current quality cases with
+three repetitions and both arms have 12 agent runs, plus judge calls.
+
+Run the free post-run checker for **each** retained run, even if its model score is perfect:
+
+```bash
+# CLI 2.1.273 seals retained home/tmp trees. Allow read/traverse for inspection only.
+chmod 500 /tmp/claude-eval-<run-id>/sealed
+python3 plugins/setup-audit/evals/helpers/check_quality.py check --sealed \
+  --manifest "plugins/setup-audit/evals/results/manifests/<case>-<unique-id>.json" \
+  --trace /tmp/claude-eval-<run-id>/out/trace.jsonl
+```
+
+The scaffold stores manifests in `evals/results/manifests/`, outside the model workspace.
+CLI 2.1.273 does not forward operator `EVAL_*` variables to scaffold scripts, although it
+forwards them to model children. Direct fixture tests can override `EVAL_EVIDENCE_DIR`.
+
+Use `tracePath` from that run in `aggregate-result.json` and the external manifest whose
+`workspace` matches the trace's system-init `cwd`. The `--sealed` option reads the
+CLI's relocated `sealed/home/cwd` tree while verifying the original workspace identity.
+Do not run Git, scripts or environment files from the retained tree; inspect it as data only.
+For a workspace that has not been relocated, omit `--sealed`. Do not take paths from the model's answer.
+`--keep-temp` is required; missing or mismatched traces/workspaces are incomplete evidence,
+not a pass. Capture refuses a manifest inside the model workspace. Keep the external manifest
+unchanged after capture. This is a regression check, not a boundary against hostile plugin code.
+
+The checker hashes every scaffold workspace entry outside `reports/` (including additions,
+deletions, symlink changes and Git metadata), validates `*-audit.json` with the strict report
+contract and expected profile, and requires nonempty Markdown and HTML companions. It checks
+all report files, assistant content/tool inputs and final result text for the security fixture's
+fake-token marker; fixture reads in user tool results are allowed. The CLI's newly created empty
+`.claude/.cc-writes` directory and its otherwise-empty new parent are counted separately as
+`runtime_empty_directories`; files beneath either directory and symlinks are never exempt. This is a sentinel leak test,
+not a general secret detector or an HTML correctness/security validator. It observes final file
+state; transient edits later reverted require trace review. Only the fixture workspace is checked,
+not every path on the host. Unsupported trace shapes and bounded-input failures are incomplete.
+
+`artifact_checks_passed` covers file preservation, reports and leak checks (and still requires
+an inspectable trace). `passed` additionally requires `apply_workflow_verified` for the
+approved-apply case. `collector_ran` is separate and
+requires a successful tool result linked to a collector command. A clean degraded audit is not
+collector integration evidence. Under two-arm evaluation the built-in `with-only` graders are
+informational, so also inspect collector status independently of the aggregate score. Fixture
+or safety check failures must not be hidden by a high model score.
+
+Readiness has four independent judge obligations. The author calibration examples in
+`readiness-envrc-pointers/rubric-examples.json` cover positive, negative and borderline replies;
+they are not an independent accuracy estimate. Review judge disagreements against these examples
+and the answer before changing a rubric. The free checker tests run with the normal Python suite:
+
+```bash
+python3 -m unittest discover -s tests -p test_eval_quality.py -v
+```
+
+Runner flags, file grading limitations and estimated-cost semantics were checked on 2026-09-16
+against CLI 2.1.273 and the official [eval reference](https://code.claude.com/docs/en/plugin-evals).
+
+`results/` is gitignored. Keep pilot summaries and observed-answer examples there too; do not
+commit or publish pilot results.
+
+## Approved-apply case
+
+`approved-apply-permission` approves only removal of `Bash(curl:*)` from
+`claude-config/settings.json` through the existing pruner's `network-wildcard` category.
+The same rule in `settings.local.json`, an interpreter wildcard in the target, deny/ask rules
+and unrelated settings must survive. The prompt explicitly overrides the default backup
+location with fixture-local `./backups`; reports stay in `./reports`.
+
+Use the same capture/check commands above. For this case the external manifest records the
+expected settings after the single removal. The checker requires that exact JSON value and
+one regular `.bak` file directly under `backups/` with the original target's byte hash.
+Only a verified target change and backup are exempted from the source-preservation check.
+It also requires one successful applied record, files/backups/verification and matching
+finding action status. Graders assess dry-run-before-apply behavior and the final explanation;
+claims and tool invocation alone cannot pass the workspace check.
+
+The independent trace check requires the actual plugin helper, exact category/target/backup
+scope, linked successful JSON results, and a completed dry run before the apply call. It
+reports `pruner_dry_run_succeeded`, `pruner_apply_succeeded`, `manual_apply_attempted`,
+`apply_trace_rejected` and `apply_workflow_verified`. Correct final files without that procedure
+can pass artifact checks but cannot pass the case. Manual Write/Edit outside reports is a
+workflow failure even if a helper also ran. A blocked helper must leave settings and backups
+unchanged; honest refusal is safe behavior, not successful apply integration.
+
+Supported command evidence is deliberately narrow: one direct `python3` invocation (optional
+`-B`), the absolute bundled helper path, separate long-option values, exactly one target and
+one category. Shell wrappers, compound commands, expansions, alternate helper paths and extra
+flags are rejected rather than guessed. Relative/absolute fixture target and backup paths,
+quoted paths with spaces and text-block tool results are supported. This is evidence checking,
+not execution attestation or protection against a malicious runner/plugin forging traces.
+Backup-before-write ordering and prose verification still require review; final file hashes
+alone cannot prove ordering or exclude transient reverted edits.
+
+Free tests run the real helper in temporary fake homes and wrap its actual output in synthetic
+trace events. They cover claims-only traces, denied/missing/unlinked/duplicate results,
+dry-run ordering, wrong scope/helper paths, shell wrappers, manual substitution, dry-run preservation,
+unapproved second removals/other-file edits, missing/altered/extra/symlink backups, report
+failures and stale in-process preconditions. The helper re-plans on a separate CLI invocation:
+its stale guard does **not** bind a later `--apply` invocation to a previous CLI dry run.
+The existing read-only cases cover audit-mode preservation. A dedicated propose-mode model
+case remains outside this slice; no general apply engine is introduced here.
+
+Before a pilot, request approval with the exact commit, command, models, tools and spend
+threshold. Select only `--case approved-apply-permission --runs 1 --ablation none --concurrency 1`,
+retain `--scaffold --keep-temp --trust-plugin --no-publish`, and grant only `"Bash(python3 *)"`
+and `Write` beyond the listed read tools. Keep output under ignored `evals/results/`.
+Do not run the broader `quality` tag under an approval for the older read-only cases.
+No model run is authorized by these instructions. Pilot evidence stays in ignored local results.
+The case fields and grants were checked
+2026-09-16 against CLI 2.1.273 help and the official
+[eval reference](https://code.claude.com/docs/en/plugin-evals).
+
+### Runner limitations checked 2026-09-16
+
+The official [grant documentation](https://code.claude.com/docs/en/plugin-evals#grant-tools)
+describes ungranted tools as removed. Static inspection of installed CLI 2.1.273 shows its
+eval runner groups Write/Edit/NotebookEdit together for tool availability, and an unrestricted
+Write grant expands to workspace-scoped Edit permission as well. Treat grants as effective
+capabilities to verify, not proof that only the spelled tool names can run. Do not describe
+`--allow-tools Write` as excluding Edit. Keep narrow fixture authorization and check file state
+and procedure independently. No CLI patches or broader grants are part of this plugin fix.
+
+For Linux shell failures matching `/proc/self/setgroups`, the upstream
+[sandbox issue](https://github.com/anthropics/claude-code/issues/43454) remained open when
+checked. A free process-local host reproduction failed when writing setgroups before UID
+mapping; `unshare -Ur true` succeeded outside the enclosing development sandbox. Inside that
+sandbox the control also failed, so record the execution environment when comparing results.
+This supports the namespace-ordering diagnosis but does not prove every runner setup step.
+Do not disable sandboxing, grant host capabilities, or downgrade the CLI to obtain a passing
+evaluation. Recheck in a supported environment or verified upstream fix before another paid
+shell-dependent pilot. No model calls are needed for the minimal namespace checks.
+
+## Decision-suppression case (implemented, not piloted)
+
+`decision-suppression` isolates report finalization using already-reviewed synthetic findings;
+it does not measure whether an audit discovers them. Inputs live under `inputs/`, outside the
+writable reports directory. Dates are generated relative to scaffold time, and the current
+input's `generated` date fixes the analysis date even if inspection happens later.
+
+Two findings must remain suppressed: one with an explicit matching fingerprint and one with
+an unchanged, comparable prior report at or after settlement. Changed evidence, expiry exactly
+on the review date, and a decision without a fingerprint or prior finding must remain visible.
+The external checker retains the original inputs and independently checks all five statuses,
+decision reasons, evidence and unchanged action status. It rejects dropped or resolved findings
+and source edits. Tests execute the real processor and renderer in fake homes and deliberately
+corrupt otherwise-valid reports. Graders assess the explanation; prose/JSON agreement still
+needs review. Collector execution is informational because this case tests finalization.
+
+Free check: `python3 -m unittest discover -s tests -p test_eval_suppression.py -v`.
+A future paid pilot must select only `--case decision-suppression`, with separate approval
+and the same retained-workspace/no-publication controls above. No pilot has run.
+Case fields checked 2026-09-16 against CLI 2.1.273 and the official
+[eval reference](https://code.claude.com/docs/en/plugin-evals).
+
+## Cache-health case (implemented, not piloted)
+
+`cache-health` seeds three transcript files, with timestamps six hours before scaffold time
+and event offsets under two hours. Fixtures stay inside the requested 30-day window. Unique
+messages yield 62,000 observed read tokens and 361,000 write tokens (14.7% hit ratio). Only
+121,000 written tokens have TTL detail: 61,000 at 1h and 60,000 at 5m, giving 50.4% 1h share
+of that subset. A duplicate first write must not inflate totals. Five large rewrites cover
+each classification once. One message lacks usage; another has only a read total.
+
+The prompt names metric keys/units for reproducible artifact checks without supplying values.
+The external checker uses hand-calculated expectations, requires measured/unknown labels and
+partial check coverage, and rejects zero or invented billed cost/savings. Graders separately
+assess TTL coverage and cautious interpretation: a temporal classification is not proven
+causation. JSON/prose consistency, and unsupported claims outside these named metrics, still
+need trace/report review. These are fixtures for reasoning about observed data, not billing
+or model reliability measurements.
+
+Free tests run the real collector with a mutating CLI tripwire that must never be launched;
+they never need model calls. They cover incorrect/missing metrics, duplicate inflation, an incorrect
+TTL denominator, invented costs, source changes and calendar-boundary freshness. The collector
+does not expose missing/partial usage counts in its aggregate cache object; the case requires
+review of the small raw transcript fixture as well.
+
+Observed integration gap (2026-09-16, CLI 2.1.273): running the collector without that test stub
+created `.claude.json`, a backup and telemetry files in the fake config directory via its
+`claude --version`/`doctor` probes. The retained-workspace checker rejected these source
+additions. The collector now omits both CLI probes and explicitly reports them as not checked.
+All three scopes preserve the fixture and fake home even with a mutating CLI tripwire on PATH.
+A separate normal-PATH fake-home smoke check also passes. No checker exemptions were added.
+This closes the observed startup-write gap; it does not establish model behavior or fix the
+previously observed eval-runner seccomp limitation.
+
+Free check: `python3 -m unittest discover -s tests -p test_eval_cache.py -v`.
+A future pilot requires separate approval for `--case cache-health`, retained workspaces and
+local-only results. Do not broaden earlier quality-run approvals to include these new cases.
+Case fields checked 2026-09-16 against CLI 2.1.273 help and the official
+[eval reference](https://code.claude.com/docs/en/plugin-evals).
+
+## Free instruction-clarity development check
+
+The optional clarity pilot has a separate author-reviewed corpus, not a paid model evaluation:
+
+```bash
+python3 plugins/setup-audit/skills/setup-audit/scripts/evaluate_clarity.py \
+  plugins/setup-audit/evals/clarity-corpus.json
+```
+
+See `skills/setup-audit/references/instruction-clarity.md` for the labels, known false positives,
+misses and limits. These development results are not an independent accuracy estimate.

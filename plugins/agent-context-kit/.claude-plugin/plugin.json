@@ -1,0 +1,10 @@
+{
+  "name": "agent-context-kit",
+  "description": "Four Agent Skills (directives, how-tos, scripts, context-refactor) that give a coding agent persistent, discoverable context about a codebase, instead of re-deriving it every session.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Stefano Falasca",
+    "email": "stefano.falasca@gmail.com"
+  },
+  "license": "MIT"
+}

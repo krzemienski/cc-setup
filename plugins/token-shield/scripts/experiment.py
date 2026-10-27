@@ -1,0 +1,1039 @@
+#!/usr/bin/env python3
+"""
+experiment.py: the only honest way Token Shield produces a VERIFIED saving.
+
+A prevented event is a counterfactual, so it is at best ESTIMATED, never
+verified. The only thing that earns VERIFIED is a real before/after: measure,
+change one thing, measure again over the SAME window, and refuse the comparison
+if anything that would invalidate it changed.
+
+  python3 experiment.py start "shrink-claude-md"   # pins a baseline now
+  ...do the one change, work normally for a while...
+  python3 experiment.py end "shrink-claude-md"     # compares, writes one record
+  python3 experiment.py report                     # per-label rows, never summed
+
+Each ended experiment appends ONE record to ~/.claude/token-shield/savings.jsonl,
+the append-only proof ledger the dashboard reads for its VERIFIED column. The
+comparison reuses the meter's own guards: it refuses across a schema change and
+downgrades to NOT_PROVEN on a window mismatch or thin data, rather than print a
+confident number that means nothing.
+
+v2 adds four more guards on top of the v1 before/after:
+  - cohorts are built from each usage record's own message timestamp, not the
+    session file's mtime, so a transcript resumed from before the experiment
+    only contributes the records that actually fall inside the window, and it
+    contributes no startup floor at all because its first turn is not in there;
+  - the after cohort is refused outright (no ledger write) if it would start
+    at or before the before cohort ended, since touching windows put the same
+    boundary record on both sides of the comparison;
+  - a config fingerprint (CLAUDE.md, settings.json, ~/.claude.json, every
+    skills/*/SKILL.md, installed plugin dirs) is taken at start and end; if it
+    moved for any reason other than the named --treats target, the verdict
+    downgrades to NOT_PROVEN rather than credit an unrelated config change.
+    Whatever --treats excludes is listed on the record and printed at the end,
+    because a blind spot nobody can see is worse than no guard at all. A JSON
+    file in the fingerprint is hashed in canonical form with its volatile
+    keys (~/.claude.json's own lastUsedAt, usageCount) stripped first, since
+    those move on their own several times a minute with no config change
+    involved; a baseline's fingerprint_start pinned under an older hashing
+    method is never compared byte-for-byte against a fresh fingerprint_end,
+    since that would look like "config changed" for no reason but the
+    hashing itself, so a method mismatch reports NO DATA instead;
+  - a baseline pinned before those guards existed carries none of them, so it
+    is not comparable under them: it can never be VERIFIED, only NOT_PROVEN
+    with the legacy baseline named as the reason.
+"""
+
+import argparse
+import glob
+import hashlib
+import json
+import os
+import time
+from datetime import datetime, timezone
+
+import measure_tokens as mt
+
+HOME = os.path.expanduser("~")
+STORE = os.path.join(HOME, ".claude", "token-shield")
+EXP_DIR = os.path.join(STORE, "experiments")
+LEDGER = os.path.join(STORE, "savings.jsonl")
+CLAUDE_MD_PATH = os.path.join(HOME, ".claude", "CLAUDE.md")
+SETTINGS_PATH = os.path.join(HOME, ".claude", "settings.json")
+CLAUDE_JSON_PATH = os.path.join(HOME, ".claude.json")  # holds mcpServers
+SKILLS_DIR = os.path.join(HOME, ".claude", "skills")
+PLUGINS_CACHE = os.path.join(HOME, ".claude", "plugins", "cache")
+
+MIN_SESSIONS = 3  # below this, coverage is too thin to call a comparison verified
+EXP_SCHEMA = 2  # ledger record schema. v1 records never carried a "schema" key
+                # at all, so its absence on an old record means schema 1; this
+                # is a different axis than mt.SCHEMA, which is the meter's own.
+
+# The metric build_record judges VERIFIED/NOT_PROVEN by, when a baseline
+# carries no target_metric of its own. Every baseline pinned before this
+# unit existed is missing the key entirely, and reads as this same default,
+# so nothing about the legacy path changes.
+DEFAULT_METRIC = "first_request_median"
+
+# Every summarize() key this unit accepts as a declared --metric, and which
+# way "better" points for each: "down" for a token/cost count that a real
+# saving shrinks, "up" for a ratio that a real saving grows. This is also the
+# validation set (M2): --metric refuses at start against anything not listed
+# here, because a typo pinned for a 30 day experiment can only fail at the
+# end. DEFAULT_METRIC is in this mapping, so "the mapping's keys" already
+# covers "the mapping's keys plus the default".
+METRIC_DIRECTIONS = {
+    "first_request_median": "down",
+    "first_request_mean": "down",
+    "first_request_p90": "down",
+    "first_request_share_median": "down",
+    "output_total": "down",
+    "normalized_input_total": "down",
+    "input_total": "down",
+    "write_5m_total": "down",
+    "write_1h_total": "down",
+    "write_unsplit_total": "down",
+    "subagent_output_total": "down",
+    "hit_ratio_median": "up",
+}
+
+
+def _is_numeric(v):
+    """True for a real int/float, never a bool (which is a bool subtype of
+    int in Python and would otherwise sail through this check)."""
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
+# The keys a v2 baseline snapshot must carry for the v2 guards to have anything
+# to check. A v1.6 snapshot has none of them, and every v2 guard is written as
+# "downgrade if this moved", which a missing key silently passes.
+V2_BASELINE_KEYS = ("cohort_start_ts", "cohort_end_ts", "fingerprint_start", "treats")
+
+# The keys stripped from a JSON config file before it is fingerprinted.
+# ~/.claude.json is Claude Code's own live state file: lastUsedAt and
+# usageCount move on their own, several times a minute, on every session
+# that so much as looks at the file, with zero configuration change
+# involved. Hashing the file's raw bytes (the original approach) meant
+# fingerprint_start and fingerprint_end differed on EVERY experiment,
+# appending "config changed during experiment window" every single time,
+# which made a VERIFIED verdict structurally unreachable. Stripping these
+# keys before hashing follows the same principle as the dominant-model
+# guard in build_record: compare the meaningful signal, not an incidental
+# one. Matched by exact key name, at any depth.
+VOLATILE_JSON_KEYS = {"lastUsedAt", "usageCount"}
+
+# Bumped whenever compute_fingerprint's hashing algorithm changes in a way
+# that would move the hash for reasons unrelated to actual config drift.
+# Recorded on every fresh baseline as "fingerprint_method" (additive,
+# optional field, no EXP_SCHEMA bump). build_record uses it to tell a
+# fingerprint computed under an OLD method apart from one computed under
+# the CURRENT method: comparing those byte-for-byte would read as "config
+# changed" even when nothing did, purely because the hashing algorithm
+# changed out from under a running experiment. See build_record's
+# config-change guard.
+FINGERPRINT_METHOD = 2
+
+
+def _iso(ts):
+    return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+
+
+def _parse_ts(s):
+    """Parse a message timestamp (ISO 8601, typically 'Z' or '+00:00') to
+    epoch seconds. Returns None on anything unparsable rather than guessing,
+    since a record with an unreadable timestamp cannot be placed in a cohort
+    window."""
+    if not s or not isinstance(s, str):
+        return None
+    try:
+        return datetime.fromisoformat(s.replace("Z", "+00:00")).timestamp()
+    except ValueError:
+        return None  # sbe: allow-silent an unparseable ISO timestamp becomes NO DATA at the caller rather than a guessed time the cohort maths would trust
+
+
+def fingerprint_files():
+    """Every file whose content is inside the fingerprint's scope, sorted.
+    Machine-level config only: a project's own CLAUDE.md is out of scope
+    because this comparison is machine-wide and cwd-dependent (docs/CLAIMS.md
+    records that gap)."""
+    files = [CLAUDE_MD_PATH, SETTINGS_PATH, CLAUDE_JSON_PATH]
+    try:
+        files += glob.glob(os.path.join(SKILLS_DIR, "**", "SKILL.md"), recursive=True)
+    except OSError:
+        pass  # sbe: allow-silent NARROWING, stated: an unreadable skills directory leaves the fingerprint built from the three named config files only, so a skill edit during the window would go undetected and the config guard is weaker, not absent. glob swallows most errors itself, so this path is near unreachable; the three files still fingerprint
+    return sorted(set(files))
+
+
+def excluded_by_treats(treats=None):
+    """The in-scope files --treats blinds the fingerprint to. Returned so the
+    record and the end-of-experiment output can name them: an exclusion the
+    user cannot see is a confounder credited to the named treatment."""
+    if not treats:
+        return []
+    treats_abs = os.path.abspath(os.path.expanduser(treats))
+    return [p for p in fingerprint_files() if os.path.abspath(p) == treats_abs]
+
+
+def _strip_volatile(value):
+    """Recursively remove VOLATILE_JSON_KEYS from a parsed JSON structure, at
+    any depth, matched by exact key name. Returns a new structure; the input
+    is not mutated, so the caller's already-parsed object stays intact."""
+    if isinstance(value, dict):
+        return {k: _strip_volatile(v) for k, v in value.items()
+                if k not in VOLATILE_JSON_KEYS}
+    if isinstance(value, list):
+        return [_strip_volatile(v) for v in value]
+    return value
+
+
+def _sha_file(path):
+    """Hash one fingerprinted file. Returns (hexdigest, method), where method
+    is "json" or "raw" so a caller can always tell a canonical hash from a
+    raw-byte one.
+
+    A file whose content parses as a JSON object or array is hashed in
+    CANONICAL form: parsed, VOLATILE_JSON_KEYS stripped at any depth, then
+    re-serialized with sort_keys and fixed separators. That is what keeps
+    ~/.claude.json's own live telemetry (lastUsedAt, usageCount, both of
+    which move on their own several times a minute) from ever looking like
+    a configuration change.
+
+    A file that is not JSON (CLAUDE.md, a SKILL.md) or JSON that fails to
+    parse is hashed as raw bytes, exactly as before this method existed.
+    Dropping an unparseable file from the fingerprint would blind the guard
+    entirely, which is a worse defect than the one being fixed, so it is
+    never silently skipped: it still contributes a hash, just a raw-byte
+    one, and the returned method says so."""
+    try:
+        with open(path, "rb") as f:
+            raw = f.read()
+    except OSError:
+        return "MISSING", "raw"
+    parsed = None
+    try:
+        candidate = json.loads(raw)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        candidate = None
+    if isinstance(candidate, (dict, list)):
+        parsed = candidate
+    if parsed is not None:
+        canonical = json.dumps(_strip_volatile(parsed), sort_keys=True,
+                               separators=(",", ":"))
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest(), "json"
+    return hashlib.sha256(raw).hexdigest(), "raw"
+
+
+def compute_fingerprint(treats=None):
+    """sha256 over a MANIFEST, one line per in-scope item, sorted:
+    "<path>:<method>:<hash of its content>" for each fingerprinted file
+    (method is "json" for a canonical-form hash, "raw" for a raw-byte one;
+    see _sha_file), then "<dir>:PLUGIN" for each installed plugin dir under
+    plugins/cache/*/*. Hashing a manifest rather than concatenated bytes
+    means two files cannot trade content across their boundary and leave
+    the hash unmoved.
+
+    `treats` names the one file this experiment's own treatment edits: its
+    line becomes "<path>:EXCLUDED" so the experiment does not trip its own
+    confounder guard. Call excluded_by_treats() to report that blind spot.
+    """
+    excluded = set(excluded_by_treats(treats))
+    lines = []
+    for path in fingerprint_files():
+        if path in excluded:
+            lines.append(f"{path}:EXCLUDED")
+            continue
+        digest, method = _sha_file(path)
+        lines.append(f"{path}:{method}:{digest}")
+    try:
+        plugin_dirs = sorted(
+            d for d in glob.glob(os.path.join(PLUGINS_CACHE, "*", "*")) if os.path.isdir(d)
+        )
+    except OSError:
+        plugin_dirs = []
+    lines += [f"{d}:PLUGIN" for d in plugin_dirs]
+    return hashlib.sha256("\n".join(sorted(lines)).encode("utf-8")).hexdigest()
+
+
+def legacy_baseline_reason(baseline):
+    """A baseline snapshot pinned by v1.6 carries none of the v2 guard fields,
+    and every v2 guard passes silently when its field is absent, so such a
+    snapshot would sail through to VERIFIED with nothing actually checked.
+    Returns a reason string naming the legacy baseline, or None when the
+    snapshot carries the whole v2 shape."""
+    missing = [k for k in V2_BASELINE_KEYS if k not in baseline]
+    if not missing:
+        return None
+    label = baseline.get("label") or "(unlabeled)"
+    return (f"legacy baseline '{label}' predates the v2 guards (missing "
+            f"{', '.join(missing)}), so none of them ever ran on it; it is not "
+            f"comparable. Pin a fresh baseline with experiment start.")
+
+
+def check_cohort_order(before_end_ts, after_start_ts):
+    """Pure guard: the after cohort must start strictly after the before cohort
+    ends, or the two windows hold overlapping (double-counted) sessions.
+    Windows are half-open [start, end), so a shared boundary already shares no
+    record; refusing the touching case too keeps the guard true even if a
+    caller ever hands it a closed window.
+    Returns a reason string to refuse on, or None when the order is fine."""
+    if after_start_ts < before_end_ts:
+        return (f"after cohort starts before the before cohort ends "
+                f"(after {_iso(after_start_ts)} < before-end {_iso(before_end_ts)}); "
+                f"windows overlap")
+    if after_start_ts == before_end_ts:
+        return (f"after cohort starts exactly where the before cohort ends "
+                f"({_iso(after_start_ts)}); the boundary record would be counted "
+                f"on both sides")
+    return None
+
+
+def _read_session_cohort(fp, start_ts, end_ts):
+    """Mirror of measure_tokens.read_session, filtered to only the usage
+    records whose message timestamp falls inside the half-open window
+    [start_ts, end_ts). Returns the same dict shape read_session does, so
+    measure_tokens.summarize can consume it unchanged. A resumed old
+    transcript contributes only the records inside the window, never its
+    whole history.
+
+    A transcript whose FIRST usage record predates start_ts is a straddler:
+    its earliest in-window record is a mid-conversation turn, not a startup
+    floor, so it contributes NO first_request (first stays 0, which is how
+    summarize already excludes a transcript from the floor stats). Its tokens
+    stay in the totals, and the dict is marked "straddler" so the exclusion
+    can be counted and shown."""
+    first = None
+    started = None
+    earliest_ts = None
+    tot = {"input": 0, "write_5m": 0, "write_1h": 0, "write_unsplit": 0,
+           "read": 0, "output": 0}
+    calls = 0
+    sub_calls = 0
+    sub_output = 0
+    models = set()
+    try:
+        fh = open(fp, "r", errors="ignore")
+    except OSError:
+        # Counted, not swallowed. This mirror of measure_tokens.read_session
+        # copied its two skip handlers but dropped the counter increments that
+        # go with them, so an unreadable transcript vanished from a cohort
+        # without trace and the verdict never knew a file was missing.
+        mt.SKIP_COUNTS["files"] += 1
+        return None
+    with fh:
+        for line in fh:
+            if '"usage"' not in line:
+                continue
+            try:
+                rec = json.loads(line)
+            except (json.JSONDecodeError, RecursionError, ValueError):
+                # A truncated line is the common case: Claude Code was still
+                # writing. Dropping the FIRST line silently promoted a cheap
+                # mid-conversation turn to "first request", which is how a
+                # parse failure turned into a proven floor reduction.
+                mt.SKIP_COUNTS["lines"] += 1
+                continue
+            ts = _parse_ts(rec.get("timestamp"))
+            msg = rec.get("message") or {}
+            usage = msg.get("usage") or rec.get("usage")
+            if not isinstance(usage, dict):
+                continue
+            inp = usage.get("input_tokens") or 0
+            rd = usage.get("cache_read_input_tokens") or 0
+            out = usage.get("output_tokens") or 0
+            w5, w1, wu = mt.split_writes(usage)
+            if inp == 0 and rd == 0 and w5 == 0 and w1 == 0 and wu == 0:
+                continue
+
+            is_sub = bool(rec.get("isSidechain"))
+            # Tracked over the WHOLE transcript, before the window filter, and
+            # only over the records that could ever become a first_request.
+            # That is what makes the straddler test below mean "the first turn
+            # of this session" rather than "the first turn inside the window".
+            if not is_sub and ts is not None and (earliest_ts is None or ts < earliest_ts):
+                earliest_ts = ts
+            if ts is None or ts < start_ts or ts >= end_ts:
+                continue
+
+            calls += 1
+            tot["input"] += inp
+            tot["write_5m"] += w5
+            tot["write_1h"] += w1
+            tot["write_unsplit"] += wu
+            tot["read"] += rd
+            tot["output"] += out
+
+            if is_sub:
+                sub_calls += 1
+                sub_output += out
+            else:
+                model = msg.get("model")
+                if model and not str(model).startswith("<"):
+                    models.add(model)
+                if first is None:
+                    first = inp + w5 + w1 + wu + rd
+                    started = rec.get("timestamp")
+
+    if calls == 0:
+        return None
+
+    straddler = earliest_ts is not None and earliest_ts < start_ts
+    if straddler:
+        # Mid-conversation turns are cheap relative to a real startup floor.
+        # Counting one as a first_request is how a floor reduction gets
+        # invented out of a resumed transcript, so this side contributes none.
+        first = None
+        started = None
+
+    write_total = tot["write_5m"] + tot["write_1h"] + tot["write_unsplit"]
+    raw_input = tot["input"] + write_total + tot["read"]
+    if tot["write_unsplit"]:
+        normalized = None
+    else:
+        normalized = (tot["input"] + mt.CACHE_WRITE_5M * tot["write_5m"]
+                      + mt.CACHE_WRITE_1H * tot["write_1h"] + mt.CACHE_READ * tot["read"])
+    first = first or 0
+    return {
+        "file": fp, "calls": calls, "first_request": first, "started": started,
+        "first_request_share": (first * calls / raw_input) if raw_input else None,
+        "hit_ratio": (tot["read"] / raw_input) if raw_input else 0.0,
+        "rewrite_ratio": (write_total / tot["read"]) if tot["read"] else None,
+        "write_total": write_total, "raw_input": raw_input,
+        "normalized_input": normalized,
+        "output_to_input": (tot["output"] / normalized) if normalized else None,
+        "models": len(models), "model_names": models,
+        "sub_calls": sub_calls, "sub_output": sub_output,
+        "straddler": straddler,
+        **tot,
+    }
+
+
+def collect_cohort(root, start_ts, end_ts):
+    """All sessions' usage records with a message timestamp inside the
+    window, across every transcript under root. A file's mtime can only be
+    older than the last record it holds, so files untouched since start_ts
+    cannot contain a record inside the window and are skipped."""
+    # Reset so the counts describe THIS cohort walk, not a running total
+    # across both cohorts and every earlier call in the process.
+    mt.SKIP_COUNTS["files"] = 0
+    mt.SKIP_COUNTS["lines"] = 0
+    out = []
+    for fp in mt.iter_session_files(root, start_ts):
+        s = _read_session_cohort(fp, start_ts, end_ts)
+        if s:
+            out.append(s)
+    return out
+
+
+def build_record(baseline, after_sm, ended_iso, fingerprint_end=None):
+    """Pure verdict function: baseline (the start snapshot) + the after summary
+    -> one ledger record with a confidence class. No I/O, so it is testable.
+
+    Guards, each of which downgrades to NOT_PROVEN with a stated reason:
+      - the baseline predates the v2 guards, so none of them ever ran on it;
+      - schema changed since the baseline (the meter's own refusal);
+      - window length differs (different windows hold different sessions);
+      - too few sessions on EITHER side to measure a floor honestly, because a
+        one-session before cohort is exactly as thin as a one-session after;
+      - the baseline's declared target_metric (a summarize() key; defaults to
+        first_request_median when the baseline names none, which is every
+        baseline pinned before this field existed) is absent from either
+        cohort's summary: "metric not measured", never a guess;
+      - the declared metric is present on both sides but not numeric (a model
+        name, a list of models): "metric not comparable (non-numeric)",
+        naming the key, instead of the TypeError a subtraction would raise;
+      - the config fingerprint moved between start and end (fingerprint_end
+        passed in, compared against baseline["fingerprint_start"]) and the
+        mover was not the file named at start's --treats; if the baseline's
+        fingerprint_method does not match the current FINGERPRINT_METHOD (no
+        method recorded at all, or a since-changed one), the two fingerprints
+        are not comparable at all, and this reports NO DATA by name instead
+        of comparing them anyway;
+      - the DOMINANT main-thread model (the one used in the most sessions,
+        ties broken lexically) differs between the before and after cohort,
+        when both sides carry main-thread model tracking at all; exactly one
+        side missing it (a baseline pinned before this field existed) is
+        itself a downgrade, never a silent skip, since NO DATA beats a guess;
+      - the move (by magnitude, whichever direction) is no larger than the
+        noisier of the two cohorts' spreads (first_request_p90 minus the
+        median), so the move sits inside noise the data already shows rather
+        than above it. Judged only for the default (median) metric, since
+        the spread is defined against that median; exactly one side
+        carrying a p90 is itself a downgrade, both sides missing it stays
+        silent UNLESS a modern summary reports fewer than 10 first-request
+        sessions on either side, which is named as its own downgrade rather
+        than read as "no dispersion tracking".
+    Non-overlap between the before and after cohort windows is a harder
+    refusal, enforced by check_cohort_order before this function is ever
+    called, so no ledger record gets written for it at all.
+    """
+    reasons = []
+    b = baseline.get("summary") or {}
+    legacy = legacy_baseline_reason(baseline)
+    if legacy:
+        reasons.append(legacy)
+    if baseline.get("schema") != mt.SCHEMA:
+        reasons.append(f"baseline is schema {baseline.get('schema')}, meter is {mt.SCHEMA}")
+    if baseline.get("window_days") != after_sm.get("_window_days"):
+        reasons.append(f"window changed ({baseline.get('window_days')} vs "
+                       f"{after_sm.get('_window_days')} days)")
+    if (b.get("parent_sessions") or 0) < MIN_SESSIONS:
+        reasons.append(f"only {b.get('parent_sessions')} sessions before the change, "
+                       f"need {MIN_SESSIONS}")
+    if (after_sm.get("parent_sessions") or 0) < MIN_SESSIONS:
+        reasons.append(f"only {after_sm.get('parent_sessions')} sessions after the change, "
+                       f"need {MIN_SESSIONS}")
+
+    # A cohort assembled from a partly unreadable tree is not evidence: a
+    # dropped file removes whole sessions from a median, and a dropped FIRST
+    # line promotes a cheap mid-conversation turn to "first request". Both
+    # move the exact number the verdict compares, so a skip on either side is
+    # a downgrade rather than a footnote. The reviewer demonstrated a clean
+    # VERIFIED with a 39,750 token "saving" produced entirely this way, from
+    # five transcripts whose content had not changed at all.
+    for side, cohort in (("before", b), ("after", after_sm)):
+        sf = (cohort or {}).get("_skipped_files") or 0
+        sl = (cohort or {}).get("_skipped_lines") or 0
+        if sf or sl:
+            reasons.append(
+                f"the {side} cohort skipped {sf} unreadable file(s) and "
+                f"{sl} undecodable line(s): the comparison is missing data")
+
+    fp_start = baseline.get("fingerprint_start")
+    fp_method = baseline.get("fingerprint_method")
+    if fingerprint_end is not None and fp_start is not None:
+        if fp_method != FINGERPRINT_METHOD:
+            # A baseline pinned before FINGERPRINT_METHOD existed, or under a
+            # since-changed hashing algorithm, has an fp_start that is not
+            # comparable to an fp_end computed under the CURRENT algorithm:
+            # they would differ even if configuration never moved, purely
+            # because the hashing changed. That is exactly the defect this
+            # guard exists to catch, so it must not fire on itself. NO DATA
+            # beats a guess: name the reason instead of claiming "changed" or
+            # claiming "unchanged".
+            reasons.append(
+                "config fingerprint method changed since the baseline was "
+                f"pinned (baseline method {fp_method!r}, current method "
+                f"{FINGERPRINT_METHOD!r}): NO DATA on whether configuration "
+                "changed during the window, the start and end fingerprints "
+                "are not comparable")
+        elif fingerprint_end != fp_start:
+            reasons.append("config changed during experiment window")
+
+    # Model mix is a confound the same way the config fingerprint is: a floor
+    # change might come from a model switch mid-experiment, not the named
+    # treatment. The trigger is the DOMINANT model per cohort (the one used
+    # in the most sessions, ties broken lexically), not full-set equality:
+    # a routine minor-version bump touching one session out of many would
+    # otherwise downgrade every experiment. The full sets still ride along
+    # on the record as models_before/models_after for transparency.
+    #
+    # "Neither side tracked" (both None, e.g. a legacy baseline compared
+    # against another legacy-shaped summary) is not a difference and stays
+    # silent. But EXACTLY ONE side missing _models is not "no data on
+    # either side": it means the comparison itself cannot be trusted, and a
+    # silent skip there would let a live baseline pinned before this field
+    # existed sail through to VERIFIED with the guard never having run.
+    # NO DATA beats a guess, so that case downgrades with a named reason.
+    models_before = b.get("_models")
+    models_after = after_sm.get("_models")
+    if models_before is None and models_after is None:
+        pass
+    elif (models_before is None) != (models_after is None):
+        thin_side = "before" if models_before is None else "after"
+        reasons.append(
+            f"model mix cannot be compared: the {thin_side} cohort predates "
+            f"model tracking (no _models recorded)")
+    else:
+        dominant_before = b.get("_dominant_model")
+        dominant_after = after_sm.get("_dominant_model")
+        if (dominant_before is not None and dominant_after is not None
+                and dominant_before != dominant_after):
+            reasons.append(
+                f"dominant model changed during experiment window "
+                f"(before {dominant_before!r}, after {dominant_after!r})")
+
+    # first_request_before/after always read the startup floor, regardless of
+    # which metric is declared, so a record's existing consumers see the
+    # exact values they always have. floor_reduction_tokens is different: it
+    # is a TOKEN COUNT, and only the default metric ever measured the floor,
+    # so a non-default experiment (C2) must not populate it, or a hit-ratio
+    # experiment reads on the dashboard as a proven token saving it never
+    # measured. first_request_before/after stay for context either way.
+    fr_before = b.get("first_request_median")
+    fr_after = after_sm.get("first_request_median")
+
+    # The verdict itself, and direction, are judged on the DECLARED metric: a
+    # baseline naming no target_metric reads as DEFAULT_METRIC, which makes
+    # metric_before/after literally the same values as fr_before/fr_after
+    # above, so nothing about a legacy or metric-less record's verdict moves.
+    metric = baseline.get("target_metric") or DEFAULT_METRIC
+    metric_before = b.get(metric)
+    metric_after = after_sm.get(metric)
+    if metric_before is None or metric_after is None:
+        reasons.append("no first-request median on one side" if metric == DEFAULT_METRIC
+                       else f"metric not measured: '{metric}' missing from one side")
+    elif not (_is_numeric(metric_before) and _is_numeric(metric_after)):
+        # M1. A present-but-non-numeric value (a model name, a list of
+        # models) cannot be subtracted; the old code crashed here instead of
+        # refusing. NO DATA beats a guess, so this downgrades by name rather
+        # than raising.
+        reasons.append(f"metric not comparable (non-numeric): '{metric}'")
+
+    metric_delta = None
+    if _is_numeric(metric_before) and _is_numeric(metric_after):
+        # Raw delta, always before minus after (positive = the number went
+        # down). Whether that is a saving depends on which way the metric's
+        # own "better" points, which direction below works out separately.
+        metric_delta = metric_before - metric_after
+
+    floor_reduction = None
+    # D21a. `is not None` was the only gate here, so the non-numeric guard
+    # thirty lines above named the value as not comparable and then this
+    # subtracted it anyway. For the default metric those are literally the
+    # same two values, so a summary carrying a string where the median
+    # belongs was downgraded by name and then raised TypeError out of
+    # build_record, taking the whole close with it. A guard undone by a later
+    # statement is not a guard, so the same _is_numeric test runs here.
+    if metric == DEFAULT_METRIC and _is_numeric(fr_before) and _is_numeric(fr_after):
+        floor_reduction = fr_before - fr_after
+
+    direction = None
+    if metric_delta is not None:
+        # C1. metric_delta alone cannot say "saving": for a down-is-better
+        # count a positive delta is the win, but for an up-is-better ratio
+        # (hit_ratio_median) a positive delta (before minus after > 0) means
+        # the ratio FELL, which is the regression, not the saving. Flip the
+        # sign by the metric's own declared direction before reading it.
+        sense = METRIC_DIRECTIONS.get(metric, "down")
+        improvement = metric_delta if sense == "down" else -metric_delta
+        if improvement > 0:
+            direction = "saving"
+        elif improvement < 0:
+            direction = "regression"
+        else:
+            direction = "flat"
+
+    p90_before = b.get("first_request_p90")
+    p90_after = after_sm.get("first_request_p90")
+
+    # D27 follow-up. A move no larger than the noise already present in
+    # EITHER cohort is not evidence: the same cohort resampled could have
+    # produced it. The spread is p90 minus the median, so it only describes
+    # the default (median) metric. The first cut of this guard compared the
+    # move only to the WIDENING of the spread (spread_after - spread_before),
+    # which left a move smaller than an identical or even a tightened spread
+    # reaching VERIFIED untouched, on main and here alike, because nothing
+    # widened. The noise a move has to clear is the larger of the two
+    # cohorts' spreads, not the change between them, so the comparison is
+    # against max(spread_before, spread_after) instead. A spread of exactly
+    # zero on both sides (no measured dispersion at all) still verifies:
+    # there is no noise band for the move to hide inside. The move is
+    # compared by magnitude (abs), because a regression is exactly as
+    # explainable by noise as a saving is; direction below still says which
+    # one it was. Exactly one side carrying a p90 is a downgrade by name, the
+    # same as the model mix guard above: a silent skip there would let a
+    # baseline pinned before p90 existed reach VERIFIED with this guard
+    # never having run. Both sides carrying no p90 is not automatically
+    # silent either: measure_tokens.py only computes a p90 at 10 or more
+    # first-request sessions (scripts/measure_tokens.py:622), while
+    # MIN_SESSIONS above is 3, so a cohort of 3 to 9 sessions reports a
+    # first_request_n below 10 with first_request_p90 None on a modern
+    # summary, not a legacy one missing the field outright. That thin-sample
+    # case is named explicitly rather than read as "no dispersion tracking"
+    # and passed through silently.
+    if metric == DEFAULT_METRIC:
+        if p90_before is None and p90_after is None:
+            n_before = b.get("first_request_n")
+            n_after = after_sm.get("first_request_n")
+            thin = [n for n in (n_before, n_after) if n is not None and n < 10]
+            if thin:
+                reasons.append(
+                    "dispersion cannot be measured: fewer than 10 "
+                    "first-request sessions on at least one side "
+                    f"(before={n_before}, after={n_after}), need 10 for a p90")
+        elif (p90_before is None) != (p90_after is None):
+            thin_side = "before" if p90_before is None else "after"
+            reasons.append(
+                f"dispersion cannot be compared: the {thin_side} cohort has "
+                f"no first_request_p90 recorded")
+        elif (metric_delta is not None
+                and _is_numeric(p90_before) and _is_numeric(p90_after)):
+            spread_before = p90_before - metric_before
+            spread_after = p90_after - metric_after
+            noise = max(spread_before, spread_after)
+            move = abs(improvement)
+            if noise > 0 and move <= noise:
+                move_word = "worsened" if direction == "regression" else "improved"
+                reasons.append(
+                    f"the median {move_word} by {move} but the spread (p90 "
+                    f"minus median) is {noise} on the noisier side (before "
+                    f"{spread_before}, after {spread_after}): the change is "
+                    f"inside the noise of the cohorts")
+
+    verified = not reasons
+
+    return {
+        "schema": EXP_SCHEMA,
+        "timestamp": ended_iso,
+        "label": baseline.get("label"),
+        "confidence": "VERIFIED" if verified else "NOT_PROVEN",
+        "reasons": reasons,
+        "window_days": baseline.get("window_days"),
+        "cohort_before": {"start": baseline.get("cohort_start_ts"),
+                          "end": baseline.get("cohort_end_ts")},
+        "cohort_after": {"start": after_sm.get("_cohort_start_ts"),
+                         "end": after_sm.get("_cohort_end_ts")},
+        "fingerprint_start": fp_start,
+        "fingerprint_end": fingerprint_end,
+        "fingerprint_excluded": baseline.get("fingerprint_excluded") or [],
+        "treats": baseline.get("treats"),
+        "first_request_before": fr_before,
+        "first_request_after": fr_after,
+        "floor_reduction_tokens": floor_reduction,
+        "direction": direction,
+        "target_metric": metric,
+        "metric_before": metric_before,
+        "metric_after": metric_after,
+        "metric_delta": metric_delta,
+        "sessions_before": b.get("parent_sessions"),
+        "sessions_after": after_sm.get("parent_sessions"),
+        "dispersion_before": p90_before,
+        "dispersion_after": p90_after,
+        "normalized_input_before": b.get("normalized_input_total"),
+        "normalized_input_after": after_sm.get("normalized_input_total"),
+        "models_before": models_before,
+        "models_after": models_after,
+        "evidence": "API usage counters, before/after over the same window, "
+                    "cohorted by message timestamp",
+    }
+
+
+def aggregate_by_label(records):
+    """Group ledger records by label. One row per label, always: a floor
+    reduction measured for one experiment is never summed with a floor
+    reduction measured for an unrelated one, because they are not the same
+    quantity.
+
+    D18. "reductions" carries VERIFIED records ONLY. It used to take the
+    delta off every record whatever its confidence, and cmd_report prints the
+    last one on a line that opens with the VERIFIED count, so a label with two
+    proven runs and one later unproven one printed the UNPROVEN number in the
+    column a reader takes as the proven result. That is the confidence label
+    inverted: its entire job is to stop an unproven number borrowing a proven
+    one's authority.
+
+    "count", "verified" and "not_proven" still see every record, because how
+    many times a thing was tried and how often it failed to prove out are
+    exactly the facts a reader should keep. A label with no verified run comes
+    back with an EMPTY reductions list and the caller says NO DATA, rather
+    than falling back to its newest guess."""
+    by_label = {}
+    for rec in records:
+        label = rec.get("label") or "(unlabeled)"
+        row = by_label.setdefault(label, {"count": 0, "verified": 0,
+                                          "not_proven": 0, "reductions": []})
+        row["count"] += 1
+        if rec.get("confidence") == "VERIFIED":
+            row["verified"] += 1
+        else:
+            row["not_proven"] += 1
+        fr = rec.get("floor_reduction_tokens")
+        if fr is not None and rec.get("confidence") == "VERIFIED":
+            row["reductions"].append(fr)
+    return by_label
+
+
+def _measure_cohort(root, start_ts, end_ts, days):
+    sessions = collect_cohort(root, start_ts, end_ts)
+    skipped = mt.skip_counts()
+    sm = mt.summarize(sessions) or {}
+    sm = dict(sm)
+    # Carried onto the cohort so build_record can downgrade on it. A cohort
+    # assembled from a partly unreadable tree is not evidence: dropped files
+    # and dropped lines both change the very medians the verdict compares.
+    sm["_skipped_files"] = skipped.get("files", 0)
+    sm["_skipped_lines"] = skipped.get("lines", 0)
+    sm["_window_days"] = days
+    sm["_cohort_start_ts"] = start_ts
+    sm["_cohort_end_ts"] = end_ts
+    # The main-thread model names actually used in this cohort (model_names
+    # is collected only from non-subagent records, see _read_session_cohort),
+    # so build_record can catch a model switch between the before and after
+    # cohort: a floor change might come from the new model, not the named
+    # treatment. _models is the full set, kept for transparency on the
+    # record; _dominant_model is the one used in the most sessions (ties
+    # broken lexically) and is what the downgrade guard actually compares,
+    # so a minor-version bump touching one session out of many does not by
+    # itself flag every experiment.
+    models = set()
+    session_counts = {}
+    for s in sessions:
+        names = s.get("model_names") or set()
+        models |= names
+        for name in names:
+            session_counts[name] = session_counts.get(name, 0) + 1
+    sm["_models"] = sorted(models)
+    sm["_dominant_model"] = (min(session_counts, key=lambda m: (-session_counts[m], m))
+                             if session_counts else None)
+    return sm
+
+
+def print_excluded(excluded):
+    """Name every file --treats hid from the fingerprint. Printed at close,
+    every time, because a guard with an unannounced hole in it reads as a
+    stronger guard than it is."""
+    if not excluded:
+        return
+    print("fingerprint blind spot (named by --treats, excluded from the "
+          "confounder guard):")
+    for path in excluded:
+        print(f"  - {path}")
+    print("  Any other change to those files during the window is credited to "
+          "this treatment.")
+
+
+def cmd_start(label, root, days, now_ts, treats, metric=None):
+    if metric and metric not in METRIC_DIRECTIONS:
+        # M2. Nothing checked this before: a typo'd --metric pinned a 30 day
+        # experiment that could only fail at `end`, long after the baseline
+        # window closed. The valid set is exactly METRIC_DIRECTIONS' keys,
+        # which already includes DEFAULT_METRIC.
+        valid = ", ".join(sorted(METRIC_DIRECTIONS))
+        print(f"NO DATA: '{metric}' is not a metric this experiment can judge. "
+              f"Valid metrics: {valid}.")
+        return 2
+    os.makedirs(EXP_DIR, exist_ok=True)
+    before_start_ts = now_ts - days * 86400
+    before_end_ts = now_ts
+    sm = _measure_cohort(root, before_start_ts, before_end_ts, days)
+    fingerprint_start = compute_fingerprint(treats)
+    excluded = excluded_by_treats(treats)
+    snap = {"label": label, "started": _iso(now_ts), "window_days": days,
+            "schema": mt.SCHEMA, "cohort_start_ts": before_start_ts,
+            "cohort_end_ts": before_end_ts, "fingerprint_start": fingerprint_start,
+            "fingerprint_method": FINGERPRINT_METHOD,
+            "treats": treats, "fingerprint_excluded": excluded, "summary": sm}
+    if metric:
+        snap["target_metric"] = metric
+    path = os.path.join(EXP_DIR, label.replace("/", "_") + ".json")
+    with open(path, "w") as f:
+        json.dump(snap, f, indent=2)
+    fr = sm.get("first_request_median")
+    print(f"baseline pinned for '{label}': first-request median "
+          f"{mt.fmt(fr)} tokens over {days:g} days.")
+    if metric and metric != DEFAULT_METRIC:
+        print(f"target metric for this experiment: '{metric}' "
+              f"(baseline value {mt.fmt(sm.get(metric))})")
+    print_excluded(excluded)
+    print("Make ONE change now (for example diet CLAUDE.md), work normally, then run: "
+          f"python3 experiment.py end \"{label}\"")
+    return 0
+
+
+def cmd_end(label, root, days, now_ts):
+    path = os.path.join(EXP_DIR, label.replace("/", "_") + ".json")
+    if not os.path.exists(path):
+        print(f"NO DATA: no baseline named '{label}'. Run start first.")
+        return 2
+    try:
+        with open(path) as f:
+            baseline = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        print(f"NO DATA: cannot read baseline for '{label}' ({e}).")
+        return 2
+
+    after_start_ts = now_ts - days * 86400
+    after_end_ts = now_ts
+    before_end_ts = baseline.get("cohort_end_ts")
+    if before_end_ts is not None:
+        overlap_reason = check_cohort_order(before_end_ts, after_start_ts)
+        if overlap_reason:
+            print(f"REFUSED: {overlap_reason}")
+            # D19. This used to offer a second way out: "or end with a
+            # smaller --days window". Taking it is strictly harmful. A
+            # smaller window trips build_record's own window-length guard,
+            # which is an unconditional downgrade, and cmd_end writes that
+            # NOT_PROVEN permanently into an APPEND-ONLY ledger. The reader
+            # follows our own instruction and buys a permanent unproven
+            # verdict for an experiment that had nothing wrong with it.
+            # Waiting is the only sound path, so it is the only one offered.
+            print("Nothing was written to the ledger. Wait until the after "
+                  "cohort starts after the before cohort ended, then end "
+                  "again.")
+            print("Do NOT shorten --days to force it through: a window that "
+                  "differs from the baseline's is its own downgrade, and the "
+                  "NOT_PROVEN it writes cannot be taken back out of the "
+                  "ledger.")
+            return 2
+
+    sm = _measure_cohort(root, after_start_ts, after_end_ts, days)
+    fingerprint_end = compute_fingerprint(baseline.get("treats"))
+    now_iso = _iso(now_ts)
+    rec = build_record(baseline, sm, now_iso, fingerprint_end)
+    os.makedirs(STORE, exist_ok=True)
+    with open(LEDGER, "a") as f:
+        f.write(json.dumps(rec) + "\n")
+    print(f"=== experiment '{label}': {rec['confidence']} ===")
+    if rec["confidence"] != "VERIFIED":
+        print("NOT PROVEN, so nothing is claimed as verified. Reasons:")
+        for r in rec["reasons"]:
+            print(f"  - {r}")
+    # Words, never a bare signed number: a signed delta reads as "went up" /
+    # "went down" with no hint of whether that is good, and for an
+    # up-is-better metric (hit_ratio_median) a positive delta is the
+    # regression, which a bare "+0.12" invites the reader to misread as a win.
+    fr_b, fr_a = rec["first_request_before"], rec["first_request_after"]
+    if fr_b is not None and fr_a is not None:
+        floor_word = ("improved" if fr_a < fr_b
+                      else "worsened" if fr_a > fr_b else "did not move")
+        print(f"first-request median {floor_word}: {mt.fmt(fr_b)} -> {mt.fmt(fr_a)} "
+              f"tokens per call")
+    if rec["target_metric"] != DEFAULT_METRIC:
+        mb, ma = rec["metric_before"], rec["metric_after"]
+        if mb is not None and ma is not None and rec["direction"] is not None:
+            metric_word = {"saving": "improved", "regression": "worsened",
+                           "flat": "did not move"}[rec["direction"]]
+            print(f"{rec['target_metric']} {metric_word}: {mt.fmt(mb)} -> {mt.fmt(ma)}")
+    print_excluded(rec["fingerprint_excluded"])
+    print(f"one record appended to {LEDGER}")
+    return 0
+
+
+def list_open_experiments(exp_dir=None, ledger=None):
+    """Every baseline snapshot in exp_dir with no matching close in the ledger.
+    cmd_end never deletes or marks the file it reads, so this is the only way
+    to tell 'started, never ended' from 'started, ended, file just still there'.
+    Returns a list of the raw baseline dicts (label, started, fingerprint_start,
+    treats, ...), sorted by started ascending, [] when nothing is open.
+
+    Fails CLOSED, not open: a .json in exp_dir that cannot be read (permission
+    denied, truncated mid-write by a crash) or does not parse as a JSON object
+    (corrupt, or a stray non-dict value) is not skipped. It is impossible to
+    tell such a file apart from a genuinely open experiment whose baseline
+    write got interrupted, and a skip-on-unreadable rule would let an apply
+    run unchallenged right through that gap. It comes back instead as a
+    marker dict carrying "_unreadable" (the file's path) and no "label", so a
+    caller can name the file directly rather than pretend to know its label.
+
+    exp_dir/ledger default to the module globals EXP_DIR/LEDGER, looked up at
+    call time (not bound as default-argument values), so a test that
+    monkeypatches ex.EXP_DIR/ex.LEDGER before calling with no arguments is
+    honored rather than silently reading the real machine's paths."""
+    exp_dir = EXP_DIR if exp_dir is None else exp_dir
+    ledger = LEDGER if ledger is None else ledger
+    closed = set()
+    if os.path.exists(ledger):
+        with open(ledger, errors="ignore") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue  # sbe: allow-silent a corrupt ledger line is skipped so one bad line cannot hide every other experiment record
+                label = rec.get("label")
+                end = (rec.get("cohort_before") or {}).get("end")
+                # D8. This used to require `end is not None` as well, which
+                # made a legacy baseline UNCLOSABLE. Such a baseline carries
+                # no cohort_end_ts, so its close record carries end=None, was
+                # refused entry here, and the baseline's own (label, None)
+                # key could never match anything: closing it appended a
+                # NOT_PROVEN record and it still read as open, forever, one
+                # more record per attempt. guided_apply refuses to run while
+                # any experiment is open, so a single legacy baseline blocked
+                # every guided change on the machine indefinitely.
+                #
+                # None stays IN the key rather than being dropped from it: a
+                # legacy baseline matches a legacy close, and a v2 baseline
+                # (which always has a real cohort_end_ts) still cannot be
+                # closed by a record that lost its own. Two baselines cannot
+                # collide on (label, None), because EXP_DIR holds one file per
+                # label by construction.
+                if label is not None:
+                    closed.add((label, end))
+    open_baselines = []
+    if os.path.isdir(exp_dir):
+        for fp in sorted(glob.glob(os.path.join(exp_dir, "*.json"))):
+            try:
+                with open(fp) as f:
+                    baseline = json.load(f)
+            except (OSError, json.JSONDecodeError):
+                open_baselines.append({"label": None, "started": None, "_unreadable": fp})
+                continue
+            if not isinstance(baseline, dict):
+                open_baselines.append({"label": None, "started": None, "_unreadable": fp})
+                continue
+            pair = (baseline.get("label"), baseline.get("cohort_end_ts"))
+            if pair not in closed:
+                open_baselines.append(baseline)
+    open_baselines.sort(key=lambda b: b.get("started") or "")
+    return open_baselines
+
+
+def cmd_report():
+    if not os.path.exists(LEDGER):
+        print(f"NO DATA: no ledger at {LEDGER} yet.")
+        return 2
+    records = []
+    with open(LEDGER) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                records.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue  # sbe: allow-silent same ledger, same rule: one unparseable line must not empty the report
+    if not records:
+        print("NO DATA: ledger carries no readable records.")
+        return 2
+    by_label = aggregate_by_label(records)
+    print("=== experiments, one row per label (never summed across labels) ===")
+    for label in sorted(by_label):
+        row = by_label[label]
+        # The column says VERIFIED out loud. It used to read "latest floor
+        # reduction" while carrying whatever the newest record held, proven or
+        # not (D18), and a reader has no way to tell those apart in a printed
+        # column. A label with no verified run says NO DATA rather than
+        # showing its newest unproven guess in the same place.
+        latest = row["reductions"][-1] if row["reductions"] else None
+        floor = (f"{mt.fmt(latest)} tokens/call" if latest is not None
+                 else "NO DATA (no verified run)")
+        print(f"{label:<30} {row['count']:>3} runs  "
+              f"{row['verified']:>2} VERIFIED  {row['not_proven']:>2} NOT_PROVEN  "
+              f"latest VERIFIED floor reduction {floor}")
+    return 0
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    ap.add_argument("action", choices=["start", "end", "report"])
+    ap.add_argument("label", nargs="?", default=None)
+    ap.add_argument("--root", default=os.path.expanduser("~/.claude/projects"))
+    ap.add_argument("--days", type=float, default=30)
+    ap.add_argument("--treats", default=None,
+                    help="path excluded from the config fingerprint (the file "
+                         "this experiment's own treatment edits); start only")
+    ap.add_argument("--metric", default=None,
+                    help="summarize() field this experiment is judged on (start "
+                         "only); defaults to first_request_median when omitted")
+    a = ap.parse_args()
+
+    if a.action == "report":
+        return cmd_report()
+    if not a.label:
+        print(f"NO DATA: '{a.action}' requires a label.")
+        return 2
+    if not os.path.isdir(a.root):
+        print(f"NO DATA: {a.root} does not exist.")
+        return 2
+    now_ts = time.time()
+    if a.action == "start":
+        return cmd_start(a.label, a.root, a.days, now_ts, a.treats, a.metric)
+    return cmd_end(a.label, a.root, a.days, now_ts)
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main())

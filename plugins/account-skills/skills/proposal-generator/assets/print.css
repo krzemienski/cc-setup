@@ -1,0 +1,59 @@
+/* WithAgents proposal — print stylesheet for weasyprint (HTML -> PDF).
+   Inverts to ink-on-paper for printing economy, keeps crimson as the single accent.
+   weasyprint does not run JS, so this renders the static proposal. */
+
+@page {
+  size: Letter;
+  margin: 20mm 18mm 22mm 18mm;
+  @bottom-center {
+    content: "WithAgents  ·  build with agents";
+    font-family: 'JetBrains Mono', monospace; font-size: 8pt;
+    letter-spacing: 1.5px; color: #9b978d;
+  }
+  @bottom-right {
+    content: "Page " counter(page) " / " counter(pages);
+    font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: #9b978d;
+  }
+}
+
+:root {
+  --ink: #16161a; --ink-2: #3d3d44; --ink-3: #6f6f78;
+  --accent: #E0273C;            /* crimson, slightly deepened for paper contrast */
+  --pass: #1f9d6b; --warn: #c2790a; --info: #1593a6;
+  --paper: #ffffff; --paper-2: #faf9f7; --rule: #e6e4df; --rule-2: #d6d4ce;
+}
+
+* { -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; }
+html, body { background: #ffffff; color: var(--ink); font-family: 'Inter', system-ui, sans-serif; line-height: 1.5; font-size: 10.5pt; }
+
+.eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 8pt; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
+.mono, .mono-label { font-family: 'JetBrains Mono', monospace; }
+.mono-label { font-size: 7.5pt; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-3); }
+h1 { font-size: 30pt; font-weight: 800; letter-spacing: -1px; line-height: 1.08; color: var(--ink); }
+h2 { font-size: 17pt; font-weight: 700; letter-spacing: -0.5px; color: var(--ink); }
+h3 { font-size: 12.5pt; font-weight: 600; color: var(--ink); }
+.display-italic { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 400; color: var(--accent); }
+p { color: var(--ink-2); }
+strong { color: var(--ink); font-weight: 600; }
+.num { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--ink); }
+.num-accent { color: var(--accent); }
+
+.card { background: var(--paper-2); border: 1px solid var(--rule-2); border-radius: 8px; padding: 14px 16px; }
+section, .card, table, .week-row, .keep { break-inside: avoid; }
+.page-break { break-before: page; }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--rule-2); color: var(--ink-2); }
+.pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--info); }
+.pill--pass { color: var(--pass); } .pill--pass .dot { background: var(--pass); }
+.pill--accent { color: var(--accent); } .pill--accent .dot { background: var(--accent); }
+.pill--warn { color: var(--warn); } .pill--warn .dot { background: var(--warn); }
+
+table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+thead th { font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-3); text-align: left; padding: 7px 10px; border-bottom: 1.5px solid var(--rule-2); }
+tbody td { padding: 7px 10px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+tfoot td { padding: 8px 10px; font-weight: 700; color: var(--ink); border-top: 1.5px solid var(--rule-2); }
+
+.bar-track { display: block; height: 7px; border-radius: 999px; background: var(--rule); overflow: hidden; }
+.bar-fill { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+hr { border: 0; border-top: 1px solid var(--rule); }
+a { color: var(--accent); text-decoration: none; }

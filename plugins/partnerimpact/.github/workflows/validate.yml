@@ -1,0 +1,97 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JSON parses
+        run: |
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json .mcp.json; do
+            python3 -c "import json,sys; json.load(open('$f'))" && echo "ok  $f"
+          done
+
+      - name: Nothing outside the plugin, the connector and the web
+        run: |
+          fail=0
+          check() {
+            if grep -rnE --include='*.md' --include='*.json' --exclude=CHANGELOG.md --exclude-dir=.git --exclude-dir=.github "$1" .; then
+              echo "::error::$2"; fail=1
+            fi
+          }
+          check '/Users/|~/' 'absolute home path'
+          check 'partners/|out/<|partner-os-profile|profile\.template|workspace\.md' 'local file or saved state'
+          check 'partner-templates|\[NEEDS INPUT|`configure`|/configure' 'template or configure reference'
+          check 'calc\.mjs|references/calculators/|maturity-rubric|packages/calculators' 'local calculator or rubric'
+          check 'Partner Diagnostic|partner-diagnostic([^i]|$)|partner_diagnostic|partner_template' 'surface not on the public connector'
+          check '#contact|full PartnerImpact plugin' 'sales line'
+          check '\$ARGUMENTS|allowed-tools|references/playbooks/' 'leftover from another edition'
+          check '—' 'em dash'
+          exit $fail
+
+      - name: Every plugin path resolves
+        run: |
+          fail=0
+          for ref in $(grep -rhoE --include='*.md' '\$\{CLAUDE_PLUGIN_ROOT\}/[A-Za-z0-9_./-]+\.md' . | sort -u); do
+            path="${ref#\$\{CLAUDE_PLUGIN_ROOT\}/}"
+            [ -f "$path" ] || { echo "::error::$ref does not exist"; fail=1; }
+          done
+          exit $fail
+
+      - name: Agents load the house rules, hand off, and cannot write or spawn
+        run: |
+          fail=0
+          for f in agents/*.md; do
+            grep -q 'house-rules.md' "$f" || { echo "::error::$f does not load house-rules"; fail=1; }
+            grep -q 'HANDOFF →' "$f"     || { echo "::error::$f has no handoff block"; fail=1; }
+            grep -q '^## Before you answer' "$f" || { echo "::error::$f has no pre-answer checklist"; fail=1; }
+            grep -qE '^disallowedTools: Agent, Bash, Write, Edit' "$f" || { echo "::error::$f may write or spawn"; fail=1; }
+          done
+          exit $fail
+
+      - name: Front matter is strict YAML with a text description
+        run: |
+          ruby -ryaml -e '
+          bad = 0
+          Dir.glob(["agents/*.md", "skills/*/SKILL.md"]).sort.each do |f|
+            m = File.read(f, encoding: "UTF-8").match(/\A---\n(.*?)\n---\n/m)
+            if m.nil? then puts "::error::#{f} has no front matter"; bad += 1; next end
+            begin
+              d = YAML.safe_load(m[1])["description"]
+              unless d.is_a?(String) then puts "::error::#{f} description is not text"; bad += 1 end
+            rescue => e
+              puts "::error::#{f} front matter does not parse: #{e.message}"; bad += 1
+            end
+          end
+          exit(bad.zero? ? 0 : 1)'
+
+      - name: Every skill has a SKILL.md and loads the rules
+        run: |
+          fail=0
+          for d in skills/*/; do
+            [ -f "$d/SKILL.md" ] || { echo "::error::$d has no SKILL.md"; fail=1; }
+          done
+          for s in partner-os research qualify partner-brief partner-strategy program-design onboard cosell-plan qbr-prep partner-comms diagnose partner-health-check partner-maturity-check partner-numbers ideal-partner-profile; do
+            grep -qE 'references/(house-rules|interview)\.md|agents/partner-researcher|skills/qualify/SKILL\.md' "skills/$s/SKILL.md" || { echo "::error::skills/$s loads no rules"; fail=1; }
+          done
+          exit $fail
+
+      - name: The trusted source is named
+        run: |
+          for f in references/house-rules.md skills/partner-research/references/evidence-sourcing.md agents/partner-researcher.md agents/partner-qualifier.md agents/partner-strategist.md; do
+            grep -qE 'https://www\.partnerimpact\.net([^/a-zA-Z]|$)' "$f" || { echo "::error::$f does not name the trusted source"; exit 1; }
+          done
+
+      - name: Licensing present
+        run: |
+          for f in LICENSE NOTICE README.md CHANGELOG.md; do
+            [ -s "$f" ] || { echo "::error::$f missing or empty"; exit 1; }
+          done
+          grep -q '"license": "CC-BY-4.0"' .claude-plugin/plugin.json

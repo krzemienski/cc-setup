@@ -1,0 +1,313 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Proposal — Get Path · slides</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>/* WithAgents — Operator Console tokens + base components.
+   Single source of truth for proposal screen styling. Mirrors DESIGN.md §6.
+   Renderers inline this file into self-contained HTML. */
+
+:root {
+  --bg-page: #08080a;
+  --accent: #FF3D52;          /* crimson */
+  --violet: #B84DFF;
+  --pass: #34D08C; --fail: #FF3D52; --warn: #FFB84D; --info: #5EE6F2;
+
+  --fill-1: rgba(255,255,255,0.02);
+  --fill-2: rgba(255,255,255,0.04);
+  --fill-3: rgba(255,255,255,0.05);
+  --fill-4: rgba(255,255,255,0.08);
+  --line:   rgba(255,255,255,0.06);
+  --line-2: rgba(255,255,255,0.08);
+  --line-3: rgba(255,255,255,0.12);
+
+  --text:   #f4f3ee;
+  --text-2: rgba(244,243,238,0.72);
+  --text-3: rgba(244,243,238,0.40);
+  --text-4: rgba(244,243,238,0.30);
+
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px; --r-pill: 999px;
+  --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--bg-page);
+  background-image:
+    radial-gradient(ellipse 1000px 600px at 90% -10%, rgba(255,61,82,0.08), transparent 60%),
+    radial-gradient(ellipse 900px 500px at -10% 120%, rgba(122,61,255,0.08), transparent 60%);
+  background-attachment: fixed;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- type ---- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+}
+.mono { font-family: var(--font-mono); }
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px; font-weight: 600;
+  letter-spacing: 1.6px; text-transform: uppercase;
+  color: var(--text-3);
+}
+h1 { font-size: clamp(40px, 6vw, 64px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.05; }
+h2 { font-size: clamp(28px, 3.5vw, 36px); font-weight: 700; letter-spacing: -0.8px; }
+h3 { font-size: 22px; font-weight: 600; letter-spacing: -0.2px; }
+.display-italic { font-family: var(--font-display); font-style: italic; font-weight: 400; color: var(--accent); }
+p { color: var(--text-2); }
+strong { color: var(--text); font-weight: 600; }
+.num { font-family: var(--font-mono); font-weight: 700; color: var(--text); font-feature-settings: "tnum"; }
+.num-accent { color: var(--accent); }
+
+/* ---- surfaces ---- */
+.card {
+  background: var(--fill-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  transition: transform 120ms var(--ease), border-color 120ms var(--ease), background 120ms var(--ease);
+}
+.card--hover:hover { transform: translateY(-2px); border-color: var(--line-3); background: var(--fill-3); }
+.card--xl { border-radius: var(--r-xl); padding: 32px; }
+
+/* ---- status pills ---- */
+.pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  padding: 5px 11px; border-radius: var(--r-pill);
+  border: 1px solid var(--line-2); color: var(--text-2);
+}
+.pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--info); }
+.pill--pass { color: var(--pass); border-color: rgba(52,208,140,0.3); }
+.pill--pass .dot { background: var(--pass); box-shadow: 0 0 10px var(--pass); }
+.pill--accent { color: var(--accent); border-color: rgba(255,61,82,0.3); }
+.pill--accent .dot { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+.pill--warn { color: var(--warn); border-color: rgba(255,184,77,0.3); }
+.pill--warn .dot { background: var(--warn); box-shadow: 0 0 10px var(--warn); }
+.pill--info .dot { background: var(--info); box-shadow: 0 0 10px var(--info); }
+
+/* ---- buttons ---- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  padding: 12px 20px; border-radius: var(--r-md); cursor: pointer;
+  border: 1px solid transparent; transition: transform 120ms var(--ease), border-color 120ms var(--ease);
+}
+.btn--primary { background: var(--accent); color: #08080a; }
+.btn--ghost { background: transparent; color: var(--text); border-color: var(--line-3); }
+.btn:hover { transform: translateY(-2px); }
+.btn--ghost:hover { border-color: var(--accent); }
+
+/* ---- tables ---- */
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+thead th {
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-3);
+  text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line-3);
+}
+tbody td { padding: 13px 16px; border-bottom: 1px solid var(--line); color: var(--text-2); vertical-align: top; }
+tbody tr:hover { background: var(--fill-1); }
+tbody td .num { color: var(--text); }
+tfoot td { padding: 14px 16px; font-weight: 700; color: var(--text); border-top: 1px solid var(--line-3); }
+
+/* ---- bars (estimation viz) ---- */
+.bar-track { display: block; height: 8px; border-radius: var(--r-pill); background: var(--fill-3); overflow: hidden; }
+.bar-fill { display: block; height: 100%; border-radius: var(--r-pill); background: var(--accent); }
+
+/* ---- divider / rule ---- */
+hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* WithAgents proposal slide deck — self-contained scroll-snap deck engine.
+   Sits on top of tokens.css. Presentation scale, Operator Console theme. */
+
+body { overflow: hidden; }
+.deck { height: 100dvh; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+
+.slide {
+  height: 100dvh; scroll-snap-align: start; overflow: hidden; position: relative; isolation: isolate;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(48px, 7vh, 92px) clamp(44px, 8vw, 128px);
+  opacity: 0; transform: translateY(36px) scale(.985);
+  transition: opacity .6s var(--ease), transform .6s var(--ease);
+}
+.slide.visible { opacity: 1; transform: none; }
+.slide::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 900px 520px at 88% -12%, rgba(255,61,82,0.10), transparent 60%);
+}
+.slide:nth-child(even)::before { background: radial-gradient(ellipse 820px 480px at -8% 118%, rgba(184,77,255,0.10), transparent 60%); }
+
+.slide .reveal { opacity: 0; transform: translateY(18px); transition: opacity .5s var(--ease), transform .5s var(--ease); }
+.slide.visible .reveal { opacity: 1; transform: none; }
+.slide.visible .reveal:nth-child(1){transition-delay:.08s}
+.slide.visible .reveal:nth-child(2){transition-delay:.16s}
+.slide.visible .reveal:nth-child(3){transition-delay:.24s}
+.slide.visible .reveal:nth-child(4){transition-delay:.32s}
+.slide.visible .reveal:nth-child(5){transition-delay:.40s}
+.slide.visible .reveal:nth-child(6){transition-delay:.48s}
+
+.s-eyebrow { font-family: var(--font-mono); font-size: clamp(11px,1.1vw,14px); font-weight: 700; letter-spacing: 2.4px; text-transform: uppercase; color: var(--accent); margin-bottom: 22px; }
+.slide h1 { font-size: clamp(44px, 8vw, 104px); font-weight: 800; letter-spacing: -3px; line-height: 1.02; }
+.slide h1 em { font-family: var(--font-display); font-style: italic; font-weight: 400; color: var(--accent); }
+.slide h2 { font-size: clamp(30px, 4.4vw, 52px); font-weight: 700; letter-spacing: -1px; margin-bottom: 28px; }
+.slide .big-lede { font-size: clamp(18px, 2.1vw, 26px); color: var(--text-2); max-width: 28ch; line-height: 1.4; }
+
+.s-lockup { display: flex; align-items: center; gap: 11px; font-weight: 700; font-size: clamp(16px,1.6vw,20px); margin-bottom: 30px; }
+.s-lockup .wamark { width: 28px; height: 28px; border-radius: var(--r-sm); border: 1px solid var(--accent); display: grid; place-items: center; font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.s-lockup b { color: var(--accent); } .s-lockup span { color: var(--text-2); }
+
+.s-counter-row { display: flex; gap: clamp(28px,4vw,64px); margin-top: 40px; flex-wrap: wrap; }
+.s-stat .v { font-family: var(--font-mono); font-size: clamp(34px,5vw,64px); font-weight: 700; letter-spacing: -2px; line-height: 1; }
+.s-stat .v.accent { color: var(--accent); }
+.s-stat .l { font-family: var(--font-mono); font-size: clamp(10px,1vw,12px); letter-spacing: 1.6px; text-transform: uppercase; color: var(--text-3); margin-top: 10px; }
+
+.s-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.s-card { background: var(--fill-2); border: 1px solid var(--line-2); border-radius: var(--r-lg); padding: clamp(16px,1.8vw,24px); }
+.s-card .l { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent); }
+.s-card h3 { font-size: clamp(16px,1.7vw,20px); margin: 8px 0 6px; }
+.s-card p { font-size: clamp(13px,1.3vw,15px); }
+.s-card .hrs { font-family: var(--font-mono); font-weight: 700; color: var(--text); font-size: 14px; float: right; }
+
+.s-pipe { display: flex; align-items: stretch; gap: 0; margin-top: 16px; }
+.s-step { flex: 1; background: var(--fill-2); border: 1px solid var(--line-2); border-radius: var(--r-md); padding: clamp(12px,1.4vw,18px); text-align: center; }
+.s-step .wk { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.s-step .fc { font-size: clamp(13px,1.3vw,16px); font-weight: 600; margin: 8px 0; }
+.s-step .hh { font-family: var(--font-mono); font-size: 12px; color: var(--text-3); }
+.s-arrow { display: flex; align-items: center; color: var(--text-4); padding: 0 6px; }
+
+.s-bars { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; max-width: 760px; }
+.s-bar { display: grid; grid-template-columns: 190px 1fr 90px; align-items: center; gap: 16px; }
+.s-bar .bl { font-size: clamp(13px,1.3vw,16px); color: var(--text-2); }
+.s-bar .bt { display: block; height: 10px; border-radius: var(--r-pill); background: var(--fill-3); overflow: hidden; }
+.s-bar .bf { display: block; height: 100%; border-radius: var(--r-pill); background: var(--accent); }
+.s-bar .bv { font-family: var(--font-mono); font-size: 13px; font-weight: 600; text-align: right; }
+
+.s-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+.s-table th { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-3); text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line-3); }
+.s-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: clamp(13px,1.3vw,16px); color: var(--text-2); }
+.s-table .amt { font-family: var(--font-mono); font-weight: 700; color: var(--accent); text-align: right; }
+.s-table .run { font-family: var(--font-mono); text-align: right; color: var(--text); }
+
+/* chrome */
+.deck-progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0; z-index: 100; transition: width .3s var(--ease); }
+.deck-dots { position: fixed; right: 22px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+.deck-dots button { width: 9px; height: 9px; border-radius: 50%; border: 0; background: var(--line-3); cursor: pointer; padding: 0; transition: all .2s var(--ease); }
+.deck-dots button.active { background: var(--accent); transform: scale(1.5); }
+.deck-counter { position: fixed; left: 22px; bottom: 18px; font-family: var(--font-mono); font-size: 12px; color: var(--text-3); z-index: 100; letter-spacing: 1px; }
+.deck-hints { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-4); z-index: 100; transition: opacity .6s var(--ease); }
+.deck-hints.faded { opacity: 0; }
+@media (max-width: 760px){ .deck-dots { display: none; } .s-grid2 { grid-template-columns: 1fr; } .s-pipe { flex-wrap: wrap; } .s-arrow { display: none; } }
+/* Progressive enhancement: if JS never runs, show every slide stacked. */
+html:not(.js) .slide, html:not(.js) .slide .reveal { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce){ .slide,.slide .reveal { opacity:1!important; transform:none!important; } }
+</style>
+<script>document.documentElement.classList.add('js')</script></head><body>
+<div class="deck"><section class="slide">
+  <div class="s-lockup reveal"><span class="wamark">W</span><span>with</span><b>agents</b></div>
+  <div class="s-eyebrow reveal">build with agents</div>
+  <h1 class="reveal">Project Proposal<br>for <em>Get Path</em></h1>
+  <div class="s-counter-row reveal">
+    <div class="s-stat"><div class="v">$15,000</div><div class="l">Full build</div></div>
+    <div class="s-stat"><div class="v accent">$10,000</div><div class="l">Recommended · 5-wk core</div></div>
+    <div class="s-stat"><div class="v">100h</div><div class="l">Estimated build</div></div>
+  </div>
+  <p class="reveal" style="margin-top:34px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;color:var(--text-3)">WA-GETPATH-20260617 · STARTS MONDAY, JUNE 22, 2026</p>
+</section><section class="slide">
+  <div class="s-eyebrow reveal">Overview</div>
+  <h2 class="reveal">What we're building toward</h2>
+  <div class="s-grid2 reveal"><div class="s-card reveal"><div class="l">Goal 1</div><h3>Personalized roadmaps</h3><p>Let any user go from a target role to a concrete, ordered skill roadmap in under five minutes.</p></div><div class="s-card reveal"><div class="l">Goal 2</div><h3>Trustworthy AI recommendations</h3><p>Generate roadmap steps grounded in a curated skills graph so suggestions feel credible rather than generic.</p></div><div class="s-card reveal"><div class="l">Goal 3</div><h3>Visible progress</h3><p>Give users a clear way to track which roadmap milestones they have completed and what comes next.</p></div><div class="s-card reveal"><div class="l">Goal 4</div><h3>Validated v1 launch</h3><p>Ship a lean, production-deployed MVP that real users can sign up for and complete an end-to-end roadmap flow.</p></div></div>
+</section><section class="slide">
+  <div class="s-eyebrow reveal">Scope</div>
+  <h2 class="reveal">6 deliverables · 100 hours</h2>
+  <div class="s-grid2 reveal"><div class="s-card reveal"><span class="hrs">13h</span><div class="l">D1</div><h3>Foundation &amp; Project Setup</h3></div><div class="s-card reveal"><span class="hrs">17h</span><div class="l">D2</div><h3>Authentication &amp; User Profiles</h3></div><div class="s-card reveal"><span class="hrs">18h</span><div class="l">D3</div><h3>Skills Graph &amp; Roadmap Data Model</h3></div><div class="s-card reveal"><span class="hrs">23h</span><div class="l">D4</div><h3>AI Roadmap Recommendation Engine</h3></div><div class="s-card reveal"><span class="hrs">15h</span><div class="l">D5</div><h3>Roadmap UI &amp; Progress Experience</h3></div><div class="s-card reveal"><span class="hrs">14h</span><div class="l">D6</div><h3>Testing, Launch &amp; Handoff</h3></div></div>
+</section><section class="slide">
+  <div class="s-eyebrow reveal">Estimations</div>
+  <h2 class="reveal">Effort by phase</h2>
+  <div class="s-bars"><div class="s-bar reveal"><span class="bl">Foundation</span>
+        <span class="bt"><span class="bf" style="width:79%"></span></span>
+        <span class="bv">19h · 19.0%</span></div><div class="s-bar reveal"><span class="bl">Core Features</span>
+        <span class="bt"><span class="bf" style="width:100%"></span></span>
+        <span class="bv">24h · 24.0%</span></div><div class="s-bar reveal"><span class="bl">AI Integration</span>
+        <span class="bt"><span class="bf" style="width:96%"></span></span>
+        <span class="bv">23h · 23.0%</span></div><div class="s-bar reveal"><span class="bl">Polish &amp; UX</span>
+        <span class="bt"><span class="bf" style="width:83%"></span></span>
+        <span class="bv">20h · 20.0%</span></div><div class="s-bar reveal"><span class="bl">Launch &amp; Handoff</span>
+        <span class="bt"><span class="bf" style="width:58%"></span></span>
+        <span class="bv">14h · 14.0%</span></div></div>
+</section><section class="slide">
+  <div class="s-eyebrow reveal">Timeline</div>
+  <h2 class="reveal">5-week core · 5–10 weeks range</h2>
+  <div class="s-pipe"><div class="s-step reveal"><div class="wk">Week 1</div><div class="fc">Foundation</div><div class="hh">Jun 22 – Jun 26 · 19h</div></div><div class="s-arrow reveal">→</div><div class="s-step reveal"><div class="wk">Week 2</div><div class="fc">Core Features</div><div class="hh">Jun 29 – Jul 3 · 24h</div></div><div class="s-arrow reveal">→</div><div class="s-step reveal"><div class="wk">Week 3</div><div class="fc">AI Integration</div><div class="hh">Jul 6 – Jul 10 · 23h</div></div><div class="s-arrow reveal">→</div><div class="s-step reveal"><div class="wk">Week 4</div><div class="fc">Polish &amp; UX</div><div class="hh">Jul 13 – Jul 17 · 20h</div></div><div class="s-arrow reveal">→</div><div class="s-step reveal"><div class="wk">Week 5</div><div class="fc">Launch &amp; Handoff</div><div class="hh">Jul 20 – Jul 24 · 14h</div></div></div>
+  <p class="reveal" style="margin-top:24px;font-family:var(--font-mono);font-size:13px;color:var(--text-3)">Starts Monday, June 22, 2026</p>
+</section><section class="slide">
+  <div class="s-eyebrow reveal">Costs</div>
+  <h2 class="reveal">Investment &amp; pay-as-you-go plan</h2>
+  <div class="s-counter-row reveal" style="margin-top:0;margin-bottom:18px">
+    <div class="s-stat"><div class="v">$15,000</div><div class="l">Full build</div></div>
+    <div class="s-stat"><div class="v accent">$10,000</div><div class="l">Recommended</div></div>
+    <div class="s-stat"><div class="v">$4,000</div><div class="l">Down payment</div></div>
+    <div class="s-stat"><div class="v">$100/hr</div><div class="l">Remediation</div></div>
+    <div class="s-stat"><div class="v">$5,000</div><div class="l">Change budget</div></div>
+  </div>
+  <table class="s-table reveal"><thead><tr><th>When</th><th>Milestone</th><th style="text-align:right">Invoice</th><th style="text-align:right">Cumulative</th></tr></thead>
+  <tbody><tr><td class="mono">Wk 1–2</td><td>Kickoff · Foundation + Core Features</td>
+        <td class="amt">$4,000</td><td class="run">$4,000</td></tr><tr><td class="mono">Wk 3</td><td>AI Integration</td>
+        <td class="amt">$2,000</td><td class="run">$6,000</td></tr><tr><td class="mono">Wk 4</td><td>Polish &amp; UX</td>
+        <td class="amt">$2,000</td><td class="run">$8,000</td></tr><tr><td class="mono">Wk 5</td><td>Launch &amp; Handoff</td>
+        <td class="amt">$2,000</td><td class="run">$10,000</td></tr></tbody></table>
+</section><section class="slide">
+  <div class="s-eyebrow reveal">Terms · let's build</div>
+  <h2 class="reveal">How we work together</h2>
+  <div class="s-grid2 reveal"><div class="s-card reveal"><div class="l">Down payment</div><p>A $4,000 down payment kicks off the engagement and covers the first 2 weeks of work.</p></div><div class="s-card reveal"><div class="l">Weekly billing</div><p>After the down payment, work is billed at $2,000/week (20 hrs @ $100/hr) as it progresses — pay-as-you-go, pause or adjust between weeks.</p></div><div class="s-card reveal"><div class="l">Remediation</div><p>Post-build changes and fixes are billed at $100/hour, only as used — no retainer.</p></div><div class="s-card reveal"><div class="l">Change budget</div><p>A $5,000 reserve is set aside for product evolution after the initial build ships, drawn down only against agreed work.</p></div></div>
+  <p class="reveal" style="margin-top:30px;font-size:20px;color:var(--text)"><em class="display-italic" style="font-size:24px">build with agents</em> — Timely delivery, pay-as-you-go weekly rates.</p>
+</section></div><script>
+function SlideEngine(){this.deck=document.querySelector('.deck');
+  this.slides=[].slice.call(document.querySelectorAll('.slide'));
+  this.current=0;this.total=this.slides.length;this.buildChrome();this.bindEvents();this.observe();this.update();}
+SlideEngine.prototype.buildChrome=function(){
+  this.bar=document.createElement('div');this.bar.className='deck-progress';document.body.appendChild(this.bar);
+  var dots=document.createElement('div');dots.className='deck-dots';var self=this;this.dots=[];
+  this.slides.forEach(function(s,i){var b=document.createElement('button');b.onclick=function(){self.goTo(i);};dots.appendChild(b);self.dots.push(b);});
+  document.body.appendChild(dots);
+  this.counter=document.createElement('div');this.counter.className='deck-counter';document.body.appendChild(this.counter);
+  this.hints=document.createElement('div');this.hints.className='deck-hints';this.hints.textContent='\u2191 \u2193 arrows / scroll';document.body.appendChild(this.hints);};
+SlideEngine.prototype.bindEvents=function(){var self=this;
+  document.addEventListener('keydown',function(e){
+    if(e.target.closest('input,textarea,[contenteditable]'))return;
+    if(['ArrowDown','ArrowRight',' ','PageDown'].indexOf(e.key)>-1){e.preventDefault();self.next();}
+    else if(['ArrowUp','ArrowLeft','PageUp'].indexOf(e.key)>-1){e.preventDefault();self.prev();}
+    else if(e.key==='Home'){e.preventDefault();self.goTo(0);}
+    else if(e.key==='End'){e.preventDefault();self.goTo(self.total-1);}
+    if(self.hints)self.hints.classList.add('faded');});
+  var tY=null;this.deck.addEventListener('touchstart',function(e){tY=e.touches[0].clientY;},{passive:true});
+  this.deck.addEventListener('touchend',function(e){if(tY===null)return;var dy=tY-e.changedTouches[0].clientY;
+    if(Math.abs(dy)>50){dy>0?self.next():self.prev();}tY=null;});
+  setTimeout(function(){if(self.hints)self.hints.classList.add('faded');},4000);};
+SlideEngine.prototype.observe=function(){var self=this;
+  var obs=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){
+    en.target.classList.add('visible');self.current=self.slides.indexOf(en.target);self.update();}});},{threshold:.5});
+  this.slides.forEach(function(s){obs.observe(s);});};
+SlideEngine.prototype.goTo=function(i){this.slides[Math.max(0,Math.min(i,this.total-1))].scrollIntoView({behavior:'smooth'});};
+SlideEngine.prototype.next=function(){if(this.current<this.total-1)this.goTo(this.current+1);};
+SlideEngine.prototype.prev=function(){if(this.current>0)this.goTo(this.current-1);};
+SlideEngine.prototype.update=function(){this.bar.style.width=((this.current+1)/this.total*100)+'%';
+  var c=this.current;this.dots.forEach(function(d,i){d.classList.toggle('active',i===c);});
+  this.counter.textContent=(this.current+1)+' / '+this.total;};
+document.addEventListener('DOMContentLoaded',function(){document.querySelector('.slide').classList.add('visible');new SlideEngine();});
+</script></body></html>

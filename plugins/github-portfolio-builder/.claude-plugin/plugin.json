@@ -1,0 +1,21 @@
+{
+  "name": "github-portfolio-builder",
+  "displayName": "GitHub Portfolio Builder",
+  "version": "1.1.0",
+  "description": "Reviews a GitHub profile or repository as portfolio evidence. Returns up to five ranked improvements, each with a direct evidence link and a verified, reported, inferred, or unresolved label.",
+  "author": {
+    "name": "Rachael Quisel"
+  },
+  "homepage": "https://github.com/RachaelQuisel/github-portfolio-builder",
+  "repository": "https://github.com/RachaelQuisel/github-portfolio-builder",
+  "license": "MIT",
+  "keywords": [
+    "github",
+    "portfolio",
+    "review"
+  ],
+  "icon": "./icon.png",
+  "documentationUrl": "https://github.com/RachaelQuisel/github-portfolio-builder#readme",
+  "privacyPolicyUrl": "https://github.com/RachaelQuisel/github-portfolio-builder/blob/main/plugins/github-portfolio-builder/PRIVACY.md",
+  "supportUrl": "https://github.com/RachaelQuisel/github-portfolio-builder/issues"
+}

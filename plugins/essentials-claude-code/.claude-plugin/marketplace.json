@@ -1,0 +1,18 @@
+{
+  "name": "essentials-claude-code",
+  "version": "3.43.0",
+  "description": "Loops, swarms, and teams powered by Claude Code's built-in Task System. Plans define exit criteria. Executors run until tests pass. Done means actually done.",
+  "author": "GantisStorm",
+  "owner": {
+    "name": "GantisStorm"
+  },
+  "homepage": "https://github.com/GantisStorm/essentials-claude-code",
+  "plugins": [
+    {
+      "name": "essentials",
+      "version": "3.43.0",
+      "description": "24 commands, 8 agents. Loops, swarms, and teams powered by Claude Code's built-in Task System. Native task dependencies, ctrl+t progress, automatic persistence.",
+      "source": "./essentials"
+    }
+  ]
+}

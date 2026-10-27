@@ -1,0 +1,19 @@
+{
+  "name": "crewmarshal-marketplace",
+  "interface": {
+    "displayName": "CrewMarshal"
+  },
+  "plugins": [
+    {
+      "name": "crewmarshal",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "skills": ["optimizing-prompts"],
+    "query": "Optimize this prompt for Claude Fable 5.1.",
+    "files": ["evals/files/legacy-prompt.md"],
+    "expected_behavior": [
+      "Lints the original with kit.py --model claude-fable-5-1 lint and reports the findings",
+      "Removes the anti-formatting rule instead of keeping it, the temperature line, the step-by-step line, and the show-your-reasoning request",
+      "Wraps the input slot in pasted_content with the pasted-content note",
+      "Recommends effort high, no sampling parameters, and --prose if the output is prose",
+      "Builds and audits a request from the rewrite with 0 errors",
+      "Delivers the prompt, a parameter block, and a rationale table with sources"
+    ]
+  },
+  {
+    "skills": ["optimizing-prompts"],
+    "query": "Port this same prompt to GPT-6 Luna for tagging 200k support tickets a day.",
+    "files": ["evals/files/legacy-prompt.md"],
+    "expected_behavior": [
+      "Uses Markdown sections and the instruction-precedence line",
+      "Recommends effort low (or none for pure labeling) and a strict JSON schema with an enum of tags",
+      "Explains temperature is allowed only at effort none",
+      "Keeps stable instructions first for caching with prompt_cache_options.ttl 30m",
+      "Audits the built request with --model gpt-6-luna and reports 0 errors"
+    ]
+  },
+  {
+    "skills": ["optimizing-prompts"],
+    "query": "Show me how this prompt should differ between Opus 5.5 and GPT-6 Astra.",
+    "files": ["evals/files/legacy-prompt.md"],
+    "expected_behavior": [
+      "Produces both rewrites: XML-tagged for Opus 5.5 and Markdown-sectioned for Astra",
+      "Names the parameter differences: output_config.effort and adaptive thinking versus reasoning.effort, verbosity, and prompt_cache_options",
+      "Audits both requests with the matching --model and reports 0 errors each"
+    ]
+  }
+]

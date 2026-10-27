@@ -1,0 +1,419 @@
+"""Bounded MCP/plugin provenance. Never connects, installs, or runs discovered components."""
+from collections import defaultdict
+import ipaddress
+import json
+import os
+from pathlib import Path
+import re
+from urllib.parse import urlsplit
+import inventory
+
+MAX_ENTRIES = 100
+MAX_PLUGINS = 50
+NAME_CAP = 120
+PROJECT_STATE_LISTS = ('enabledMcpjsonServers', 'disabledMcpjsonServers', 'disabledMcpServers', 'enabledMcpServers')
+OBS_LIMIT = 20
+
+# mcp.md, fetched 2026-09-29: reserved built-in names ("including"; not exhaustive), remote types
+# (streamable-http is an alias of http), and the tool-name normalization for plugin servers.
+RESERVED_NAMES = frozenset({'workspace', 'claude-in-chrome', 'computer-use', 'Claude Preview', 'Claude Browser'})
+REMOTE_TYPES = frozenset({'http', 'streamable-http', 'sse', 'ws'})
+VAR_RE = re.compile(r'\$\{([A-Za-z_][A-Za-z_0-9]*)(?::-[^}]*)?\}')
+
+
+def split_url(url):
+    """urlsplit with the WHATWG rule that '\\' equals '/' in special schemes (http, https, ws, wss)."""
+    if url.split(':', 1)[0].lower() in ('http', 'https', 'ws', 'wss'):
+        url = url.replace('\\', '/')
+    return urlsplit(url)
+
+
+def url_origin(url):
+    """scheme://host for http/https/ws/wss URLs with a host; else 'dynamic_or_unknown' ('invalid_url' on ValueError)."""
+    try:
+        parts = split_url(url)
+    except ValueError:
+        return 'invalid_url'
+    return (f'{parts.scheme}://{parts.hostname}' if parts.scheme in ('http', 'https', 'ws', 'wss')
+            and parts.hostname else 'dynamic_or_unknown')
+
+
+def tool_prefix(name, plugin=None):
+    """Server segment of mcp__<segment>__<tool>: chars outside [A-Za-z0-9_-] become '_'."""
+    norm = lambda s: re.sub(r'[^A-Za-z0-9_-]', '_', s)  # noqa: E731
+    return f'plugin_{norm(plugin)}_{norm(name)}' if plugin else norm(name)
+
+
+def endpoint_locality(url):
+    """Locality from the URL text alone; never resolves names."""
+    if '${' in url:
+        return 'dynamic'
+    try:
+        host = split_url(url).hostname
+    except ValueError:
+        return 'invalid'
+    if not host:
+        return 'invalid'
+    if host == 'localhost':
+        return 'loopback'
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return 'named_host'
+    if ip.is_loopback:
+        return 'loopback'
+    if ip.is_private or ip.is_link_local:
+        return 'private_address'
+    return 'public_address'
+
+
+def json_object(path, scope, sources):
+    text, info = inventory.read_text(path, 1024 * 1024)
+    data = {}
+    if text is not None and not info.get('truncated'):
+        try:
+            data = json.loads(text)
+            if not isinstance(data, dict):
+                raise ValueError()
+        except ValueError:
+            data = {}
+            info.update(status='unavailable', reason='invalid_json_object')
+    sources.append(inventory.source(path, scope, **info))
+    return data
+
+
+def mcp_summary(name, config, path, scope, redact, project=None, plugin=None):
+    item = inventory.source(path, scope, 'collected', name=redact(name), project=project,
+                            active_state='unknown', representation='selected_fields')
+    if not isinstance(config, dict):
+        return dict(item, status='unavailable', reason='invalid_server')
+    command = config.get('command')
+    item['transport'] = config.get('type', 'stdio') if isinstance(config.get('type', 'stdio'), str) else 'unknown'
+    # Arguments and URL paths may hold unlabeled credentials; do not serialize them.
+    item['executable'] = (redact(command) if isinstance(command, str) and
+                          re.fullmatch(r'[\w./${}-]+', command) else 'unknown_or_complex')
+    args = config.get('args', [])
+    item['argument_count'] = len(args) if isinstance(args, list) else None
+    item['package_version_evidence'] = 'unknown'
+    if isinstance(command, str) and os.path.basename(command) in ('npx', 'uvx') and isinstance(args, list):
+        packages = [a for a in args if isinstance(a, str) and not a.startswith('-')]
+        if packages:
+            candidate = packages[0]
+            item['package_version_evidence'] = ('exact_version_shape' if re.fullmatch(
+                r'(?:@[\w.-]+/)?[\w.-]+(?:@|==)\d+\.\d+\.\d+(?:-[\w.-]+)?', candidate) else 'no_exact_version_observed')
+    url = config.get('url')
+    if isinstance(url, str):
+        item['endpoint_origin'] = url_origin(url)
+        item['endpoint_detail'] = 'path, query, fragment, port and userinfo omitted'
+    mechanisms = []
+    for key in ('env', 'headers'):
+        values = config.get(key)
+        item[key + '_keys'] = sorted(values) if isinstance(values, dict) else []
+        if isinstance(values, dict) and values:
+            refs = sorted({m.group(1) for v in values.values() if isinstance(v, str)
+                           for m in VAR_RE.finditer(v)})
+            item[key + '_variable_references'] = refs
+            mechanisms.append(key + ('_references_or_literals' if refs else '_configured_values_omitted'))
+    for key in ('oauth', 'headersHelper'):
+        if key in config:
+            mechanisms.append(key + '_configured')
+    item['credential_mechanisms'] = mechanisms or ['not_observed_in_selected_fields']
+    declared = config.get('type')
+    declared = declared if declared is None or isinstance(declared, str) else '<invalid>'
+    has_url = 'url' in config
+    notes = []
+    if declared is None and has_url:
+        notes.append('url_without_type')
+    if declared == 'sdk':
+        notes.append('sdk_type_skipped')
+    if declared == 'sse':
+        notes.append('sse_deprecated')
+    if name in RESERVED_NAMES:
+        notes.append('reserved_name')
+    if declared in REMOTE_TYPES and url == '':
+        notes.append('empty_url_placeholder')
+    item['config_notes'] = notes
+    item['transport_class'] = ('skipped' if declared == 'sdk' or (declared is None and has_url) else
+                               'remote' if declared in REMOTE_TYPES else
+                               'local_process' if declared in (None, 'stdio') else 'unknown')
+    if isinstance(url, str) and url:
+        item['endpoint_locality'] = endpoint_locality(url)
+        try:
+            parts = split_url(url)
+            scheme, userinfo, query = parts.scheme, '@' in parts.netloc, bool(parts.query)
+        except ValueError:
+            scheme, userinfo, query = '', False, False
+        item['url_has_userinfo'], item['url_has_query'] = userinfo, query
+        item['plaintext_transport'] = scheme in ('http', 'ws') and item['endpoint_locality'] != 'loopback'
+        item['url_variable_references'] = sorted({redact(m.group(1))[:NAME_CAP] for m in VAR_RE.finditer(url)})[:MAX_ENTRIES]
+    for key in ('env', 'headers'):
+        values = config.get(key)
+        if isinstance(values, dict):
+            item[key + '_literal_keys'] = sorted(k for k, v in values.items()
+                                                 if isinstance(v, str) and v and not VAR_RE.search(v))[:MAX_ENTRIES]
+    oauth = config.get('oauth')
+    if isinstance(oauth, dict):
+        item['oauth_keys'] = sorted(redact(k)[:NAME_CAP] for k in oauth if isinstance(k, str))[:MAX_ENTRIES]
+        scopes = oauth.get('scopes')
+        item['oauth_scopes'] = (sorted({redact(t[:64]) for t in scopes.split()})[:20]
+                                if isinstance(scopes, str) else None)
+    item['tool_prefix'] = tool_prefix(redact(name), redact(plugin) if plugin else None)[:NAME_CAP]
+    if plugin:
+        item['plugin'] = redact(plugin)[:NAME_CAP]
+    return item
+
+
+def name_collisions(servers):
+    """Same name in local/project/user scope for one project (mcp.md: matched by name there)."""
+    rows = [s for s in servers if s.get('status') == 'collected' and s.get('scope') in ('user', 'local', 'project')]
+    shared = [s for s in rows if s['scope'] == 'user']
+    out = []
+    for project in sorted({s['project'] for s in rows if s.get('project')}):
+        group = defaultdict(list)
+        for s in shared + [s for s in rows if s['scope'] != 'user' and s.get('project') == project]:
+            group[s['name']].append(s)
+        for name in sorted(group):
+            scopes = sorted({s['scope'] for s in group[name]})
+            if len(scopes) > 1:
+                ends = {(s.get('transport'), s.get('endpoint_origin') or s.get('executable')) for s in group[name]}
+                out.append(dict(name=name, project=project, scopes=scopes, endpoint_origins_differ=len(ends) > 1))
+    return out[:MAX_ENTRIES]
+
+
+def mcp_observations(servers, layers, project_state, display):
+    """Per-source observations for each collected server; never an effective state.
+
+    layers: (user|project|managed, project display path or None, settings summary). A project layer
+    applies to servers of that project, or to servers without a project (then its source names it).
+    Past OBS_LIMIT, managed-policy observations are kept first, then the rest in collection order.
+    """
+    for s in servers:
+        if s.get('status') != 'collected':
+            continue
+        project = display(s['project']) if s.get('project') else None
+        obs = []  # (is_managed, observation)
+        for layer, where, summary in layers:
+            if layer == 'project' and project is not None and where != project:
+                continue
+            managed = layer == 'managed'
+            src = summary.get('path', '?')
+            policy = summary.get('mcp_policy') or {}
+
+            def add(kind, value, src=src, managed=managed):
+                obs.append((managed, dict(source=src, kind=kind, value=value)))
+
+            if s['scope'] == 'project':
+                for key, kind in (('enabledMcpjsonServers', 'approval_enabled'),
+                                  ('disabledMcpjsonServers', 'approval_rejected')):
+                    if isinstance(policy.get(key), list) and s['name'] in policy[key]:
+                        add(kind, True)
+                if isinstance(policy.get('enableAllProjectMcpServers'), bool):
+                    add('approval_enable_all', policy['enableAllProjectMcpServers'])
+            for key, kind in (('allowedMcpServers', 'policy_allowed_by_name'),
+                              ('deniedMcpServers', 'policy_denied_by_name')):
+                shape = policy.get(key)
+                if isinstance(shape, dict) and s['name'] in shape.get('server_names', []):
+                    add(kind, True)
+            rules = summary.get('mcp_permission_rules') or {}
+            for kind in ('allow', 'ask', 'deny'):
+                counts = rules.get(kind) or {}
+                if counts.get(s.get('tool_prefix')):
+                    add(f'permission_{kind}', counts[s['tool_prefix']])
+                if counts.get('*'):
+                    add(f'permission_{kind}_any_server', counts['*'])
+        names = {s['name']} | ({f"plugin:{s['plugin']}:{s['name']}"} if s.get('plugin') else set())
+        for state in project_state:
+            where = display(state['project'])
+            if project is not None and where != project:
+                continue
+            src = f"{display(state['source'])}#projects[{where}]"
+            if s['scope'] == 'project':
+                for key, kind in (('enabledMcpjsonServers', 'approval_enabled'),
+                                  ('disabledMcpjsonServers', 'approval_rejected')):
+                    if s['name'] in state.get(key, []):
+                        obs.append((False, dict(source=src, kind=kind, value=True)))
+                s['project_trust_accepted'] = state.get('trust_accepted')
+            for key, kind in (('disabledMcpServers', 'toggle_disabled'), ('enabledMcpServers', 'toggle_enabled')):
+                if names & set(state.get(key, [])):
+                    obs.append((False, dict(source=src, kind=kind, value=True)))
+        if s['scope'] == 'project':
+            s.setdefault('project_trust_accepted', None)
+        keep = sorted(sorted(range(len(obs)), key=lambda i: (not obs[i][0], i))[:OBS_LIMIT])
+        s['policy_observations'] = [obs[i][1] for i in keep]
+        if len(obs) > OBS_LIMIT:
+            s['policy_observations_omitted'] = len(obs) - OBS_LIMIT
+
+
+def collect_extensions(home, claude, roots, contexts, managed_dir, managed_sources, settings, redact, hook_summary,
+                       git_status=None):
+    sources, servers, plugins = [], [], []
+
+    def servers_from(data, path, scope, project=None, key='mcpServers', bare=False, plugin=None):
+        values = data.get(key, data if bare else {})
+        if not isinstance(values, dict):
+            sources.append(inventory.source(path, scope, 'unavailable', reason='invalid_server_map'))
+            return
+        remaining = max(0, MAX_ENTRIES - len(servers))
+        names = sorted(values)
+        if len(names) > remaining:
+            sources.append(inventory.source(path, scope, 'partial', reason='server_limit', omitted=len(names)-remaining))
+        servers.extend(mcp_summary(n, values[n], path, scope, redact, project, plugin) for n in names[:remaining])
+
+    user_path = os.path.join(home, '.claude.json')
+    user = json_object(user_path, 'user', sources)
+    servers_from(user, user_path, 'user')
+    project_paths = sorted(set(roots) | {c['session_cwd'] for c in contexts})
+    local = user.get('projects', {})
+    project_state = []
+    for root in project_paths:
+        entry = local.get(root) if isinstance(local, dict) else None
+        if isinstance(entry, dict):
+            servers_from(entry, user_path, 'local', root)
+            state = {'project': root, 'source': user_path}
+            for key in PROJECT_STATE_LISTS:
+                if isinstance(entry.get(key), list):
+                    state[key] = sorted({redact(x)[:NAME_CAP] for x in entry[key] if isinstance(x, str)})[:MAX_ENTRIES]
+            trust = entry.get('hasTrustDialogAccepted')
+            state['trust_accepted'] = trust if isinstance(trust, bool) else None
+            project_state.append(state)
+        path = os.path.join(root, '.mcp.json')
+        before = len(servers)
+        servers_from(json_object(path, 'project', sources), path, 'project', root)
+        if git_status and len(servers) > before:
+            state = git_status(root, '.mcp.json')
+            for server in servers[before:]:
+                server['file_git_status'] = state
+    if managed_dir:
+        path = os.path.join(managed_dir, 'managed-mcp.json')
+        servers_from(json_object(path, 'managed', sources), path, 'managed')
+    for src in managed_sources:
+        path = src['source']
+        if src['status'] == 'collected' and path.endswith('.json'):
+            servers_from(json_object(path, 'managed', sources), path, 'managed', key='managedMcpServers')
+
+    registry_path = os.path.join(claude, 'plugins', 'installed_plugins.json')
+    registry_data = json_object(registry_path, 'plugin_registry', sources)
+    registry_read = sources[-1]['status'] == 'collected'
+    registry = registry_data.get('plugins')
+    registry_valid = registry_read and isinstance(registry, dict)
+    if registry_read and not isinstance(registry, dict):
+        sources.append(inventory.source(registry_path, 'plugin_registry', 'unavailable', reason='unknown_registry_shape'))
+    if not isinstance(registry, dict):
+        registry = {}
+    if any(not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows)
+           for rows in registry.values()):
+        sources.append(inventory.source(registry_path, 'plugin_registry', 'partial', reason='unknown_registry_shape'))
+    records = [(name, row) for name in sorted(registry) if isinstance(registry[name], list)
+               for row in registry[name] if isinstance(row, dict)]
+    selected = []
+    for name, row in records:
+        scope = row.get('scope')
+        project = row.get('projectPath') if isinstance(row.get('projectPath'), str) else None
+        if scope in ('project', 'local') and project not in project_paths:
+            continue
+        if scope not in ('user', 'project', 'local', 'managed'):
+            sources.append(inventory.source(registry_path, 'plugin_registry', 'not_checked', reason='unknown_install_scope'))
+            continue
+        selected.append((name, row))
+    if registry_valid:
+        sources.append(inventory.source(registry_path + '#selected-installs', 'plugin_registry',
+                                        'partial' if len(selected) > MAX_PLUGINS else 'collected',
+                                        eligible=len(selected), scanned=min(len(selected), MAX_PLUGINS),
+                                        omitted=max(0, len(selected)-MAX_PLUGINS)))
+    for name, row in selected[:MAX_PLUGINS]:
+        plugin = dict(name=redact(name), scope=row.get('scope'), project=project,
+                      version=redact(str(row.get('version', 'unknown'))), active_state='unknown',
+                      enablement_observations=[dict(source=s['path'], value=s['enabled_plugins'][name])
+                                               for s in settings if isinstance(s.get('enabled_plugins'), dict)
+                                               and name in s['enabled_plugins']], components=[])
+        plugins.append(plugin)
+        root = row.get('installPath')
+        cache = os.path.realpath(os.path.join(claude, 'plugins'))
+        if not isinstance(root, str) or not os.path.isabs(root) or not os.path.realpath(root).startswith(cache + os.sep):
+            plugin.update(status='not_checked', reason='install_path_outside_plugin_storage')
+            continue
+        plugin.update(source=root, status='collected')
+        manifest_path = os.path.join(root, '.claude-plugin', 'plugin.json')
+        manifest = json_object(manifest_path, 'plugin', sources)
+        plugin['manifest_keys'] = sorted(manifest)
+        plugin_name = (manifest['name'] if isinstance(manifest.get('name'), str) and manifest['name']
+                       else name.split('@')[0])
+        for kind, default in (('hooks', 'hooks/hooks.json'), ('mcpServers', '.mcp.json'),
+                              ('skills', 'skills'), ('agents', 'agents'), ('commands', 'commands')):
+            field = manifest.get(kind)
+            paths = [default] if kind not in ('agents', 'commands') or field is None else []
+            inline = []
+            for value in field if isinstance(field, list) else [field]:
+                if isinstance(value, str):
+                    paths.append(value)
+                elif isinstance(value, dict):
+                    inline.append(value)
+            for data in inline:
+                if kind == 'mcpServers':
+                    servers_from(data, manifest_path, 'plugin', plugin['project'], bare=True, plugin=plugin_name)
+                elif kind == 'hooks':
+                    add_hooks(plugin, data, manifest_path, hook_summary)
+            if len(set(paths)) > MAX_ENTRIES:
+                sources.append(inventory.source(manifest_path, 'plugin', 'partial', reason='component_path_limit',
+                                                omitted=len(set(paths))-MAX_ENTRIES))
+            for rel in sorted(set(paths))[:MAX_ENTRIES]:
+                path = os.path.abspath(os.path.join(root, rel))
+                if not path.startswith(os.path.abspath(root) + os.sep) or not os.path.realpath(path).startswith(os.path.realpath(root) + os.sep):
+                    sources.append(inventory.source(manifest_path, 'plugin', 'not_checked', reason='external_component_path'))
+                    continue
+                if kind in ('hooks', 'mcpServers'):
+                    data = json_object(path, 'plugin', sources)
+                    if kind == 'mcpServers':
+                        servers_from(data, path, 'plugin', plugin['project'], bare=True, plugin=plugin_name)
+                    else:
+                        add_hooks(plugin, data, path, hook_summary)
+                else:
+                    component_files(plugin, path, kind, sources, redact)
+    sources.extend(inventory.source(s['source'], s['scope'], s['status'], name=s['name']) for s in servers)
+    sources.extend(inventory.source(p.get('source', registry_path), 'plugin', p['status']) for p in plugins)
+    return dict(mcp_servers=servers, plugins=plugins, sources=sources,
+                mcp_name_collisions=name_collisions(servers), mcp_project_state=project_state[:MAX_ENTRIES],
+                limitations=['Effective activation, runtime overrides and remote connectors remain unknown; approvals, toggles, server policy and permission rules are per-source observations, not effective state.',
+                             'Registry-selected installs only; no newest-cache guess. External component paths are not followed.',
+                             'Selected fields omit argument values, URL paths and credentials. Package pinning is a syntax signal.'])
+
+
+def add_hooks(plugin, data, path, hook_summary):
+    hooks = data.get('hooks', data)
+    if not isinstance(hooks, dict):
+        plugin['components'].append(dict(source=path, kind='hooks', status='unavailable'))
+        return
+    try:
+        handlers = [hook_summary(ev, group.get('matcher'), h) for ev, groups in hooks.items()
+                    for group in groups for h in group.get('hooks', [])]
+        plugin['components'].append(dict(source=path, kind='hooks', handlers=handlers[:MAX_ENTRIES],
+                                         status='partial' if len(handlers) > MAX_ENTRIES else 'collected'))
+    except (TypeError, AttributeError, KeyError):
+        plugin['components'].append(dict(source=path, kind='hooks', status='unavailable'))
+
+
+def component_files(plugin, base, kind, sources, redact):
+    paths = []
+    if os.path.isdir(base) and not os.path.islink(base):
+        def error(_):
+            sources.append(inventory.source(base, 'plugin', 'partial', reason='directory_read_failed'))
+        for i, (directory, dirs, files) in enumerate(os.walk(base, followlinks=False, onerror=error)):
+            dirs[:] = sorted(d for d in dirs if d not in inventory.SKIP and not os.path.islink(os.path.join(directory, d)))
+            if i >= 100 or len(paths) >= 100:
+                sources.append(inventory.source(base, 'plugin', 'partial', reason='component_scan_limit'))
+                break
+            wanted = (lambda f: f == 'SKILL.md') if kind == 'skills' else (lambda f: f.endswith('.md'))
+            paths.extend(os.path.join(directory, f) for f in sorted(files) if wanted(f))
+    else:
+        paths = [base]
+    if len(paths) > 100:
+        sources.append(inventory.source(base, 'plugin', 'partial', reason='component_file_limit', omitted=len(paths)-100))
+    for path in paths[:100]:
+        text, info = inventory.read_text(path)
+        sources.append(inventory.source(path, 'plugin', **info))
+        if text is None:
+            continue
+        fields, status = inventory.frontmatter(text)
+        plugin['components'].append(dict(source=path, kind=kind, **info,
+                                         frontmatter={k: redact(v) for k, v in fields.items()},
+                                         frontmatter_status=status, excerpt=redact(text)))

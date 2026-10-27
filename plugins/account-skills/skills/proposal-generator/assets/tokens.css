@@ -1,0 +1,131 @@
+/* WithAgents — Operator Console tokens + base components.
+   Single source of truth for proposal screen styling. Mirrors DESIGN.md §6.
+   Renderers inline this file into self-contained HTML. */
+
+:root {
+  --bg-page: #08080a;
+  --accent: #FF3D52;          /* crimson */
+  --violet: #B84DFF;
+  --pass: #34D08C; --fail: #FF3D52; --warn: #FFB84D; --info: #5EE6F2;
+
+  --fill-1: rgba(255,255,255,0.02);
+  --fill-2: rgba(255,255,255,0.04);
+  --fill-3: rgba(255,255,255,0.05);
+  --fill-4: rgba(255,255,255,0.08);
+  --line:   rgba(255,255,255,0.06);
+  --line-2: rgba(255,255,255,0.08);
+  --line-3: rgba(255,255,255,0.12);
+
+  --text:   #f4f3ee;
+  --text-2: rgba(244,243,238,0.72);
+  --text-3: rgba(244,243,238,0.40);
+  --text-4: rgba(244,243,238,0.30);
+
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px; --r-pill: 999px;
+  --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--bg-page);
+  background-image:
+    radial-gradient(ellipse 1000px 600px at 90% -10%, rgba(255,61,82,0.08), transparent 60%),
+    radial-gradient(ellipse 900px 500px at -10% 120%, rgba(122,61,255,0.08), transparent 60%);
+  background-attachment: fixed;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- type ---- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+}
+.mono { font-family: var(--font-mono); }
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px; font-weight: 600;
+  letter-spacing: 1.6px; text-transform: uppercase;
+  color: var(--text-3);
+}
+h1 { font-size: clamp(40px, 6vw, 64px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.05; }
+h2 { font-size: clamp(28px, 3.5vw, 36px); font-weight: 700; letter-spacing: -0.8px; }
+h3 { font-size: 22px; font-weight: 600; letter-spacing: -0.2px; }
+.display-italic { font-family: var(--font-display); font-style: italic; font-weight: 400; color: var(--accent); }
+p { color: var(--text-2); }
+strong { color: var(--text); font-weight: 600; }
+.num { font-family: var(--font-mono); font-weight: 700; color: var(--text); font-feature-settings: "tnum"; }
+.num-accent { color: var(--accent); }
+
+/* ---- surfaces ---- */
+.card {
+  background: var(--fill-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  transition: transform 120ms var(--ease), border-color 120ms var(--ease), background 120ms var(--ease);
+}
+.card--hover:hover { transform: translateY(-2px); border-color: var(--line-3); background: var(--fill-3); }
+.card--xl { border-radius: var(--r-xl); padding: 32px; }
+
+/* ---- status pills ---- */
+.pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  padding: 5px 11px; border-radius: var(--r-pill);
+  border: 1px solid var(--line-2); color: var(--text-2);
+}
+.pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--info); }
+.pill--pass { color: var(--pass); border-color: rgba(52,208,140,0.3); }
+.pill--pass .dot { background: var(--pass); box-shadow: 0 0 10px var(--pass); }
+.pill--accent { color: var(--accent); border-color: rgba(255,61,82,0.3); }
+.pill--accent .dot { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+.pill--warn { color: var(--warn); border-color: rgba(255,184,77,0.3); }
+.pill--warn .dot { background: var(--warn); box-shadow: 0 0 10px var(--warn); }
+.pill--info .dot { background: var(--info); box-shadow: 0 0 10px var(--info); }
+
+/* ---- buttons ---- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  padding: 12px 20px; border-radius: var(--r-md); cursor: pointer;
+  border: 1px solid transparent; transition: transform 120ms var(--ease), border-color 120ms var(--ease);
+}
+.btn--primary { background: var(--accent); color: #08080a; }
+.btn--ghost { background: transparent; color: var(--text); border-color: var(--line-3); }
+.btn:hover { transform: translateY(-2px); }
+.btn--ghost:hover { border-color: var(--accent); }
+
+/* ---- tables ---- */
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+thead th {
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-3);
+  text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line-3);
+}
+tbody td { padding: 13px 16px; border-bottom: 1px solid var(--line); color: var(--text-2); vertical-align: top; }
+tbody tr:hover { background: var(--fill-1); }
+tbody td .num { color: var(--text); }
+tfoot td { padding: 14px 16px; font-weight: 700; color: var(--text); border-top: 1px solid var(--line-3); }
+
+/* ---- bars (estimation viz) ---- */
+.bar-track { display: block; height: 8px; border-radius: var(--r-pill); background: var(--fill-3); overflow: hidden; }
+.bar-fill { display: block; height: 100%; border-radius: var(--r-pill); background: var(--accent); }
+
+/* ---- divider / rule ---- */
+hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

@@ -1,0 +1,53 @@
+{
+  "vendor": "anthropic",
+  "model": "claude-fable-5-1",
+  "url": "https://api.anthropic.com/v1/messages",
+  "headers": {
+    "x-api-key": "${ANTHROPIC_API_KEY}",
+    "anthropic-version": "2023-06-01",
+    "content-type": "application/json"
+  },
+  "body": {
+    "model": "claude-fable-5-1",
+    "max_tokens": 32000,
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "system": [
+      {
+        "type": "text",
+        "text": "You write research summaries. Do not use markdown or bullet lists."
+      }
+    ],
+    "tools": [
+      {
+        "name": "save_summary",
+        "description": "Save the summary",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ]
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "tool",
+      "name": "save_summary"
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": "Summarize the attached findings."
+      },
+      {
+        "role": "assistant",
+        "content": "{"
+      }
+    ]
+  }
+}

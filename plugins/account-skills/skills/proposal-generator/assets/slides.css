@@ -1,0 +1,83 @@
+/* WithAgents proposal slide deck — self-contained scroll-snap deck engine.
+   Sits on top of tokens.css. Presentation scale, Operator Console theme. */
+
+body { overflow: hidden; }
+.deck { height: 100dvh; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+
+.slide {
+  height: 100dvh; scroll-snap-align: start; overflow: hidden; position: relative; isolation: isolate;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(48px, 7vh, 92px) clamp(44px, 8vw, 128px);
+  opacity: 0; transform: translateY(36px) scale(.985);
+  transition: opacity .6s var(--ease), transform .6s var(--ease);
+}
+.slide.visible { opacity: 1; transform: none; }
+.slide::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 900px 520px at 88% -12%, rgba(255,61,82,0.10), transparent 60%);
+}
+.slide:nth-child(even)::before { background: radial-gradient(ellipse 820px 480px at -8% 118%, rgba(184,77,255,0.10), transparent 60%); }
+
+.slide .reveal { opacity: 0; transform: translateY(18px); transition: opacity .5s var(--ease), transform .5s var(--ease); }
+.slide.visible .reveal { opacity: 1; transform: none; }
+.slide.visible .reveal:nth-child(1){transition-delay:.08s}
+.slide.visible .reveal:nth-child(2){transition-delay:.16s}
+.slide.visible .reveal:nth-child(3){transition-delay:.24s}
+.slide.visible .reveal:nth-child(4){transition-delay:.32s}
+.slide.visible .reveal:nth-child(5){transition-delay:.40s}
+.slide.visible .reveal:nth-child(6){transition-delay:.48s}
+
+.s-eyebrow { font-family: var(--font-mono); font-size: clamp(11px,1.1vw,14px); font-weight: 700; letter-spacing: 2.4px; text-transform: uppercase; color: var(--accent); margin-bottom: 22px; }
+.slide h1 { font-size: clamp(44px, 8vw, 104px); font-weight: 800; letter-spacing: -3px; line-height: 1.02; }
+.slide h1 em { font-family: var(--font-display); font-style: italic; font-weight: 400; color: var(--accent); }
+.slide h2 { font-size: clamp(30px, 4.4vw, 52px); font-weight: 700; letter-spacing: -1px; margin-bottom: 28px; }
+.slide .big-lede { font-size: clamp(18px, 2.1vw, 26px); color: var(--text-2); max-width: 28ch; line-height: 1.4; }
+
+.s-lockup { display: flex; align-items: center; gap: 11px; font-weight: 700; font-size: clamp(16px,1.6vw,20px); margin-bottom: 30px; }
+.s-lockup .wamark { width: 28px; height: 28px; border-radius: var(--r-sm); border: 1px solid var(--accent); display: grid; place-items: center; font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.s-lockup b { color: var(--accent); } .s-lockup span { color: var(--text-2); }
+
+.s-counter-row { display: flex; gap: clamp(28px,4vw,64px); margin-top: 40px; flex-wrap: wrap; }
+.s-stat .v { font-family: var(--font-mono); font-size: clamp(34px,5vw,64px); font-weight: 700; letter-spacing: -2px; line-height: 1; }
+.s-stat .v.accent { color: var(--accent); }
+.s-stat .l { font-family: var(--font-mono); font-size: clamp(10px,1vw,12px); letter-spacing: 1.6px; text-transform: uppercase; color: var(--text-3); margin-top: 10px; }
+
+.s-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.s-card { background: var(--fill-2); border: 1px solid var(--line-2); border-radius: var(--r-lg); padding: clamp(16px,1.8vw,24px); }
+.s-card .l { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent); }
+.s-card h3 { font-size: clamp(16px,1.7vw,20px); margin: 8px 0 6px; }
+.s-card p { font-size: clamp(13px,1.3vw,15px); }
+.s-card .hrs { font-family: var(--font-mono); font-weight: 700; color: var(--text); font-size: 14px; float: right; }
+
+.s-pipe { display: flex; align-items: stretch; gap: 0; margin-top: 16px; }
+.s-step { flex: 1; background: var(--fill-2); border: 1px solid var(--line-2); border-radius: var(--r-md); padding: clamp(12px,1.4vw,18px); text-align: center; }
+.s-step .wk { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.s-step .fc { font-size: clamp(13px,1.3vw,16px); font-weight: 600; margin: 8px 0; }
+.s-step .hh { font-family: var(--font-mono); font-size: 12px; color: var(--text-3); }
+.s-arrow { display: flex; align-items: center; color: var(--text-4); padding: 0 6px; }
+
+.s-bars { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; max-width: 760px; }
+.s-bar { display: grid; grid-template-columns: 190px 1fr 90px; align-items: center; gap: 16px; }
+.s-bar .bl { font-size: clamp(13px,1.3vw,16px); color: var(--text-2); }
+.s-bar .bt { display: block; height: 10px; border-radius: var(--r-pill); background: var(--fill-3); overflow: hidden; }
+.s-bar .bf { display: block; height: 100%; border-radius: var(--r-pill); background: var(--accent); }
+.s-bar .bv { font-family: var(--font-mono); font-size: 13px; font-weight: 600; text-align: right; }
+
+.s-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+.s-table th { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-3); text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line-3); }
+.s-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: clamp(13px,1.3vw,16px); color: var(--text-2); }
+.s-table .amt { font-family: var(--font-mono); font-weight: 700; color: var(--accent); text-align: right; }
+.s-table .run { font-family: var(--font-mono); text-align: right; color: var(--text); }
+
+/* chrome */
+.deck-progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0; z-index: 100; transition: width .3s var(--ease); }
+.deck-dots { position: fixed; right: 22px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+.deck-dots button { width: 9px; height: 9px; border-radius: 50%; border: 0; background: var(--line-3); cursor: pointer; padding: 0; transition: all .2s var(--ease); }
+.deck-dots button.active { background: var(--accent); transform: scale(1.5); }
+.deck-counter { position: fixed; left: 22px; bottom: 18px; font-family: var(--font-mono); font-size: 12px; color: var(--text-3); z-index: 100; letter-spacing: 1px; }
+.deck-hints { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-4); z-index: 100; transition: opacity .6s var(--ease); }
+.deck-hints.faded { opacity: 0; }
+@media (max-width: 760px){ .deck-dots { display: none; } .s-grid2 { grid-template-columns: 1fr; } .s-pipe { flex-wrap: wrap; } .s-arrow { display: none; } }
+/* Progressive enhancement: if JS never runs, show every slide stacked. */
+html:not(.js) .slide, html:not(.js) .slide .reveal { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce){ .slide,.slide .reveal { opacity:1!important; transform:none!important; } }

@@ -1,0 +1,31 @@
+PartnerImpact plugin for Claude
+Copyright (c) 2026 Bart Dirksen, trading as PartnerImpact
+https://partnerimpact.net
+
+Everything in this package (the skills, the agents, the references and the configuration) is licensed under the
+Creative Commons Attribution 4.0 International License. The full text is in LICENSE and at
+https://creativecommons.org/licenses/by/4.0/
+
+You may share and adapt it, including commercially, provided you give appropriate credit, link to
+the license, and indicate whether changes were made. Credit reads:
+  "Based on PartnerImpact by Bart Dirksen, partnerimpact.net (CC BY 4.0)"
+
+The frameworks, including the Partner Program Maturity Model (twelve domains, forty-eight
+dimensions, its anchor bands, interventions, sequencing gates and stage benchmarks), the Ideal
+Partner Profile and its anti-fit gate, the Partner Lifecycle Bowtie, the tiering model, the partner
+health model and the three asks, are original works by Bart Dirksen.
+
+The PartnerImpact connector
+  The calculations run on the hosted PartnerImpact MCP server at https://mcp.partnerimpact.net,
+  which is not part of this package. Its code is not licensed here and remains all rights reserved.
+  Use of the hosted service is free, rate-limited, and subject to the terms at
+  https://www.partnerimpact.net/privacy. Access may be changed or withdrawn at any time.
+
+Names
+  "PartnerImpact" and the PartnerImpact name and logo identify Bart Dirksen's work. This licence
+  grants no right to use them (CC BY 4.0 section 2(b)(2) excludes trademark rights), except to give
+  the credit required above. Do not present adapted versions as PartnerImpact or as endorsed by
+  Bart Dirksen.
+
+No warranty
+  Provided as is. Outputs are decision support, not financial, legal or investment advice.

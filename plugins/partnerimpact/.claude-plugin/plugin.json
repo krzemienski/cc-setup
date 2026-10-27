@@ -1,0 +1,33 @@
+{
+  "name": "partnerimpact",
+  "displayName": "PartnerImpact",
+  "version": "1.1.2",
+  "description": "Partner management for Claude: research, qualify, onboard, co-sell, QBR, strategy, program design and partner comms workflows, eight role agents, the Partner Program Maturity Assessment, partner health, and every PartnerImpact calculator through the hosted connector. Free. By Bart Dirksen.",
+  "author": {
+    "name": "Bart Dirksen (PartnerImpact)",
+    "url": "https://www.partnerimpact.net"
+  },
+  "homepage": "https://www.partnerimpact.net",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "partnerships",
+    "partner-management",
+    "partner-program",
+    "channel",
+    "alliances",
+    "co-sell",
+    "ecosystem",
+    "qbr",
+    "partnerimpact"
+  ],
+  "repository": "https://github.com/bart1004/PartnerImpact",
+  "icon": "./icon.svg",
+  "privacyPolicyUrl": "https://www.partnerimpact.net/privacy",
+  "termsOfServiceUrl": "https://www.partnerimpact.net/privacy",
+  "mcpServers": {
+    "partnerimpact": {
+      "type": "http",
+      "url": "https://mcp.partnerimpact.net/mcp"
+    }
+  }
+}

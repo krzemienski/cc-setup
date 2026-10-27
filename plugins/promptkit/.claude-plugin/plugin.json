@@ -1,0 +1,17 @@
+{
+  "name": "promptkit",
+  "version": "0.2.0",
+  "description": "Model-correct prompts and requests for Claude Opus 5.5, Claude Fable 5.1, and GPT-6 Astra, Sol, and Luna: turn any ramble or existing prompt into a ready prompt, build and audit API requests, run unattended agents; plus PRD writing and the Speakwright build loop.",
+  "author": {
+    "name": "Nick"
+  },
+  "keywords": [
+    "prompting",
+    "claude",
+    "gpt-6",
+    "opus",
+    "fable",
+    "prd"
+  ],
+  "license": "MIT"
+}

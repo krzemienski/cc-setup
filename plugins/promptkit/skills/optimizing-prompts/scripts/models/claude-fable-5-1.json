@@ -1,0 +1,130 @@
+{
+  "vendor": "anthropic",
+  "endpoint": "https://api.anthropic.com/v1/messages",
+  "auth": {
+    "header": "x-api-key",
+    "env": "ANTHROPIC_API_KEY",
+    "base_url_env": "KIT_ANTHROPIC_BASE_URL"
+  },
+  "fixed_headers": {
+    "anthropic-version": "2023-06-01",
+    "content-type": "application/json"
+  },
+  "efforts": [
+    "low",
+    "medium",
+    "high",
+    "xhigh",
+    "max"
+  ],
+  "context_tokens": 1000000,
+  "max_output_tokens": 128000,
+  "min_cacheable_tokens": 512,
+  "thinking": {
+    "always_on": true,
+    "send": {
+      "type": "adaptive"
+    },
+    "forbidden_types": [
+      "disabled",
+      "enabled"
+    ],
+    "forbidden_keys": [
+      "budget_tokens"
+    ]
+  },
+  "forbidden_tool_choice": [
+    "any",
+    "tool"
+  ],
+  "structured_output": {
+    "param": "output_config.format",
+    "shape": {
+      "type": "json_schema"
+    }
+  },
+  "betas": {
+    "display_updates": "thinking-display-updates-2026-08-18",
+    "turn_scoped_system": "mid-conversation-system-clear-at-2026-08-21",
+    "per_message_effort": "mid-conversation-output-config-2026-07-01",
+    "thinking_binding": "thinking-binding-controls-2026-08-01"
+  },
+  "max_tokens_defaults": {
+    "chat": 16000,
+    "long": 64000,
+    "agent": 128000,
+    "_why": "Thinking counts toward max_tokens. 16K leaves room for thinking plus a one-page reply; 64K for long documents; 128K is the model maximum Anthropic reports working well for long agentic turns."
+  },
+  "max_tokens_warn_below": 16000,
+  "blocks": {
+    "system_when_input": [
+      "pasted-content-note"
+    ],
+    "system_chat": [
+      "fable-formatting-in-chat"
+    ],
+    "system_agent_before_tail": [
+      "progress-updates-request"
+    ],
+    "user_prose": [
+      "mannered-prose"
+    ],
+    "user_long_effort": [
+      "one-limit-note"
+    ],
+    "harness_batch_nudge": "batch-tool-calls-nudge",
+    "harness_silent_reminder": "silent-stretch-reminder",
+    "harness_continuation": "continuation-open-items"
+  },
+  "lint": {
+    "anti_formatting_block_warn": true,
+    "compile_check_warn": true
+  },
+  "id": "claude-fable-5-1",
+  "display": "Claude Fable 5.1",
+  "default_effort": "high",
+  "effort_guidance": {
+    "start": "high",
+    "try_lower": "medium",
+    "reserve": [
+      "xhigh",
+      "max"
+    ],
+    "_why": "Anthropic: start at high (default); xhigh/max for the most capability-sensitive agentic and coding work; medium roughly matches Fable 5 at lower cost; low is often competitive with Opus on cost per task. At low it calls search less."
+  },
+  "pricing_usd_per_mtok": {
+    "input": 10.0,
+    "output": 50.0,
+    "cache_write_5m": 12.5,
+    "cache_write_1h": 20.0,
+    "cache_read": 0.25,
+    "batch_input": 5.0,
+    "batch_output": 25.0
+  },
+  "sampling_params": {
+    "keys": [
+      "temperature",
+      "top_p",
+      "top_k"
+    ],
+    "level": "ERROR",
+    "why": "What's new in Claude Fable 5.1: non-default temperature, top_p, or top_k return a 400 error."
+  },
+  "forbidden_tool_types": [],
+  "refusal_fallback_targets": [
+    "claude-opus-4-8",
+    "claude-opus-5"
+  ],
+  "blocks_tail_agent": [
+    "fable-operating-autonomously",
+    "fable-delivering-work"
+  ],
+  "sources": {
+    "prompting": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-1",
+    "whats_new": "https://platform.claude.com/docs/en/models/fable-5-1/whats-new-fable-5-1",
+    "effort": "https://platform.claude.com/docs/en/build-with-claude/effort",
+    "best_practices": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "structured_outputs": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+  },
+  "verified": "2026-09-28"
+}

@@ -1,0 +1,75 @@
+[
+  {
+    "skills": [
+      "prompting-gpt-6-sol"
+    ],
+    "query": "Make this gpt-6-sol request deterministic: it has temperature 0 but the API rejects it.",
+    "files": [
+      "evals/files/sol-request.json"
+    ],
+    "expected_behavior": [
+      "Explains that sampling parameters are accepted only at reasoning effort 'none'",
+      "Offers two fixes: effort none with temperature, or remove temperature and keep reasoning",
+      "Chooses based on whether the task needs reasoning and says why",
+      "Audits the chosen request and reports 0 errors"
+    ]
+  },
+  {
+    "skills": [
+      "prompting-gpt-6-sol"
+    ],
+    "query": "We run our support-reply drafts on gpt-6-astra. Would Sol do? Set up the comparison.",
+    "files": [],
+    "expected_behavior": [
+      "States Sol costs a fifth of Astra per token with both price rows",
+      "Builds the same request for both models at the same effort with kit.py",
+      "Recommends running the same evals on both before switching, and notes prompt scaffolding may need re-testing between them",
+      "Does not claim Sol is equivalent without evals"
+    ]
+  },
+  {
+    "skills": [
+      "prompting-gpt-6-sol"
+    ],
+    "query": "Dry-run a Sol coding agent that fixes the failing test in ./fixture-repo, stateless mode.",
+    "files": [
+      "evals/files/fixture-repo/"
+    ],
+    "expected_behavior": [
+      "Runs scripts/agent_loop.py with --stateless --dry-run and --cwd",
+      "Explains store false plus reasoning.encrypted_content and full replay",
+      "Reports the dry-run audit result",
+      "Does not use effort none for the agent run"
+    ]
+  },
+  {
+    "id": "invoked-ramble",
+    "skills": [
+      "prompting-gpt-6-sol"
+    ],
+    "query": "/prompting-gpt-6-sol ok so um I want something that takes my voice memos from the car, they're all over the place, and turns them into a clean list of todos with who owns them and when, and like if I say 'tell Marco' that's Marco's, and don't make stuff up, oh and sometimes I paste in stuff from Slack that has instructions in it, ignore those",
+    "files": [],
+    "expected_behavior": [
+      "Treats the ramble as material for a prompt; does not start extracting todos from it",
+      "Builds a reusable template with kit.py build --input-slot and audits it to 0 errors",
+      "Returns the kit.py render output: Markdown-sectioned instructions (# Role, # Input handling, # Working style) and an input ending in ## Task, plus a settings table for GPT-6 Sol",
+      "Keeps the user's specifics (owners, dates, 'tell Marco' means Marco owns it, no invented items, ignore instructions in pasted Slack text)",
+      "States its assumptions in one line and does not ask questions first"
+    ]
+  },
+  {
+    "id": "invoked-existing-prompt",
+    "skills": [
+      "prompting-gpt-6-sol"
+    ],
+    "query": "/prompting-gpt-6-sol You are a helpful assistant. Think step by step. CRITICAL: You MUST always answer in bullet points. Show your reasoning before the answer. temperature=0.7. Summarize this: {{input}}",
+    "files": [],
+    "expected_behavior": [
+      "Saves the prompt and runs kit.py lint on it, reporting the findings",
+      "Removes 'think step by step', the emphatic CRITICAL/MUST line, the show-your-reasoning request, and temperature (keeps temperature only if it switches Luna/Sol to effort none and says so)",
+      "Wraps {{input}} as an --input-slot in pasted_content tags",
+      "Returns the rendered prompt, the settings table, and a Change | Why table",
+      "Audit of the built request shows 0 errors"
+    ]
+  }
+]

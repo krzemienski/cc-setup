@@ -1,0 +1,949 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Setup Audit snapshot v1",
+  "description": "Stable envelope and coverage/provenance contract. Family payloads allow additive fields; see snapshot-format.md.",
+  "$defs": {
+    "config_layer": {"enum": ["managed", "user", "project", "local", "plugin"]},
+    "mcp_server": {
+      "type": "object",
+      "required": [
+        "source",
+        "scope",
+        "status"
+      ],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "collected",
+            "absent",
+            "partial",
+            "unavailable",
+            "not_checked"
+          ]
+        },
+        "eligible": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scanned": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "omitted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknown_date": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "truncated": {
+          "type": [
+            "integer",
+            "boolean"
+          ],
+          "minimum": 0
+        },
+        "bytes_read": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "file_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "transport_class": {
+          "enum": [
+            "local_process",
+            "remote",
+            "skipped",
+            "unknown"
+          ]
+        },
+        "config_notes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "url_without_type",
+              "sdk_type_skipped",
+              "sse_deprecated",
+              "reserved_name",
+              "empty_url_placeholder"
+            ]
+          }
+        },
+        "endpoint_locality": {
+          "enum": [
+            "loopback",
+            "private_address",
+            "public_address",
+            "named_host",
+            "dynamic",
+            "invalid"
+          ]
+        },
+        "plaintext_transport": {
+          "type": "boolean"
+        },
+        "url_has_userinfo": {
+          "type": "boolean"
+        },
+        "url_has_query": {
+          "type": "boolean"
+        },
+        "url_variable_references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "env_literal_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "headers_literal_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "oauth_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "oauth_scopes": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "tool_prefix": {
+          "type": "string"
+        },
+        "plugin": {
+          "type": "string"
+        },
+        "file_git_status": {
+          "enum": [
+            "tracked",
+            "untracked",
+            "ignored",
+            "not-a-git-repo",
+            "unknown"
+          ]
+        },
+        "project_trust_accepted": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "policy_observations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "source",
+              "kind",
+              "value"
+            ],
+            "properties": {
+              "source": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "approval_enabled",
+                  "approval_rejected",
+                  "approval_enable_all",
+                  "policy_allowed_by_name",
+                  "policy_denied_by_name",
+                  "toggle_disabled",
+                  "toggle_enabled",
+                  "permission_allow",
+                  "permission_ask",
+                  "permission_deny",
+                  "permission_allow_any_server",
+                  "permission_ask_any_server",
+                  "permission_deny_any_server"
+                ]
+              },
+              "value": {
+                "type": [
+                  "boolean",
+                  "integer"
+                ]
+              }
+            }
+          }
+        },
+        "policy_observations_omitted": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "tool_error_row": {
+      "type": "object",
+      "required": [
+        "calls",
+        "errors",
+        "denied",
+        "failure_rate",
+        "categories"
+      ],
+      "properties": {
+        "tool": {
+          "type": "string"
+        },
+        "server": {
+          "type": "string"
+        },
+        "calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "errors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "denied": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failure_rate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "categories": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "top_error_tools": {
+          "type": "array",
+          "items": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "skill_listing_point": {
+      "type": "object",
+      "required": ["date", "skill_count", "chars"],
+      "properties": {
+        "date": {"type": "string"},
+        "skill_count": {"type": "integer"},
+        "chars": {"type": "integer", "minimum": 0}
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "source",
+        "scope",
+        "status"
+      ],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "collected",
+            "absent",
+            "partial",
+            "unavailable",
+            "not_checked"
+          ]
+        },
+        "eligible": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scanned": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "omitted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknown_date": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "truncated": {
+          "type": [
+            "integer",
+            "boolean"
+          ],
+          "minimum": 0
+        },
+        "bytes_read": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "file_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "type": "object",
+  "required": [
+    "snapshot_version",
+    "generated",
+    "window_days",
+    "collection_scope",
+    "global",
+    "managed_settings",
+    "projects",
+    "readiness",
+    "memory",
+    "usage",
+    "corrections",
+    "transcripts",
+    "previous_audits",
+    "instructions",
+    "extensions",
+    "skill_listing",
+    "coverage"
+  ],
+  "properties": {
+    "snapshot_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "generated": {
+      "type": "string"
+    },
+    "window_days": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "collection_scope": {
+      "type": "object",
+      "required": [
+        "requested",
+        "project",
+        "projects_collected"
+      ],
+      "properties": {
+        "requested": {
+          "type": "string",
+          "enum": [
+            "global",
+            "project",
+            "all"
+          ]
+        },
+        "project": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "projects_collected": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "global": {
+      "type": "object",
+      "required": [
+        "settings"
+      ],
+      "properties": {
+        "settings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "managed_settings": {
+      "type": "object",
+      "required": [
+        "settings",
+        "sources",
+        "effective_policy"
+      ],
+      "properties": {
+        "settings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "effective_policy": {
+          "type": "string",
+          "const": "unknown"
+        }
+      }
+    },
+    "projects": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "memory": {
+      "type": "object"
+    },
+    "usage": {
+      "type": "object",
+      "required": [
+        "coverage"
+      ],
+      "properties": {
+        "coverage": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "corrections": {
+      "type": "object"
+    },
+    "transcripts": {
+      "type": "object",
+      "required": [
+        "coverage"
+      ],
+      "properties": {
+        "tool_errors": {
+          "type": "object",
+          "required": [
+            "error_results_paired",
+            "error_results_unmatched",
+            "results_without_is_error",
+            "by_tool",
+            "by_mcp_server",
+            "omitted",
+            "min_calls_for_rate"
+          ],
+          "properties": {
+            "error_results_paired": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "error_results_unmatched": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "results_without_is_error": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "by_tool": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/tool_error_row"
+              }
+            },
+            "by_mcp_server": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/tool_error_row"
+              }
+            },
+            "omitted": {
+              "type": "object",
+              "required": [
+                "tools",
+                "mcp_servers"
+              ],
+              "properties": {
+                "tools": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "mcp_servers": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "min_calls_for_rate": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "categories_basis": {
+              "type": "string"
+            },
+            "scope_note": {
+              "type": "string"
+            }
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "previous_audits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "instructions": {
+      "type": "object",
+      "required": [
+        "entries",
+        "sources",
+        "contexts",
+        "settings_candidates",
+        "limitations"
+      ],
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "contexts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "settings_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "required": [
+        "mcp_servers",
+        "plugins",
+        "sources",
+        "limitations"
+      ],
+      "properties": {
+        "mcp_servers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mcp_server"
+          }
+        },
+        "mcp_project_state": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "project",
+              "source",
+              "trust_accepted"
+            ],
+            "properties": {
+              "project": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "enabledMcpjsonServers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "disabledMcpjsonServers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "disabledMcpServers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "enabledMcpServers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "trust_accepted": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "mcp_name_collisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "project",
+              "scopes",
+              "endpoint_origins_differ"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "project": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "user",
+                    "local",
+                    "project"
+                  ]
+                }
+              },
+              "endpoint_origins_differ": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "plugins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "scope",
+              "status",
+              "active_state",
+              "components"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "scope": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "collected",
+                  "absent",
+                  "partial",
+                  "unavailable",
+                  "not_checked"
+                ]
+              },
+              "active_state": {
+                "const": "unknown"
+              },
+              "components": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "skill_listing": {
+      "type": "object"
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "version",
+        "requested_scope",
+        "projects_collected",
+        "sources",
+        "summary",
+        "limitations"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1
+        },
+        "requested_scope": {
+          "type": "string",
+          "enum": [
+            "global",
+            "project",
+            "all"
+          ]
+        },
+        "projects_collected": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "summary": {
+          "type": "string"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "privacy": {
+          "type": "object",
+          "required": ["mode", "free_text", "replaced_fields", "redactions"],
+          "properties": {
+            "mode": {"enum": ["full", "metadata-only"]},
+            "free_text": {"enum": ["collected", "replaced"]},
+            "marker": {"type": "string"},
+            "replaced_fields": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+            "redactions": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}
+          }
+        }
+      }
+    },
+    "instruction_clarity": {
+      "type": "object"
+    },
+    "ledger_signals": {
+      "type": "object",
+      "required": ["status", "entries"],
+      "properties": {
+        "status": {"enum": ["collected", "invalid"]},
+        "entries": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["from", "to", "matches", "sessions_matched", "sessions_scanned", "complete", "selector_sha"],
+            "properties": {
+              "from": {"type": "string"},
+              "to": {"type": "string"},
+              "matches": {"type": "integer", "minimum": 0},
+              "sessions_matched": {"type": "integer", "minimum": 0},
+              "sessions_scanned": {"type": "integer", "minimum": 0},
+              "complete": {"type": "boolean"},
+              "selector_sha": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "config_conflicts": {
+      "type": "object",
+      "required": ["stacks", "hook_duplicates", "hook_duplicates_omitted", "permission_overlaps",
+                   "permission_overlaps_omitted"],
+      "properties": {
+        "stacks": {"type": "integer", "minimum": 1},
+        "hook_duplicates": {"type": "array", "items": {
+          "type": "object",
+          "required": ["stack", "event", "matcher", "type", "fingerprint", "effect", "sources"],
+          "properties": {
+            "stack": {"type": "string"}, "event": {"type": "string"}, "matcher": {"type": "string"},
+            "type": {"type": "string"}, "fingerprint": {"type": "string"},
+            "effect": {"enum": ["deduplicated", "separate_copies", "same_file"]},
+            "sources": {"type": "array", "items": {
+              "type": "object", "required": ["layer", "path", "plugin"],
+              "properties": {"layer": {"$ref": "#/$defs/config_layer"}, "path": {"type": "string"},
+                             "plugin": {"type": ["string", "null"]}}}}}}},
+        "hook_duplicates_omitted": {"type": "integer", "minimum": 0},
+        "permission_overlaps": {"type": "array", "items": {
+          "type": "object", "required": ["stack", "allow", "by", "match"],
+          "properties": {
+            "stack": {"type": "string"},
+            "allow": {"type": "object", "required": ["layer", "path", "rule"],
+                      "properties": {"layer": {"$ref": "#/$defs/config_layer"}, "path": {"type": "string"},
+                                     "rule": {"type": "string"}}},
+            "by": {"type": "object", "required": ["list", "layer", "path", "rule"],
+                   "properties": {"list": {"enum": ["deny", "ask"]}, "layer": {"$ref": "#/$defs/config_layer"},
+                                  "path": {"type": "string"}, "rule": {"type": "string"}}},
+            "match": {"enum": ["exact", "tool", "prefix"]}}}},
+        "permission_overlaps_omitted": {"type": "integer", "minimum": 0}
+      }
+    },
+    "drift_signals": {
+      "type": "object",
+      "required": ["status", "path"],
+      "properties": {
+        "status": {"enum": ["collected", "invalid"]},
+        "path": {"type": "string"},
+        "entries": {"type": "integer", "minimum": 0},
+        "malformed": {"type": "integer", "minimum": 0},
+        "first_at": {"type": ["string", "null"]},
+        "last_at": {"type": ["string", "null"]},
+        "signals": {"type": "object", "additionalProperties": {
+          "type": "object",
+          "required": ["last_value", "crossings", "first_crossing_at", "last_crossing_at", "scopes"],
+          "properties": {
+            "last_value": {"type": ["number", "null"]},
+            "crossings": {"type": "integer", "minimum": 0},
+            "first_crossing_at": {"type": ["string", "null"]},
+            "last_crossing_at": {"type": ["string", "null"]},
+            "scopes": {"type": "array", "items": {"type": "string"}}
+          }}}
+      }
+    },
+    "harness_overhead": {
+      "type": "object",
+      "required": ["window_days", "sessions_scanned", "complete", "incomplete_reasons", "injected_context",
+                   "skill_listing_series", "subagent_spend", "model_spawning_hooks"],
+      "properties": {
+        "window_days": {"type": "integer", "minimum": 1},
+        "sessions_scanned": {"type": "integer", "minimum": 0},
+        "complete": {"type": "boolean"},
+        "incomplete_reasons": {"type": "array", "items": {"enum": ["main_file_cap", "subagent_file_cap",
+          "malformed_records", "plugin_registry_unreadable", "plugin_root_unreadable", "hook_file_unreadable",
+          "manifest_unreadable", "script_unresolved", "script_truncated", "transcripts_not_read", "not_observed"]}},
+        "injected_context": {
+          "type": "object",
+          "required": ["sessions_with_injection", "sources"],
+          "properties": {
+            "sessions_with_injection": {"type": "integer", "minimum": 0},
+            "sources": {"type": "array", "items": {
+              "type": "object",
+              "required": ["plugin", "attribution", "hook_event", "sessions", "records",
+                           "chars_per_session_median", "chars_per_session_p90", "est_tokens_per_session_median"],
+              "properties": {
+                "plugin": {"type": ["string", "null"]},
+                "attribution": {"enum": ["matched", "ambiguous", "unattributed"]},
+                "hook_event": {"type": "string"},
+                "sessions": {"type": "integer", "minimum": 1},
+                "records": {"type": "integer", "minimum": 1},
+                "chars_per_session_median": {"type": "integer", "minimum": 0},
+                "chars_per_session_p90": {"type": "integer", "minimum": 0},
+                "est_tokens_per_session_median": {"type": "integer", "minimum": 0}
+              }}}
+          }
+        },
+        "skill_listing_series": {"type": ["object", "null"], "properties": {
+          "sessions": {"type": "integer", "minimum": 1},
+          "first": {"$ref": "#/$defs/skill_listing_point"},
+          "last": {"$ref": "#/$defs/skill_listing_point"},
+          "max": {"type": "object", "properties": {
+            "skill_count": {"type": "integer"}, "chars": {"type": "integer", "minimum": 0}},
+            "required": ["skill_count", "chars"]},
+          "sdk_sessions_excluded": {"type": "integer", "minimum": 0},
+          "per_plugin_skills": {"type": "array", "items": {
+            "type": "object", "required": ["plugin", "skills"],
+            "properties": {"plugin": {"type": "string"}, "skills": {"type": "integer", "minimum": 0}}}}},
+          "required": ["sessions", "first", "last", "max", "sdk_sessions_excluded", "per_plugin_skills"]},
+        "subagent_spend": {
+          "type": "object",
+          "required": ["subagent_files_scanned", "sessions_with_subagents", "subagent_tokens_per_session_median",
+                       "main_tokens_per_session_median",
+                       "main_tokens_median_in_subagent_sessions", "entrypoints"],
+          "properties": {
+            "subagent_files_scanned": {"type": "integer", "minimum": 0},
+            "sessions_with_subagents": {"type": "integer", "minimum": 0},
+            "subagent_tokens_per_session_median": {"type": ["integer", "null"]},
+            "main_tokens_per_session_median": {"type": ["integer", "null"]},
+            "main_tokens_median_in_subagent_sessions": {"type": ["integer", "null"]},
+            "entrypoints": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}
+          }
+        },
+        "model_spawning_hooks": {"type": "array", "items": {
+          "type": "object",
+          "required": ["plugin", "hook_event", "file", "line", "pattern"],
+          "properties": {
+            "plugin": {"type": "string"}, "hook_event": {"type": "string"}, "file": {"type": "string"},
+            "line": {"type": ["integer", "null"]},
+            "pattern": {"enum": ["claude_print", "agent_sdk_py", "agent_sdk_js", "anthropic_client"]}
+          }}}
+      }
+    }
+  }
+}

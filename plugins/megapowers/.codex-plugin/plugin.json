@@ -1,0 +1,43 @@
+{
+  "name": "megapowers",
+  "version": "0.34.0",
+  "description": "Native-first workflow plugin for Claude Code and Codex: 16 task skills for planning, test-first implementation, debugging, verification, safe effects, cross-provider review, and orchestration, plus an optional concise output style, a destructive-command tripwire, and a self-diagnosis doctor.",
+  "author": {
+    "name": "lawzava"
+  },
+  "repository": "https://github.com/lawzava/megapowers",
+  "license": "MIT",
+  "keywords": [
+    "agentic-workflow",
+    "orchestration",
+    "verification",
+    "safety",
+    "tdd",
+    "debugging",
+    "code-review",
+    "skills",
+    "claude-code"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "megapowers",
+    "shortDescription": "Native-first workflow skills, safety tripwire, and doctor.",
+    "longDescription": "Task-level skills for orchestration, structured interviews, evidence research, design, test-first implementation, debugging, verification, real-world effects, autonomous work, independent cross-provider review, memory hygiene, MCP setup, prose, instruction authoring, safe upgrades, and self-diagnosis, plus a concise communication style and a destructive-command guard. Uses native agents, goals, and permissions and adds about 1.5k always-loaded tokens per session.",
+    "developerName": "lawzava",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use megapowers to orchestrate this task.",
+      "Use megapowers to implement this change test-first.",
+      "Use megapowers to independently review this change."
+    ],
+    "brandColor": "#1F6FEB",
+    "composerIcon": "./.claude-plugin/icon.svg",
+    "logo": "./.claude-plugin/icon.svg",
+    "websiteURL": "https://github.com/lawzava/megapowers"
+  },
+  "homepage": "https://github.com/lawzava/megapowers"
+}

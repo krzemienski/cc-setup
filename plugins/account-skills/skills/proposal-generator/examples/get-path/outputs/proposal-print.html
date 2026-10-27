@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Project Proposal — Get Path</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"><style>/* WithAgents proposal — print stylesheet for weasyprint (HTML -> PDF).
+   Inverts to ink-on-paper for printing economy, keeps crimson as the single accent.
+   weasyprint does not run JS, so this renders the static proposal. */
+
+@page {
+  size: Letter;
+  margin: 20mm 18mm 22mm 18mm;
+  @bottom-center {
+    content: "WithAgents  ·  build with agents";
+    font-family: 'JetBrains Mono', monospace; font-size: 8pt;
+    letter-spacing: 1.5px; color: #9b978d;
+  }
+  @bottom-right {
+    content: "Page " counter(page) " / " counter(pages);
+    font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: #9b978d;
+  }
+}
+
+:root {
+  --ink: #16161a; --ink-2: #3d3d44; --ink-3: #6f6f78;
+  --accent: #E0273C;            /* crimson, slightly deepened for paper contrast */
+  --pass: #1f9d6b; --warn: #c2790a; --info: #1593a6;
+  --paper: #ffffff; --paper-2: #faf9f7; --rule: #e6e4df; --rule-2: #d6d4ce;
+}
+
+* { -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; }
+html, body { background: #ffffff; color: var(--ink); font-family: 'Inter', system-ui, sans-serif; line-height: 1.5; font-size: 10.5pt; }
+
+.eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 8pt; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
+.mono, .mono-label { font-family: 'JetBrains Mono', monospace; }
+.mono-label { font-size: 7.5pt; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-3); }
+h1 { font-size: 30pt; font-weight: 800; letter-spacing: -1px; line-height: 1.08; color: var(--ink); }
+h2 { font-size: 17pt; font-weight: 700; letter-spacing: -0.5px; color: var(--ink); }
+h3 { font-size: 12.5pt; font-weight: 600; color: var(--ink); }
+.display-italic { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 400; color: var(--accent); }
+p { color: var(--ink-2); }
+strong { color: var(--ink); font-weight: 600; }
+.num { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--ink); }
+.num-accent { color: var(--accent); }
+
+.card { background: var(--paper-2); border: 1px solid var(--rule-2); border-radius: 8px; padding: 14px 16px; }
+section, .card, table, .week-row, .keep { break-inside: avoid; }
+.page-break { break-before: page; }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--rule-2); color: var(--ink-2); }
+.pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--info); }
+.pill--pass { color: var(--pass); } .pill--pass .dot { background: var(--pass); }
+.pill--accent { color: var(--accent); } .pill--accent .dot { background: var(--accent); }
+.pill--warn { color: var(--warn); } .pill--warn .dot { background: var(--warn); }
+
+table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+thead th { font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-3); text-align: left; padding: 7px 10px; border-bottom: 1.5px solid var(--rule-2); }
+tbody td { padding: 7px 10px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+tfoot td { padding: 8px 10px; font-weight: 700; color: var(--ink); border-top: 1.5px solid var(--rule-2); }
+
+.bar-track { display: block; height: 7px; border-radius: 999px; background: var(--rule); overflow: hidden; }
+.bar-fill { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+hr { border: 0; border-top: 1px solid var(--rule); }
+a { color: var(--accent); text-decoration: none; }
+</style></head><body><section class="keep" style="margin-bottom:18px">
+  <div class="eyebrow">build with agents</div>
+  <h1 style="margin:8px 0 6px">Project Proposal for <span class="display-italic">Get Path</span></h1>
+  <p style="font-size:11.5pt;max-width:60ch">Get Path partners with WithAgents to design and build their product, delivered with agents — a working product shipped fast on transparent, pay-as-you-go weekly terms.</p>
+  <div style="display:flex;gap:24px;margin:14px 0 16px;font-family:'JetBrains Mono',monospace;font-size:8pt;color:#6f6f78">
+    <span>PREPARED BY <strong>WithAgents</strong></span>
+    <span>FOR <strong>Get Path</strong></span>
+    <span>WA-GETPATH-20260617</span>
+    <span>ISSUED JUNE 17, 2026</span>
+    <span>VALID JULY 17, 2026</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="card"><div class="mono-label">Full build</div>
+      <div class="num" style="font-size:26pt">$15,000</div>
+      <p style="font-size:9pt">20 hrs/week @ $100/hr over 8 weeks. AI/agent costs included.</p></div>
+    <div class="card" style="border-color:#f3b9c1;background:#fdf3f4"><div class="mono-label" style="color:#E0273C">Recommended initial build · recommended</div>
+      <div class="num num-accent" style="font-size:26pt">$10,000</div>
+      <p style="font-size:9pt">Lean 5-week core (100 hrs), flexible across a 5–10 weeks range as scope evolves.</p></div>
+  </div>
+</section><section><div class="eyebrow">Overview</div><h2>Goals</h2>
+  <p style="font-size:10pt;margin-bottom:10px">Get Path is an AI-powered career and learning-pathway web app that turns a person&#x27;s current skills and target role into a personalized, step-by-step skill roadmap. It serves early-career professionals and career-changers who know where they want to go but not how to get there.</p><div class="card keep" style="margin-bottom:8px"><strong>G1 · Personalized roadmaps</strong>
+        <p style="font-size:9.5pt;margin-top:3px">Let any user go from a target role to a concrete, ordered skill roadmap in under five minutes.</p></div><div class="card keep" style="margin-bottom:8px"><strong>G2 · Trustworthy AI recommendations</strong>
+        <p style="font-size:9.5pt;margin-top:3px">Generate roadmap steps grounded in a curated skills graph so suggestions feel credible rather than generic.</p></div><div class="card keep" style="margin-bottom:8px"><strong>G3 · Visible progress</strong>
+        <p style="font-size:9.5pt;margin-top:3px">Give users a clear way to track which roadmap milestones they have completed and what comes next.</p></div><div class="card keep" style="margin-bottom:8px"><strong>G4 · Validated v1 launch</strong>
+        <p style="font-size:9.5pt;margin-top:3px">Ship a lean, production-deployed MVP that real users can sign up for and complete an end-to-end roadmap flow.</p></div></section><section class="page-break"><div class="eyebrow">Scope</div><h2>Deliverables &amp; tasks</h2><div class="card keep" style="margin-bottom:10px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline">
+    <strong style="font-size:11pt">D1 · Foundation &amp; Project Setup</strong>
+    <span class="num">13h</span></div>
+  <p style="font-size:9pt;margin:4px 0 6px">Stand up the application skeleton, repository, environments, and CI so all later work lands on a stable, deployable base.</p>
+  <table><tbody><tr><td>Scaffold Next.js app, repo, linting, and folder conventions</td><td class="mono" style="color:#6f6f78">Foundation</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">5h</td></tr><tr><td>Provision Postgres + hosting and wire staging/production environments</td><td class="mono" style="color:#6f6f78">Foundation</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">4h</td></tr><tr><td>Set up CI pipeline, env-var management, and preview deploys</td><td class="mono" style="color:#6f6f78">Foundation</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">4h</td></tr></tbody></table></div><div class="card keep" style="margin-bottom:10px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline">
+    <strong style="font-size:11pt">D2 · Authentication &amp; User Profiles</strong>
+    <span class="num">17h</span></div>
+  <p style="font-size:9pt;margin:4px 0 6px">Email-based account creation and a profile that captures the user&#x27;s current skills and target role, which feed the recommendation engine.</p>
+  <table><tbody><tr><td>Implement email/password auth with sessions and password reset</td><td class="mono" style="color:#6f6f78">Foundation</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">6h</td></tr><tr><td>Build profile data model (current skills, target role, experience level)</td><td class="mono" style="color:#6f6f78">Core Features</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">5h</td></tr><tr><td>Create profile onboarding UI and skill/role input flow</td><td class="mono" style="color:#6f6f78">Core Features</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">6h</td></tr></tbody></table></div><div class="card keep" style="margin-bottom:10px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline">
+    <strong style="font-size:11pt">D3 · Skills Graph &amp; Roadmap Data Model</strong>
+    <span class="num">18h</span></div>
+  <p style="font-size:9pt;margin:4px 0 6px">The curated skills/role knowledge graph and roadmap schema that the AI grounds its recommendations against, plus seed content for launch.</p>
+  <table><tbody><tr><td>Design skills/roles graph schema and roadmap/milestone tables</td><td class="mono" style="color:#6f6f78">Core Features</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">6h</td></tr><tr><td>Seed curated skills graph for 3 launch career tracks</td><td class="mono" style="color:#6f6f78">Core Features</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">7h</td></tr><tr><td>Build roadmap CRUD + persistence and milestone status tracking</td><td class="mono" style="color:#6f6f78">Polish &amp; UX</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">5h</td></tr></tbody></table></div><div class="card keep" style="margin-bottom:10px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline">
+    <strong style="font-size:11pt">D4 · AI Roadmap Recommendation Engine</strong>
+    <span class="num">23h</span></div>
+  <p style="font-size:9pt;margin:4px 0 6px">The core differentiator: an LLM/agent integration that reads the user&#x27;s profile and the skills graph to assemble a personalized, ordered roadmap.</p>
+  <table><tbody><tr><td>Define prompt + retrieval flow that grounds the LLM in the skills graph</td><td class="mono" style="color:#6f6f78">AI Integration</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">7h</td></tr><tr><td>Implement agent orchestration to assemble and order roadmap steps</td><td class="mono" style="color:#6f6f78">AI Integration</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">8h</td></tr><tr><td>Add output validation, guardrails, and graceful fallbacks</td><td class="mono" style="color:#6f6f78">AI Integration</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">5h</td></tr><tr><td>Tune ranking and add caching to control latency and token cost</td><td class="mono" style="color:#6f6f78">AI Integration</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">3h</td></tr></tbody></table></div><div class="card keep" style="margin-bottom:10px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline">
+    <strong style="font-size:11pt">D5 · Roadmap UI &amp; Progress Experience</strong>
+    <span class="num">15h</span></div>
+  <p style="font-size:9pt;margin:4px 0 6px">The interactive roadmap view where users explore their generated path, mark milestones complete, and regenerate or refine their roadmap.</p>
+  <table><tbody><tr><td>Build interactive roadmap visualization with milestone detail panels</td><td class="mono" style="color:#6f6f78">Polish &amp; UX</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">7h</td></tr><tr><td>Implement progress tracking, completion state, and dashboard</td><td class="mono" style="color:#6f6f78">Polish &amp; UX</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">5h</td></tr><tr><td>Add roadmap regeneration/refine flow and responsive polish</td><td class="mono" style="color:#6f6f78">Polish &amp; UX</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">3h</td></tr></tbody></table></div><div class="card keep" style="margin-bottom:10px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline">
+    <strong style="font-size:11pt">D6 · Testing, Launch &amp; Handoff</strong>
+    <span class="num">14h</span></div>
+  <p style="font-size:9pt;margin:4px 0 6px">End-to-end validation of the core flow, production deployment, and a clean handoff so the client can operate and extend Get Path.</p>
+  <table><tbody><tr><td>End-to-end validation of signup-to-roadmap flow on staging</td><td class="mono" style="color:#6f6f78">Launch &amp; Handoff</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">5h</td></tr><tr><td>Production deploy, monitoring, and analytics instrumentation</td><td class="mono" style="color:#6f6f78">Launch &amp; Handoff</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">5h</td></tr><tr><td>Handoff: docs, runbook, and walkthrough session</td><td class="mono" style="color:#6f6f78">Launch &amp; Handoff</td>
+            <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">4h</td></tr></tbody></table></div><div class="keep" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px">
+      <div><div class="mono-label" style="margin-bottom:4px">Assumptions</div><ul style="margin:0;padding:0"><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>Client provides brand assets (logo, colors, fonts) and approved copy for the three launch career tracks.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>Scope is a single responsive web platform; no native mobile app.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>Client supplies or approves an LLM provider API key and accepts usage-based AI costs.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>A single English-language locale is sufficient for v1.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>Subject-matter input for the curated skills graph is available from the client or a designated expert.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>One staging and one production environment are sufficient for launch.</li></ul></div>
+      <div><div class="mono-label" style="margin-bottom:4px">Constraints</div><ul style="margin:0;padding:0"><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>v1 is web-only and English-only.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>Recommendations are limited to the three seeded career tracks at launch.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>Email/password authentication only; no third-party SSO in this build.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>AI roadmap generation is grounded in the curated skills graph rather than open-ended web browsing.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#6f6f78"></span>Fixed five-week timeline aligned to the five delivery phases.</li></ul></div>
+      <div><div class="mono-label" style="margin-bottom:4px">Out of scope</div><ul style="margin:0;padding:0"><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#E0273C"></span>Native iOS and Android applications.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#E0273C"></span>Single sign-on (Google/GitHub/SAML) and enterprise identity integration.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#E0273C"></span>Payments, subscriptions, or billing.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#E0273C"></span>Integrations with external course catalogs or job boards.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#E0273C"></span>Multi-language / localization support.</li><li style="font-size:9pt;padding:3px 0 3px 14px;position:relative;list-style:none">
+            <span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#E0273C"></span>Admin CMS for non-technical editing of the skills graph.</li></ul></div></div></section><section class="keep"><div class="eyebrow">Estimations</div><h2>Effort by phase</h2>
+  <div class="card"><div style="display:grid;grid-template-columns:150px 1fr 80px;align-items:center;gap:12px;padding:4px 0">
+        <span style="font-size:9.5pt">Foundation</span>
+        <span class="bar-track"><span class="bar-fill" style="width:79%"></span></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9pt;text-align:right;font-weight:700">19h · 19.0%</span></div><div style="display:grid;grid-template-columns:150px 1fr 80px;align-items:center;gap:12px;padding:4px 0">
+        <span style="font-size:9.5pt">Core Features</span>
+        <span class="bar-track"><span class="bar-fill" style="width:100%"></span></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9pt;text-align:right;font-weight:700">24h · 24.0%</span></div><div style="display:grid;grid-template-columns:150px 1fr 80px;align-items:center;gap:12px;padding:4px 0">
+        <span style="font-size:9.5pt">AI Integration</span>
+        <span class="bar-track"><span class="bar-fill" style="width:96%"></span></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9pt;text-align:right;font-weight:700">23h · 23.0%</span></div><div style="display:grid;grid-template-columns:150px 1fr 80px;align-items:center;gap:12px;padding:4px 0">
+        <span style="font-size:9.5pt">Polish &amp; UX</span>
+        <span class="bar-track"><span class="bar-fill" style="width:83%"></span></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9pt;text-align:right;font-weight:700">20h · 20.0%</span></div><div style="display:grid;grid-template-columns:150px 1fr 80px;align-items:center;gap:12px;padding:4px 0">
+        <span style="font-size:9.5pt">Launch &amp; Handoff</span>
+        <span class="bar-track"><span class="bar-fill" style="width:58%"></span></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9pt;text-align:right;font-weight:700">14h · 14.0%</span></div><div style="border-top:1.5px solid #d6d4ce;margin-top:8px;padding-top:8px;text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">Total 100h</div></div></section><section class="keep"><div class="eyebrow">Timeline</div>
+  <h2>5-week core · starts Monday, June 22, 2026</h2>
+  <p style="font-size:9.5pt;margin-bottom:8px">Flexible across a 5–10 weeks range.</p>
+  <div class="card"><table><thead><tr><th>Week</th><th>Focus</th><th>Dates</th><th>Deliverables</th><th style="text-align:right">Hours</th></tr></thead>
+  <tbody><tr><td class="mono" style="color:#E0273C;font-weight:700">Week 1</td>
+        <td><strong>Foundation</strong></td><td>Jun 22 – Jun 26</td>
+        <td>D1, D2</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">19h</td></tr><tr><td class="mono" style="color:#E0273C;font-weight:700">Week 2</td>
+        <td><strong>Core Features</strong></td><td>Jun 29 – Jul 3</td>
+        <td>D2, D3</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">24h</td></tr><tr><td class="mono" style="color:#E0273C;font-weight:700">Week 3</td>
+        <td><strong>AI Integration</strong></td><td>Jul 6 – Jul 10</td>
+        <td>D4</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">23h</td></tr><tr><td class="mono" style="color:#E0273C;font-weight:700">Week 4</td>
+        <td><strong>Polish &amp; UX</strong></td><td>Jul 13 – Jul 17</td>
+        <td>D3, D5</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">20h</td></tr><tr><td class="mono" style="color:#E0273C;font-weight:700">Week 5</td>
+        <td><strong>Launch &amp; Handoff</strong></td><td>Jul 20 – Jul 24</td>
+        <td>D6</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">14h</td></tr></tbody></table></div></section><section class="page-break"><div class="eyebrow">Costs</div><h2>Investment &amp; payment plan</h2>
+  <div class="card keep" style="margin-bottom:10px"><table>
+    <thead><tr><th>Build line item</th><th style="text-align:right">Amount</th></tr></thead>
+    <tbody><tr><td>Foundation &amp; Project Setup <span style="color:#6f6f78;font-size:8pt">13 hrs @ $100/hr</span></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">$1,300</td></tr><tr><td>Authentication &amp; User Profiles <span style="color:#6f6f78;font-size:8pt">17 hrs @ $100/hr</span></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">$1,700</td></tr><tr><td>Skills Graph &amp; Roadmap Data Model <span style="color:#6f6f78;font-size:8pt">18 hrs @ $100/hr</span></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">$1,800</td></tr><tr><td>AI Roadmap Recommendation Engine <span style="color:#6f6f78;font-size:8pt">23 hrs @ $100/hr</span></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">$2,300</td></tr><tr><td>Roadmap UI &amp; Progress Experience <span style="color:#6f6f78;font-size:8pt">15 hrs @ $100/hr</span></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">$1,500</td></tr><tr><td>Testing, Launch &amp; Handoff <span style="color:#6f6f78;font-size:8pt">14 hrs @ $100/hr</span></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">$1,400</td></tr><tr><td>AI / agent runtime + tooling <span style="color:#6f6f78;font-size:8pt">Model usage, agent orchestration, and dev tooling</span></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700">included</td></tr></tbody>
+    <tfoot><tr><td>Recommended initial build</td><td style="text-align:right;font-family:'JetBrains Mono',monospace">$10,000</td></tr></tfoot></table></div>
+  <div class="card keep" style="margin-bottom:10px"><div class="mono-label" style="margin-bottom:6px">Weekly payment schedule · pay-as-you-go</div><table>
+    <thead><tr><th>When</th><th>Milestone</th><th style="text-align:right">Invoice</th><th style="text-align:right">Cumulative</th></tr></thead>
+    <tbody><tr><td class="mono">Wk 1–2</td><td>Kickoff · Foundation + Core Features</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;color:#E0273C;font-weight:700">$4,000</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace">$4,000</td></tr><tr><td class="mono">Wk 3</td><td>AI Integration</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;color:#E0273C;font-weight:700">$2,000</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace">$6,000</td></tr><tr><td class="mono">Wk 4</td><td>Polish &amp; UX</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;color:#E0273C;font-weight:700">$2,000</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace">$8,000</td></tr><tr><td class="mono">Wk 5</td><td>Launch &amp; Handoff</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;color:#E0273C;font-weight:700">$2,000</td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace">$10,000</td></tr></tbody></table></div>
+  <div class="keep" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+    <div class="card"><div class="mono-label" style="color:#E0273C">Down payment</div><div class="num num-accent" style="font-size:16pt">$4,000</div><p style="font-size:8.5pt">First 2 weeks of work.</p></div>
+    <div class="card"><div class="mono-label">Remediation</div><div class="num" style="font-size:16pt">$100/hr</div><p style="font-size:8.5pt">Post-build changes and fixes billed hourly, only as used.</p></div>
+    <div class="card"><div class="mono-label" style="color:#c2790a">Change budget</div><div class="num" style="font-size:16pt;color:#c2790a">$5,000</div><p style="font-size:8.5pt">Reserve for product evolution after the initial build ships.</p></div>
+  </div></section><section><div class="eyebrow">Terms</div><h2>How we work together</h2><div class="card keep" style="margin-bottom:8px"><strong>Down payment</strong>
+        <p style="font-size:9.5pt;margin-top:3px">A $4,000 down payment kicks off the engagement and covers the first 2 weeks of work.</p></div><div class="card keep" style="margin-bottom:8px"><strong>Weekly billing</strong>
+        <p style="font-size:9.5pt;margin-top:3px">After the down payment, work is billed at $2,000/week (20 hrs @ $100/hr) as it progresses — pay-as-you-go, pause or adjust between weeks.</p></div><div class="card keep" style="margin-bottom:8px"><strong>Remediation</strong>
+        <p style="font-size:9.5pt;margin-top:3px">Post-build changes and fixes are billed at $100/hour, only as used — no retainer.</p></div><div class="card keep" style="margin-bottom:8px"><strong>Change budget</strong>
+        <p style="font-size:9.5pt;margin-top:3px">A $5,000 reserve is set aside for product evolution after the initial build ships, drawn down only against agreed work.</p></div>
+  <p style="margin-top:12px;font-size:11pt"><span class="display-italic">build with agents</span> — Timely delivery, pay-as-you-go weekly rates.</p></section></body></html>

@@ -1,0 +1,1 @@
+An app for a small bakery: customers pre-order bread for pickup by 7am. Web first, then iOS. The owner sets which loaves are available each day and a daily cap per loaf. Customers pay on pickup. The owner gets a printable list at 5am. Dark theme.

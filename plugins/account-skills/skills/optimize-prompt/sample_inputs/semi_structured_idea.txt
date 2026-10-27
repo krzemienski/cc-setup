@@ -1,0 +1,6 @@
+Build a new feature for user registration that includes:
+- Email validation
+- Password strength checking
+- OAuth integration with Google and GitHub
+
+Should follow REST API patterns and be secure.

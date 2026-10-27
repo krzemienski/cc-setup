@@ -1,0 +1,59 @@
+---
+name: "testing"
+description: "Паттерны тестирования, покрытие, фреймворки"
+user-invocable: false
+---
+
+# Skill: Testing — {LANG}/{TEST_FRAMEWORK}
+
+## Фреймворк
+
+- Test runner: {TEST_FRAMEWORK} {TEST_FRAMEWORK_VERSION}
+- Mock library: {MOCK_LIBRARY}
+- Assertion: {ASSERTION_LIBRARY}
+- Coverage: {COVERAGE_TOOL}
+
+## Команды
+
+- Запуск всех: `{TEST_RUN_CMD}`
+- Один файл: `{TEST_RUN_SINGLE_CMD}`
+- С coverage: `{TEST_COVERAGE_CMD}`
+- Watch: `{TEST_WATCH_CMD}`
+
+## Именование
+
+| Элемент | Конвенция | Пример |
+|---------|-----------|--------|
+| Файлы | {TEST_FILE_NAMING} | {TEST_FILE_EXAMPLE} |
+| Классы | {TEST_CLASS_NAMING} | {TEST_CLASS_EXAMPLE} |
+| Методы | {TEST_METHOD_NAMING} | {TEST_METHOD_EXAMPLE} |
+
+## Шаблон теста
+
+```{LANG_EXT}
+{TEST_TEMPLATE}
+```
+
+## Правила моков
+
+{MOCK_RULES}
+
+## Структура директорий
+
+```
+{TEST_DIR_STRUCTURE}
+```
+
+## E2E Testing (условная секция, если FRONTEND != none)
+
+- Фреймворк: {E2E_FRAMEWORK} (Playwright/Cypress/...)
+- Команда запуска: `{E2E_RUN_CMD}`
+- Паттерны:
+  - Page Objects для переиспользуемых компонентов
+  - Data-testid для стабильных селекторов
+  - Скриншоты ключевых состояний
+  - Smoke-тест: приложение стартует, базовый flow работает
+
+## Антипаттерны
+
+{TEST_ANTIPATTERNS}

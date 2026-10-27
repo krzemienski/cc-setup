@@ -1,0 +1,114 @@
+{
+  "name": "claude-skillz",
+  "owner": {
+    "name": "Nick Tune",
+    "email": "nick@ntcoding.co.uk"
+  },
+  "metadata": {
+    "description": "Nick Tune's claude code skills",
+    "version": "1.0.3",
+    "homepage": "https://github.com/ntcoding/claude-skillz"
+  },
+  "plugins": [
+    {
+      "name": "task-check",
+      "source": "./task-check",
+      "description": "Verify task completion before finishing work. Catches incomplete work, bugs, and quality issues.",
+      "version": "1.0.5",
+      "category": "productivity",
+      "keywords": ["task", "qa", "verification", "completion", "quality"]
+    },
+    {
+      "name": "automatic-code-review",
+      "source": "./automatic-code-review",
+      "description": "Automatic code review on session stop with configurable rules",
+      "version": "1.0.3",
+      "category": "development",
+      "keywords": ["code-review", "quality", "hooks", "semantic-review"]
+    },
+    {
+      "name": "full-codebase-review",
+      "source": "./full-codebase-review",
+      "description": "Periodic full codebase review using automatic-code-review rules. Reviews entire codebase, not just modified files.",
+      "version": "1.0.1",
+      "category": "development",
+      "keywords": ["code-review", "tech-debt", "codebase-analysis", "periodic-review", "quality"]
+    },
+    {
+      "name": "track-and-improve",
+      "source": "./track-and-improve",
+      "description": "Capture mistakes and improvement opportunities with automatic 5 whys analysis",
+      "version": "1.0.0",
+      "category": "productivity",
+      "keywords": ["improvement", "tracking", "feedback", "learning"]
+    },
+    {
+      "name": "collaboration-modes",
+      "source": "./collaboration-modes",
+      "description": "Define collaboration style between Claude Code and user: step-by-step, deep-think, or pair programming",
+      "version": "1.0.1",
+      "category": "productivity",
+      "keywords": ["collaboration", "workflow", "pair-programming", "modes"]
+    },
+    {
+      "name": "learn-from-prs",
+      "source": "./learn-from-prs",
+      "description": "Analyze PR feedback patterns from CodeRabbit, SonarQube, and reviewers to suggest config updates that catch issues locally",
+      "version": "1.0.0",
+      "category": "development",
+      "keywords": ["pr-review", "feedback", "learning", "code-quality", "conventions"]
+    },
+    {
+      "name": "challenge-that",
+      "source": "./challenge-that",
+      "description": "Force critical evaluation of proposals from 5 adversarial perspectives (Skeptic, Pragmatist, Edge Case Hunter, Structural Critic, Root Cause Analyst)",
+      "version": "1.0.0",
+      "category": "productivity",
+      "keywords": ["critical-thinking", "evaluation", "review", "proposals", "decisions"]
+    },
+    {
+      "name": "architect-refine-critique",
+      "source": "./architect-refine-critique",
+      "description": "Three-phase design review producing an ADR: Architect → Refiner → Critique → Interactive Review. Run /arc-review after to produce the ADR. Run /arc-prd to add architecture section to a PRD.",
+      "version": "1.6.1",
+      "category": "development",
+      "keywords": ["architecture", "design-review", "refactoring", "ddd", "separation-of-concerns"]
+    },
+    {
+      "name": "session-optimizer",
+      "source": "./session-optimizer",
+      "description": "Analyze session transcripts for optimization opportunities using 4 parallel subagents",
+      "version": "1.0.0",
+      "category": "productivity",
+      "keywords": ["session", "optimization", "analysis", "workflow"]
+    },
+    {
+      "name": "development-skills",
+      "source": "./",
+      "description": "Random skills for various software development tasks",
+      "version": "2.5.0",
+      "category": "development",
+      "keywords": ["tdd", "design", "workflow", "personality", "project-setup"],
+      "skills": [
+        "./tdd-process",
+        "./writing-tests",
+        "./switch-persona",
+        "./lightweight-implementation-analysis-protocol",
+        "./lightweight-design-analysis",
+        "./software-design-principles",
+        "./critical-peer-personality",
+        "./independent-research",
+        "./concise-output",
+        "./observability-first-debugging",
+        "./data-visualization",
+        "./confidence-honesty",
+        "./questions-are-not-instructions",
+        "./create-tasks",
+        "./typescript-backend-project-setup",
+        "./separation-of-concerns",
+        "./tactical-ddd",
+        "./fix-it-never-work-around-it"
+      ]
+    }
+  ]
+}

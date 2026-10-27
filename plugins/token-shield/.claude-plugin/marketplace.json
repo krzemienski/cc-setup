@@ -1,0 +1,17 @@
+{
+  "name": "token-shield",
+  "owner": {
+    "name": "Khalil Maaouni",
+    "url": "https://github.com/khalilmaaouni"
+  },
+  "description": "Token Shield: run Claude Code cheaply without losing quality.",
+  "plugins": [
+    {
+      "name": "token-shield",
+      "source": "./",
+      "description": "Token economy playbook: cache discipline, compact versus fresh session, model tier routing, plugin and MCP pruning, output discipline, durable memory.",
+      "category": "productivity",
+      "keywords": ["tokens", "cost", "prompt-caching", "compaction", "model-routing"]
+    }
+  ]
+}

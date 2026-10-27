@@ -1,0 +1,27 @@
+{
+  "vendor": "openai",
+  "model": "gpt-6-sol",
+  "url": "https://api.openai.com/v1/responses",
+  "headers": {
+    "Authorization": "Bearer ${OPENAI_API_KEY}",
+    "content-type": "application/json"
+  },
+  "body": {
+    "model": "gpt-6-sol",
+    "instructions": "# Role\nYou reformat support replies into the house template.",
+    "input": [
+      {
+        "role": "user",
+        "content": "## Task\nReformat this reply: thanks for writing in, we fixed it."
+      }
+    ],
+    "reasoning": {
+      "effort": "medium"
+    },
+    "temperature": 0,
+    "max_output_tokens": 25000,
+    "prompt_cache_options": {
+      "ttl": "30m"
+    }
+  }
+}

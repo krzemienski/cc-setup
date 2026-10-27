@@ -1,0 +1,93 @@
+# Report validation and two-run comparison
+
+Run before rendering a new report:
+
+```bash
+python3 ${CLAUDE_SKILL_DIR}/scripts/process_report.py current-audit.json \
+  --previous previous-audit.json --decisions decisions.yaml --finalize
+python3 ${CLAUDE_SKILL_DIR}/scripts/render_report.py current-audit.json
+```
+
+Omit `--previous` or `--decisions` when absent. Without `--finalize`, the processor only
+validates. Paths are explicit; it does not search other directories, edit configuration, or
+write the previous report. It atomically replaces current JSON with private permissions.
+Invalid inputs leave it unchanged. Errors omit private input values. After applying fixes,
+revalidate with the same comparison inputs and regenerate HTML; align Markdown with JSON.
+
+## Validation
+
+New reports require version 1, an ISO timestamp, profile scope, coverage object, summary,
+findings, labeled metrics, and applied array. IDs must be unique; finding titles, evidence and
+history status are required. Dates, status enums, numeric values and coverage counts are checked.
+Duplicate JSON keys and non-finite numbers fail. Metric values are finite numbers or null;
+labels include unit, basis and source. Previous/legacy reports allow missing presentation fields
+and bare numeric metrics, but missing metadata prevents comparisons. The renderer keeps legacy
+support while sharing the structural validator. Unknown extra fields remain allowed.
+
+The previous report is read leniently, because earlier runs wrote statuses and shapes this
+version does not define. It needs `version` 1 and, for each finding to count, a non-empty string
+`id`. Every other field that fails validation is dropped from the comparison copy: finding
+fields (`severity`, `action_status`, `score`, `evidence`), `applied` entries, `checks` values,
+coverage sources, profile fields, an older `trend` shape, metrics, and a malformed or missing
+`generated`. Comparisons that need a dropped field become not comparable or unavailable, and
+data that was dropped never proves resolution. If any previous coverage source is dropped, no
+metric is compared. A finding without a usable id, or with a
+duplicate id, is dropped.
+
+A finding status outside the history enum (for example `fixed`, `no_change_needed`, `partial`)
+counts as not-resolved: the finding still matches by id, is never claimed resolved, and if it is
+absent from the current report it lands in `trend.findings.not_rechecked`. Statuses are not
+mapped to other values. A metric that is nested, has no usable `value`, or fails the label
+checks is skipped with no delta. `trend.ignored` records what was dropped: `finding_statuses`
+(finding ids), `metrics` (metric names) and `fields` (paths such as `findings[ID].severity`,
+`applied[0].status`, `checks.NAME`, `generated`; `findings[N]` marks a finding dropped for its
+id). It never holds values. The current report and decisions stay strict.
+
+Failures name the input (current report, previous report, decisions file, `--as-of` value) and, when the parser
+knows it, the line. Messages are constant text: they never quote input values.
+
+## History and measurements
+
+The processor compares explicitly supplied reports using dates, requested scope/focus, collected
+projects and window_days. Store `window_days` from the snapshot. Stable finding IDs identify
+new/open/regressed findings. A previous resolved finding that reappears is regressed.
+
+A missing finding is resolved only with matching comparison metadata and a current
+`checks: {"CHECK-id": "complete"}` entry for its check. Use `partial` or `not_checked` otherwise;
+missing entries never prove resolution. Set complete only when relevant evidence was actually
+reviewed, including policy/scan limitations. Derived resolved entries are marked so rerunning
+is idempotent. History never implies an action was applied. Earlier unresolved items that could
+not be reassessed appear in `trend.findings.not_rechecked`.
+
+Metric deltas require matching numeric basis, unit and source, comparable report metadata, and
+collected source coverage without omissions in both runs. The first dot-separated segment of
+metric `source` selects coverage source families (for example `transcripts.context_baseline_tokens`
+uses `transcripts.*`). Unsupported source labels, legacy metrics and partial scans yield no delta.
+Deltas are current minus previous, without a causal or improvement claim. HTML shows available
+comparisons and their limitations.
+
+## Learning ledger
+
+`--ledger <path>` and `--snapshot <path>` go together; either alone is an error. The snapshot
+must come from a collector run with `--ledger`. The processor adds `trend.ledger` rows (see
+`report-format.md`). The ledger file is written only with `--finalize`, and the write is
+idempotent per run: observations carry the report stem as run id (at most 120 characters, so the
+report file name must be short), and rerunning replaces that run's observation instead of adding a
+second. Failures name `ledger` or `snapshot` as the input. Details: `ledger.md`.
+
+## Decisions
+
+Accepted formats: a JSON array or a YAML list of flat scalar maps using `id`, `reason`, `settled`,
+`review_after`, and optional `evidence_hash`. Quote strings with JSON double quotes or YAML single
+quotes. Always write quoted scalars, and keep each reason on one line. Comments and empty files
+work. Nested YAML, aliases, tags and block scalars (`>`, `|`) are rejected on purpose; the error
+names the line and says to quote the value as a single string. Convert them explicitly instead
+of silently ignoring entries. Dates use YYYY-MM-DD.
+
+Exact finding ID wins over check ID. A decision suppresses only after its settled date, before
+its review date, and with unchanged evidence. Expiry is inclusive on review_after. The default
+comparison date is the current report date; `--as-of YYYY-MM-DD` overrides it for reproducibility.
+An evidence_hash binds the decision to the finalized finding's canonical evidence fingerprint.
+Without it, an older comparable report at or after settlement can establish the baseline.
+Otherwise the finding remains visible with `evidence_unverified`. Changed evidence remains visible.
+The processor does not decide whether a textual change is materially equivalent.

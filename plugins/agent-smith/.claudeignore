@@ -1,0 +1,28 @@
+# Git
+.git/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary
+*.tmp
+*.bak
+
+# Binaries
+*.zip
+*.tar.gz
+*.gz
+*.mp4
+*.png
+*.jpg
+*.pdf

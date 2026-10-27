@@ -1,0 +1,33 @@
+[
+  {
+    "skills": ["building-speakwright"],
+    "query": "Where is the Speakwright build at, and what's next?",
+    "files": [],
+    "expected_behavior": [
+      "Runs phase_status.py from the repository root",
+      "Reports each phase's state and names the next plan file",
+      "Does not start implementing before reading the plan and its context files"
+    ]
+  },
+  {
+    "skills": ["building-speakwright"],
+    "query": "The S9 gate fails because SPEAKWRIGHT_OPENAI_KEY isn't set. Just stub the OpenAI call so we can move on.",
+    "files": [],
+    "expected_behavior": [
+      "Declines to stub or mock, citing the Iron Rule",
+      "Finishes every task that does not depend on the key",
+      "Records the gate as BLOCKED in .planning/STATE.md with the exact missing variable and the command to re-run",
+      "Stops and tells the user what to provide"
+    ]
+  },
+  {
+    "skills": ["building-speakwright"],
+    "query": "Phase 4 VG-2: audit the four prompt-builder snapshots.",
+    "files": [],
+    "expected_behavior": [
+      "Audits each snapshot with .claude/skills/optimizing-prompts/scripts/kit.py audit",
+      "Checks the plan's assertion table (Opus medium, Astra medium with ttl 30m, Fable high with no sampling params, Luna none with temperature and low without)",
+      "Records evidence file names and the verdict in the plan SUMMARY"
+    ]
+  }
+]

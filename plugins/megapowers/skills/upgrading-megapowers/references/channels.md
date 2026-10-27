@@ -1,0 +1,55 @@
+# Current marketplace channels
+
+Use the observed marketplace name. The commands below assume the standard
+`megapowers` registration; replace that name only when inspection found a
+different existing registration.
+
+Read marketplace provenance separately from installed registration:
+
+```bash
+claude plugin marketplace list --json
+claude plugin list --json
+
+codex plugin marketplace list --json
+codex plugin list --json
+```
+
+The supported floating registration tracks the `release` branch
+(`lawzava/megapowers@release` on Claude, `--ref release` on Codex), which only
+fast-forwards to signed release tags. A registration without a ref tracks
+`main`; Codex refreshes it at startup and prunes superseded caches, so treat it
+as a channel defect and propose re-registration with the ref.
+
+Resolve the stable release tag to its exact commit and compare it with the
+marketplace source's tracked head: the `release` branch when the registration
+carries that ref, otherwise the default branch. A floating refresh may proceed
+only when the two commits match; otherwise stop before any write. After the
+approved stable tag commit matches the observed marketplace head, refresh and
+register the floating install:
+
+```bash
+claude plugin marketplace update megapowers
+git -C <marketplace-install-location> rev-parse HEAD
+claude plugin update megapowers@megapowers --scope <scope>
+
+codex plugin marketplace upgrade megapowers --json
+git -C <marketplace-install-location> rev-parse HEAD
+codex plugin add megapowers@megapowers --json
+```
+
+After each marketplace refresh, require the reported `HEAD` to equal the
+approved stable commit before running the following registration command. On a
+mismatch, stop with the installed plugin untouched.
+
+Claude's installed list supplies enabled state, version, scope, and
+`installPath`; its marketplace list supplies the repository. Codex's installed
+list supplies enabled state, version, and source. Retain `installedPath` from
+the `codex plugin add megapowers@megapowers --json` result. Compare that exact
+cache with the approved target ref.
+
+Treat `.codex-marketplace-install.json` and `.in_use` as harness runtime
+markers: exclude them from user-edit detection and target byte parity. The
+recorded Codex `revision` may corroborate Git `HEAD`, but does not replace it.
+Codex `config.toml` marketplace metadata (`last_revision`, `last_updated`) has
+been observed lagging several releases behind the actual snapshot; never treat
+it as current state.

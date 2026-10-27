@@ -1,0 +1,75 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_evals:
+        description: Run the model-graded eval suite (costs API usage)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    name: Skills, manifest and evals are consistent
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Skill format, shared truthfulness rules, provider-neutral wording, no unsupported claims
+        run: node scripts/check-skills.mjs
+      - name: Eval fixtures and expectations are sound (no model calls)
+        run: node scripts/check-routing-fixtures.mjs
+      - name: Generated evals match their spec
+        run: |
+          node scripts/generate-evals.mjs
+          git diff --exit-code -- evals
+      - name: Strict plugin validation
+        run: |
+          npm install -g @anthropic-ai/claude-code@2.1.281
+          claude plugin validate --strict .
+
+  contract:
+    name: Every tool the skills name is served by the live connector
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Unauthenticated tools/list only: no credentials, no user data.
+      - run: node scripts/check-tool-contract.mjs
+
+  evals:
+    name: Routing, discovery, no-analysis and truthfulness evals
+    if: github.event_name == 'workflow_dispatch' && inputs.run_evals
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g @anthropic-ai/claude-code@2.1.281
+      # Model calls go through Vercel AI Gateway. The key comes from a repository
+      # secret into the process environment only; nothing writes it to disk.
+      - name: Run evals (MCP tools are mocked; no rankedin account is used)
+        env:
+          ANTHROPIC_BASE_URL: https://ai-gateway.vercel.sh/claude-code
+          ANTHROPIC_AUTH_TOKEN: ${{ secrets.AI_GATEWAY_API_KEY }}
+          ANTHROPIC_API_KEY: ""
+        run: |
+          claude plugin eval . --trust-plugin --ablation none --runs 3 -j 4 --json results.json \
+            --model anthropic/claude-sonnet-5 --judge-model anthropic/claude-haiku-4.5 \
+            --threshold 0 --no-publish --max-cost-usd 60
+          node scripts/summarize-evals.mjs results.json --markdown >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: results.json

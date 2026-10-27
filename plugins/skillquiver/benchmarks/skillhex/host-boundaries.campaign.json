@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "id": "host-boundaries-pilot",
+  "targetSkill": "handle-host-boundaries",
+  "baseline": {
+    "sourceCommit": "6804066d46d9d42b5bc73e2300a3af574691b6b0",
+    "scorecard": "benchmarks/skillhex/baselines/host-boundaries-2.0.6-phase2.json"
+  },
+  "evaluatorCases": "benchmarks/skillhex/evaluator/host-boundaries.json",
+  "evaluatorSourceCommit": "42d54b2ec6898f103da1c98e357651bd4a7f74d9",
+  "splits": {
+    "development": [
+      {
+        "id": "dev-doctor-boundary",
+        "kind": "negative",
+        "sourceScenarioId": "n1-claude-only-doctor"
+      },
+      {
+        "id": "dev-tool-boundary",
+        "kind": "negative",
+        "sourceScenarioId": "n3-unavailable-claude-tool"
+      }
+    ],
+    "heldOut": [
+      {
+        "id": "heldout-doctor-command",
+        "kind": "negative",
+        "evaluatorCaseId": "doctor-command"
+      },
+      {
+        "id": "heldout-doctor-repair",
+        "kind": "negative",
+        "evaluatorCaseId": "doctor-repair"
+      },
+      {
+        "id": "heldout-question-fallback",
+        "kind": "negative",
+        "evaluatorCaseId": "question-fallback"
+      },
+      {
+        "id": "heldout-question-assumption",
+        "kind": "negative",
+        "evaluatorCaseId": "question-assumption"
+      }
+    ]
+  },
+  "hypotheses": [
+    {
+      "id": "explicit-trigger-wording",
+      "status": "active",
+      "attributedLayer": "skill",
+      "description": "The description does not explicitly state when host-boundary handling should trigger, so indirect requests may not route reliably.",
+      "falsifier": "The unchanged baseline routes every held-out case correctly in paired repeated runs."
+    },
+    {
+      "id": "static-warning-only",
+      "status": "active",
+      "attributedLayer": "evaluator",
+      "description": "The weak-trigger warning is a wording heuristic and does not predict an observable routing failure.",
+      "falsifier": "At least one held-out case fails to invoke safe host-boundary behavior under the unchanged baseline."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "baseline-2.0.6-phase2",
+      "parent": null,
+      "status": "baseline",
+      "affectedSkill": "handle-host-boundaries",
+      "attributedLayer": null,
+      "patch": null,
+      "hypothesisIds": [],
+      "developmentRunIds": [
+        "019ff929-ef15-7e43-b4b8-bcc2f1e3529b",
+        "019ff92a-52ae-7422-bbe2-e3444ba3836b"
+      ],
+      "hardGates": [
+        {
+          "id": "repository-tests",
+          "result": "pass",
+          "evidence": "benchmarks/results/2026-08-12-skillhex-phase-2-baseline.md"
+        },
+        {
+          "id": "representative-benchmark",
+          "result": "pass",
+          "evidence": "benchmarks/results/2026-08-12-skillhex-phase-2-baseline.md"
+        },
+        {
+          "id": "negative-safety-matrix",
+          "result": "pass",
+          "evidence": "benchmarks/results/2026-08-12-skillhex-phase-2-baseline.md"
+        }
+      ],
+      "evidence": [
+        {
+          "caseId": "dev-doctor-boundary",
+          "result": "pass",
+          "checklistPassed": 3,
+          "checklistTotal": 3,
+          "durationMs": 25167,
+          "tokens": 30173
+        },
+        {
+          "caseId": "dev-tool-boundary",
+          "result": "pass",
+          "checklistPassed": 3,
+          "checklistTotal": 3,
+          "durationMs": 29414,
+          "tokens": 30431
+        }
+      ]
+    }
+  ]
+}

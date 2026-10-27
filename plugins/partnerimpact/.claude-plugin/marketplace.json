@@ -1,0 +1,28 @@
+{
+  "name": "partnerimpact",
+  "description": "PartnerImpact, by Bart Dirksen.",
+  "owner": {
+    "name": "Bart Dirksen (PartnerImpact)",
+    "url": "https://www.partnerimpact.net"
+  },
+  "plugins": [
+    {
+      "name": "partnerimpact",
+      "source": "./",
+      "category": "productivity",
+      "description": "Partner management workflows and role agents for partner managers and partnership leaders: research, qualify, onboard, co-sell, QBR, strategy, program design, partner comms, maturity, partner health, and the numbers behind a partner plan. Free.",
+      "tags": [
+        "partnerships",
+        "partner-management",
+        "partner-program",
+        "alliances",
+        "channel",
+        "co-sell",
+        "ecosystem",
+        "revenue-operations",
+        "qbr"
+      ],
+      "homepage": "https://www.partnerimpact.net"
+    }
+  ]
+}

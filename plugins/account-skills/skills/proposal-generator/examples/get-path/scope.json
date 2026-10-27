@@ -1,0 +1,97 @@
+{
+  "product_name": "Get Path",
+  "product_summary": "Get Path is an AI-powered career and learning-pathway web app that turns a person's current skills and target role into a personalized, step-by-step skill roadmap. It serves early-career professionals and career-changers who know where they want to go but not how to get there.",
+  "phase_order": ["Foundation", "Core Features", "AI Integration", "Polish & UX", "Launch & Handoff"],
+  "goals": [
+    {"title": "Personalized roadmaps", "detail": "Let any user go from a target role to a concrete, ordered skill roadmap in under five minutes."},
+    {"title": "Trustworthy AI recommendations", "detail": "Generate roadmap steps grounded in a curated skills graph so suggestions feel credible rather than generic."},
+    {"title": "Visible progress", "detail": "Give users a clear way to track which roadmap milestones they have completed and what comes next."},
+    {"title": "Validated v1 launch", "detail": "Ship a lean, production-deployed MVP that real users can sign up for and complete an end-to-end roadmap flow."}
+  ],
+  "deliverables": [
+    {
+      "id": "D1",
+      "name": "Foundation & Project Setup",
+      "description": "Stand up the application skeleton, repository, environments, and CI so all later work lands on a stable, deployable base.",
+      "tasks": [
+        {"name": "Scaffold Next.js app, repo, linting, and folder conventions", "hours": 5, "phase": "Foundation"},
+        {"name": "Provision Postgres + hosting and wire staging/production environments", "hours": 4, "phase": "Foundation"},
+        {"name": "Set up CI pipeline, env-var management, and preview deploys", "hours": 4, "phase": "Foundation"}
+      ]
+    },
+    {
+      "id": "D2",
+      "name": "Authentication & User Profiles",
+      "description": "Email-based account creation and a profile that captures the user's current skills and target role, which feed the recommendation engine.",
+      "tasks": [
+        {"name": "Implement email/password auth with sessions and password reset", "hours": 6, "phase": "Foundation"},
+        {"name": "Build profile data model (current skills, target role, experience level)", "hours": 5, "phase": "Core Features"},
+        {"name": "Create profile onboarding UI and skill/role input flow", "hours": 6, "phase": "Core Features"}
+      ]
+    },
+    {
+      "id": "D3",
+      "name": "Skills Graph & Roadmap Data Model",
+      "description": "The curated skills/role knowledge graph and roadmap schema that the AI grounds its recommendations against, plus seed content for launch.",
+      "tasks": [
+        {"name": "Design skills/roles graph schema and roadmap/milestone tables", "hours": 6, "phase": "Core Features"},
+        {"name": "Seed curated skills graph for 3 launch career tracks", "hours": 7, "phase": "Core Features"},
+        {"name": "Build roadmap CRUD + persistence and milestone status tracking", "hours": 5, "phase": "Polish & UX"}
+      ]
+    },
+    {
+      "id": "D4",
+      "name": "AI Roadmap Recommendation Engine",
+      "description": "The core differentiator: an LLM/agent integration that reads the user's profile and the skills graph to assemble a personalized, ordered roadmap.",
+      "tasks": [
+        {"name": "Define prompt + retrieval flow that grounds the LLM in the skills graph", "hours": 7, "phase": "AI Integration"},
+        {"name": "Implement agent orchestration to assemble and order roadmap steps", "hours": 8, "phase": "AI Integration"},
+        {"name": "Add output validation, guardrails, and graceful fallbacks", "hours": 5, "phase": "AI Integration"},
+        {"name": "Tune ranking and add caching to control latency and token cost", "hours": 3, "phase": "AI Integration"}
+      ]
+    },
+    {
+      "id": "D5",
+      "name": "Roadmap UI & Progress Experience",
+      "description": "The interactive roadmap view where users explore their generated path, mark milestones complete, and regenerate or refine their roadmap.",
+      "tasks": [
+        {"name": "Build interactive roadmap visualization with milestone detail panels", "hours": 7, "phase": "Polish & UX"},
+        {"name": "Implement progress tracking, completion state, and dashboard", "hours": 5, "phase": "Polish & UX"},
+        {"name": "Add roadmap regeneration/refine flow and responsive polish", "hours": 3, "phase": "Polish & UX"}
+      ]
+    },
+    {
+      "id": "D6",
+      "name": "Testing, Launch & Handoff",
+      "description": "End-to-end validation of the core flow, production deployment, and a clean handoff so the client can operate and extend Get Path.",
+      "tasks": [
+        {"name": "End-to-end validation of signup-to-roadmap flow on staging", "hours": 5, "phase": "Launch & Handoff"},
+        {"name": "Production deploy, monitoring, and analytics instrumentation", "hours": 5, "phase": "Launch & Handoff"},
+        {"name": "Handoff: docs, runbook, and walkthrough session", "hours": 4, "phase": "Launch & Handoff"}
+      ]
+    }
+  ],
+  "assumptions": [
+    "Client provides brand assets (logo, colors, fonts) and approved copy for the three launch career tracks.",
+    "Scope is a single responsive web platform; no native mobile app.",
+    "Client supplies or approves an LLM provider API key and accepts usage-based AI costs.",
+    "A single English-language locale is sufficient for v1.",
+    "Subject-matter input for the curated skills graph is available from the client or a designated expert.",
+    "One staging and one production environment are sufficient for launch."
+  ],
+  "constraints": [
+    "v1 is web-only and English-only.",
+    "Recommendations are limited to the three seeded career tracks at launch.",
+    "Email/password authentication only; no third-party SSO in this build.",
+    "AI roadmap generation is grounded in the curated skills graph rather than open-ended web browsing.",
+    "Fixed five-week timeline aligned to the five delivery phases."
+  ],
+  "out_of_scope": [
+    "Native iOS and Android applications.",
+    "Single sign-on (Google/GitHub/SAML) and enterprise identity integration.",
+    "Payments, subscriptions, or billing.",
+    "Integrations with external course catalogs or job boards.",
+    "Multi-language / localization support.",
+    "Admin CMS for non-technical editing of the skills graph."
+  ]
+}

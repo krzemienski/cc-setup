@@ -1,0 +1,7 @@
+So um I was thinking we should probably look into that performance issue
+we've been having with the dashboard because like users keep complaining
+that it takes forever to load when there's a bunch of data and I think
+maybe we could cache some stuff or optimize the SQL queries or something
+because right now it's just way too slow and people are getting frustrated
+you know and I'm not really sure if it's the database or the frontend
+rendering or what but we definitely need to figure it out soon
