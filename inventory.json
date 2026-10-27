@@ -1047,7 +1047,7 @@
     ],
     "commands": [],
     "agents": [],
-    "has_hooks": false,
+    "has_hooks": true,
     "has_mcp": false
   },
   {
@@ -1937,6 +1937,126 @@
         "name": "writing-clearly-and-concisely",
         "description": "Use when writing prose humans will read\u2014documentation, commit messages, error messages, explanations, reports, or UI text. Applies Strunk's timeless rules for clearer, stronger, more professional writing.",
         "path": "plugins/agent-toolkit/skills/writing-clearly-and-concisely/SKILL.md"
+      },
+      {
+        "name": "backend-to-frontend-handoff-docs",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/backend-to-frontend-handoff-docs/skills/backend-to-frontend-handoff-docs/SKILL.md"
+      },
+      {
+        "name": "c4-architecture",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/c4-architecture/skills/c4-architecture/SKILL.md"
+      },
+      {
+        "name": "commit-work",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/commit-work/skills/commit-work/SKILL.md"
+      },
+      {
+        "name": "crafting-effective-readmes",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/crafting-effective-readmes/skills/crafting-effective-readmes/SKILL.md"
+      },
+      {
+        "name": "daily-meeting-update",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/daily-meeting-update/skills/daily-meeting-update/SKILL.md"
+      },
+      {
+        "name": "dependency-updater",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/dependency-updater/skills/dependency-updater/SKILL.md"
+      },
+      {
+        "name": "design-system-starter",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/design-system-starter/skills/design-system-starter/SKILL.md"
+      },
+      {
+        "name": "difficult-workplace-conversations",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/difficult-workplace-conversations/skills/difficult-workplace-conversations/SKILL.md"
+      },
+      {
+        "name": "draw-io",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/draw-io/skills/draw-io/SKILL.md"
+      },
+      {
+        "name": "gepetto",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/gepetto/skills/gepetto/SKILL.md"
+      },
+      {
+        "name": "humanizer",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/humanizer/skills/humanizer/SKILL.md"
+      },
+      {
+        "name": "jira",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/jira/skills/jira/SKILL.md"
+      },
+      {
+        "name": "lesson-learned",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/lesson-learned/skills/lesson-learned/SKILL.md"
+      },
+      {
+        "name": "mui",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/mui/skills/mui/SKILL.md"
+      },
+      {
+        "name": "naming-analyzer",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/naming-analyzer/skills/naming-analyzer/SKILL.md"
+      },
+      {
+        "name": "perplexity",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/perplexity/skills/perplexity/SKILL.md"
+      },
+      {
+        "name": "qa-test-planner",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/qa-test-planner/skills/qa-test-planner/SKILL.md"
+      },
+      {
+        "name": "react-dev",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/react-dev/skills/react-dev/SKILL.md"
+      },
+      {
+        "name": "reducing-entropy",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/reducing-entropy/skills/reducing-entropy/SKILL.md"
+      },
+      {
+        "name": "requirements-clarity",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/requirements-clarity/skills/requirements-clarity/SKILL.md"
+      },
+      {
+        "name": "session-handoff",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/session-handoff/skills/session-handoff/SKILL.md"
+      },
+      {
+        "name": "ship-learn-next",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/ship-learn-next/skills/ship-learn-next/SKILL.md"
+      },
+      {
+        "name": "web-to-markdown",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/web-to-markdown/skills/web-to-markdown/SKILL.md"
+      },
+      {
+        "name": "writing-clearly-and-concisely",
+        "description": "",
+        "path": "plugins/agent-toolkit/dist/plugins/writing-clearly-and-concisely/skills/writing-clearly-and-concisely/SKILL.md"
       }
     ],
     "commands": [
@@ -2311,7 +2431,13 @@
     "description": "Self-learning system for Claude Code that captures corrections and updates CLAUDE.md automatically",
     "repository": "https://github.com/bayramannakov/claude-reflect",
     "author": "Bayram Annakov",
-    "skills": [],
+    "skills": [
+      {
+        "name": "claude-reflect",
+        "description": "",
+        "path": "plugins/claude-reflect/SKILL.md"
+      }
+    ],
     "commands": [
       "commands/reflect-skills.md",
       "commands/reflect.md",
@@ -2331,7 +2457,113 @@
     "description": "Collection of Claude skills including architect, code review, data visualization, and more",
     "repository": null,
     "author": null,
-    "skills": [],
+    "skills": [
+      {
+        "name": "architect-refine-critique",
+        "description": "",
+        "path": "plugins/claude-skillz/architect-refine-critique/SKILL.md"
+      },
+      {
+        "name": "challenge-that",
+        "description": "",
+        "path": "plugins/claude-skillz/challenge-that/SKILL.md"
+      },
+      {
+        "name": "concise-output",
+        "description": "",
+        "path": "plugins/claude-skillz/concise-output/SKILL.md"
+      },
+      {
+        "name": "confidence-honesty",
+        "description": "",
+        "path": "plugins/claude-skillz/confidence-honesty/SKILL.md"
+      },
+      {
+        "name": "create-tasks",
+        "description": "",
+        "path": "plugins/claude-skillz/create-tasks/SKILL.md"
+      },
+      {
+        "name": "critical-peer-personality",
+        "description": "",
+        "path": "plugins/claude-skillz/critical-peer-personality/SKILL.md"
+      },
+      {
+        "name": "data-visualization",
+        "description": "",
+        "path": "plugins/claude-skillz/data-visualization/SKILL.md"
+      },
+      {
+        "name": "fix-it-never-work-around-it",
+        "description": "",
+        "path": "plugins/claude-skillz/fix-it-never-work-around-it/SKILL.md"
+      },
+      {
+        "name": "independent-research",
+        "description": "",
+        "path": "plugins/claude-skillz/independent-research/SKILL.md"
+      },
+      {
+        "name": "lightweight-design-analysis",
+        "description": "",
+        "path": "plugins/claude-skillz/lightweight-design-analysis/SKILL.md"
+      },
+      {
+        "name": "lightweight-implementation-analysis-protocol",
+        "description": "",
+        "path": "plugins/claude-skillz/lightweight-implementation-analysis-protocol/SKILL.md"
+      },
+      {
+        "name": "lightweight-task-workflow",
+        "description": "",
+        "path": "plugins/claude-skillz/lightweight-task-workflow/SKILL.md"
+      },
+      {
+        "name": "observability-first-debugging",
+        "description": "",
+        "path": "plugins/claude-skillz/observability-first-debugging/SKILL.md"
+      },
+      {
+        "name": "questions-are-not-instructions",
+        "description": "",
+        "path": "plugins/claude-skillz/questions-are-not-instructions/SKILL.md"
+      },
+      {
+        "name": "separation-of-concerns",
+        "description": "",
+        "path": "plugins/claude-skillz/separation-of-concerns/SKILL.md"
+      },
+      {
+        "name": "software-design-principles",
+        "description": "",
+        "path": "plugins/claude-skillz/software-design-principles/SKILL.md"
+      },
+      {
+        "name": "switch-persona",
+        "description": "",
+        "path": "plugins/claude-skillz/switch-persona/SKILL.md"
+      },
+      {
+        "name": "tactical-ddd",
+        "description": "",
+        "path": "plugins/claude-skillz/tactical-ddd/SKILL.md"
+      },
+      {
+        "name": "tdd-process",
+        "description": "",
+        "path": "plugins/claude-skillz/tdd-process/SKILL.md"
+      },
+      {
+        "name": "typescript-backend-project-setup",
+        "description": "",
+        "path": "plugins/claude-skillz/typescript-backend-project-setup/SKILL.md"
+      },
+      {
+        "name": "writing-tests",
+        "description": "",
+        "path": "plugins/claude-skillz/writing-tests/SKILL.md"
+      }
+    ],
     "commands": [],
     "agents": [],
     "has_hooks": false,
@@ -2933,7 +3165,33 @@
     "description": "Essential Claude Code skills and workflows",
     "repository": null,
     "author": null,
-    "skills": [],
+    "skills": [
+      {
+        "name": "beads-schema",
+        "description": "",
+        "path": "plugins/essentials-claude-code/essentials/skills/beads-schema/SKILL.md"
+      },
+      {
+        "name": "github-cli",
+        "description": "",
+        "path": "plugins/essentials-claude-code/essentials/skills/github-cli/SKILL.md"
+      },
+      {
+        "name": "gitlab-cli",
+        "description": "",
+        "path": "plugins/essentials-claude-code/essentials/skills/gitlab-cli/SKILL.md"
+      },
+      {
+        "name": "plan-schema",
+        "description": "",
+        "path": "plugins/essentials-claude-code/essentials/skills/plan-schema/SKILL.md"
+      },
+      {
+        "name": "prd-schema",
+        "description": "",
+        "path": "plugins/essentials-claude-code/essentials/skills/prd-schema/SKILL.md"
+      }
+    ],
     "commands": [],
     "agents": [],
     "has_hooks": false,
@@ -3407,7 +3665,7 @@
     "skills": [],
     "commands": [],
     "agents": [],
-    "has_hooks": false,
+    "has_hooks": true,
     "has_mcp": false
   },
   {
@@ -4835,7 +5093,28 @@
     "description": "Complete UI/UX design system for React Native & Next.js with 4 core skills",
     "repository": "https://github.com/apexscaleai/claude-ui-design-system",
     "author": "ApexScale AI",
-    "skills": [],
+    "skills": [
+      {
+        "name": "aesthetic-excellence",
+        "description": "",
+        "path": "plugins/ui-design-system/enhancement/aesthetic-excellence/SKILL.md"
+      },
+      {
+        "name": "design-system-foundation",
+        "description": "",
+        "path": "plugins/ui-design-system/foundation/design-system-foundation/SKILL.md"
+      },
+      {
+        "name": "design-preset-system",
+        "description": "",
+        "path": "plugins/ui-design-system/presets/design-preset-system/SKILL.md"
+      },
+      {
+        "name": "ui-refactoring-workflow",
+        "description": "",
+        "path": "plugins/ui-design-system/refactoring/ui-refactoring-workflow/SKILL.md"
+      }
+    ],
     "commands": [],
     "agents": [],
     "has_hooks": false,
@@ -4850,7 +5129,13 @@
     "description": "Generate beautiful HTML pages for diagrams, diff reviews, plan reviews, and data tables",
     "repository": "https://github.com/nicobailon/visual-explainer",
     "author": "nicobailon",
-    "skills": [],
+    "skills": [
+      {
+        "name": "visual-explainer",
+        "description": "",
+        "path": "plugins/visual-explainer/SKILL.md"
+      }
+    ],
     "commands": [
       "commands/diff-review.md",
       "commands/fact-check.md",

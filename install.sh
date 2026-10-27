@@ -112,9 +112,11 @@ if [ "$ONLY" = all ] || [ "$ONLY" = skills ]; then
 import os, sys, glob, json
 repo, dest, dry, out = sys.argv[1], sys.argv[2], sys.argv[3] == "1", sys.argv[4]
 linked, kept, conflicts = [], [], []
-for skill_md in sorted(glob.glob(os.path.join(repo, "plugins", "*", "skills", "**", "SKILL.md"), recursive=True)):
+for skill_md in sorted(glob.glob(os.path.join(repo, "plugins", "*", "**", "SKILL.md"), recursive=True)):
     src = os.path.dirname(skill_md)
     plugin = os.path.relpath(src, os.path.join(repo, "plugins")).split(os.sep)[0]
+    if "/templates/" in src or "/node_modules/" in src or src == os.path.join(repo, "plugins", plugin):
+        continue  # skip skill templates and plugin roots that only look like skills
     name = os.path.basename(src)
     target = os.path.join(dest, name)
     if os.path.islink(target) and os.path.realpath(target) == os.path.realpath(src):

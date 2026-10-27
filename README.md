@@ -1,7 +1,7 @@
 # claude-account — every plugin and skill on Nick's claude.ai account
 
 Exported 2026-10-27 from claude.ai: 85 enabled plugins plus `account-skills` (232 personal skills).
-Totals: 883 skills, 148 commands, 130 agents; 17 plugins ship hooks, 19 ship MCP servers.
+Totals: 939 skills, 148 commands, 130 agents; 19 plugins ship hooks, 19 ship MCP servers.
 `inventory.json` lists every plugin with its skills, commands, agents, hooks and MCP flags.
 
 ## Install on a Mac
