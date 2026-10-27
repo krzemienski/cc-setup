@@ -3,23 +3,28 @@
 # Claude Code, OMP, and the shared ~/.agents/skills folder.
 #
 #   ./install.sh --dry-run       show what would happen, change nothing
-#   ./install.sh                 install (skips plugins you already have from another marketplace)
+#   ./install.sh                 turn on the plugins listed in enabled.json (your claude.ai state),
+#                                skipping any you already run from another marketplace
+#   ./install.sh --all           turn on every plugin in the bundle, not just enabled.json
 #   ./install.sh --force-dupes   also install plugins you already have elsewhere (hooks may run twice)
 #   ./install.sh --only claude|omp|skills
 #
+# OMP reads Claude Code's plugin registry (~/.claude/plugins/installed_plugins.json and
+# enabledPlugins), so the Claude Code step covers OMP too. The omp step only checks that.
 # Every config file it touches is copied to .backups/<timestamp>/ first.
 # It never deletes anything.
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MARKET="claude-account"
-DRY=0; FORCE=0; ONLY="all"
+DRY=0; FORCE=0; ONLY="all"; ALL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY=1 ;;
     --force-dupes) FORCE=1 ;;
+    --all) ALL=1 ;;
     --only) shift; ONLY="$1" ;;
-    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
   shift
@@ -44,10 +49,15 @@ fi
 
 # ---------- plugin list + duplicate detection ----------
 PLAN="$REPORT_DIR/plan-$TS.json"
-python3 - "$REPO_DIR" "$HOME/.claude/plugins/installed_plugins.json" "$FORCE" "$MARKET" "$HOME/.claude/settings.json" > "$PLAN" <<'PY'
+python3 - "$REPO_DIR" "$HOME/.claude/plugins/installed_plugins.json" "$FORCE" "$MARKET" "$HOME/.claude/settings.json" "$ALL" > "$PLAN" <<'PY'
 import json, sys, os
 repo, inst_path, force, market, settings_path = sys.argv[1], sys.argv[2], sys.argv[3] == "1", sys.argv[4], sys.argv[5]
+take_all = sys.argv[6] == "1"
 mk = json.load(open(os.path.join(repo, ".claude-plugin", "marketplace.json")))
+wanted = None
+enabled_file = os.path.join(repo, "enabled.json")
+if not take_all and os.path.exists(enabled_file):
+    wanted = set(json.load(open(enabled_file))["enabled"])
 installed = {}
 if os.path.exists(inst_path):
     data = json.load(open(inst_path))
@@ -68,14 +78,18 @@ plan = []
 for p in mk["plugins"]:
     other_enabled = [m for m in enabled.get(p["name"], []) if m != market]
     already = market in enabled.get(p["name"], [])
-    action = "already-installed" if already else ("skip-duplicate" if other_enabled and not force else "install")
+    if wanted is not None and p["name"] not in wanted:
+        action = "off-in-claude-ai"
+    else:
+        action = "already-installed" if already else ("skip-duplicate" if other_enabled and not force else "install")
     plan.append({"name": p["name"], "action": action, "enabled_elsewhere": other_enabled,
                  "installed_elsewhere": [m for m in installed.get(p["name"], []) if m != market]})
 print(json.dumps(plan, indent=2))
 PY
 N_INSTALL=$(python3 -c "import json,sys;print(sum(p['action']=='install' for p in json.load(open('$PLAN'))))")
 N_DUP=$(python3 -c "import json,sys;print(sum(p['action']=='skip-duplicate' for p in json.load(open('$PLAN'))))")
-log "plan: $N_INSTALL to install, $N_DUP skipped as duplicates (see $PLAN)"
+N_OFF=$(python3 -c "import json,sys;print(sum(p['action']=='off-in-claude-ai' for p in json.load(open('$PLAN'))))")
+log "plan: $N_INSTALL to install, $N_DUP skipped as duplicates, $N_OFF left off (off in claude.ai; --all to include) (see $PLAN)"
 TO_INSTALL=$(python3 -c "import json;print('\n'.join(p['name'] for p in json.load(open('$PLAN')) if p['action']=='install'))")
 
 # ---------- Claude Code ----------
@@ -96,12 +110,18 @@ fi
 # ---------- OMP ----------
 if [ "$ONLY" = all ] || [ "$ONLY" = omp ]; then
   log "== OMP"
-  if command -v omp >/dev/null; then
-    run omp plugin marketplace add "$REPO_DIR" || run omp plugin marketplace update "$MARKET" || true
-    while IFS= read -r p; do [ -n "$p" ] && { run omp plugin install "$p@$MARKET" || true; }; done <<< "$TO_INSTALL"
-  else
-    log "  omp CLI not found; skipped"
-  fi
+  # OMP loads Claude Code plugins from ~/.claude/plugins/installed_plugins.json + enabledPlugins,
+  # and skills from ~/.agents/skills. Installing into OMP's own registry as well would load every
+  # hook twice, so this step only reports what OMP will see.
+  python3 - "$HOME/.claude/plugins/installed_plugins.json" "$MARKET" <<'PY' | tee -a "$LOG"
+import json, sys, os
+path, market = sys.argv[1], sys.argv[2]
+n = 0
+if os.path.exists(path):
+    n = sum(1 for k in json.load(open(path)).get("plugins", {}) if k.endswith("@" + market))
+print(f"  OMP will load {n} {market} plugins from Claude Code's registry"
+      + ("" if n else " (none yet: start Claude Code once so it fetches them)"))
+PY
 fi
 
 # ---------- ~/.agents/skills (Codex, OpenCode, OMP, Gemini CLI and other agentskills readers) ----------

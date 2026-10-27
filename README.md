@@ -10,11 +10,22 @@ Totals: 131 plugins, 1004 skills, 209 commands, 137 agents; 24 plugins ship hook
 git clone -b account-sync https://github.com/krzemienski/cc-setup.git ~/claude-account-plugins
 cd ~/claude-account-plugins
 ./install.sh --dry-run   # see the plan
-./install.sh             # Claude Code + OMP + ~/.agents/skills
+./install.sh             # Claude Code (+ OMP through it) + ~/.agents/skills
 ```
 
+`enabled.json` holds the plugins that are on in claude.ai; the installer turns on only those, so
+the Mac matches the account. `--all` turns on every plugin in the bundle instead.
 Plugins you already have from their original marketplace are skipped so hooks never run twice
 (`--force-dupes` overrides). Configs are backed up to `.backups/<time>/`; nothing is deleted.
+
+Where each harness picks things up:
+
+| Harness | Plugins | Skills |
+| :- | :- | :- |
+| Claude Code | `claude-account` local marketplace in `~/.claude/settings.json` | through the plugins |
+| OMP | reads Claude Code's `installed_plugins.json` and `enabledPlugins` | also `~/.agents/skills` |
+| OpenCode, Codex, Gemini CLI | none | `~/.agents/skills` (symlinks into this folder) |
+| claude.ai, mobile, cloud sessions | the account itself | the account itself |
 
 ## Keep it synced
 
