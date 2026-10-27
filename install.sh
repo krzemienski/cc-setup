@@ -119,7 +119,7 @@ for skill_md in sorted(glob.glob(os.path.join(repo, "plugins", "*", "**", "SKILL
         continue  # skip skill templates and plugin roots that only look like skills
     name = os.path.basename(src)
     target = os.path.join(dest, name)
-    if os.path.islink(target) and os.path.realpath(target) == os.path.realpath(src):
+    if os.path.islink(target) and os.path.realpath(target) == os.path.realpath(src):  # already ours
         kept.append(name); continue
     if os.path.lexists(target):
         # keep the user's existing skill; expose ours under a plugin-qualified name
@@ -128,7 +128,8 @@ for skill_md in sorted(glob.glob(os.path.join(repo, "plugins", "*", "**", "SKILL
             conflicts.append({"skill": name, "plugin": plugin}); continue
         target = alt
     if not dry:
-        os.symlink(src, target)
+        # relative target: works from macOS and from any VM that mounts the home folder elsewhere
+        os.symlink(os.path.relpath(src, os.path.dirname(target)), target)
     linked.append(os.path.basename(target))
 json.dump({"linked": linked, "already_linked": kept, "unresolved_conflicts": conflicts}, open(out, "w"), indent=2)
 print(f"  linked {len(linked)}, already linked {len(kept)}, unresolved {len(conflicts)}{' (dry-run)' if dry else ''}")
