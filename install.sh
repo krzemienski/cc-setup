@@ -44,9 +44,9 @@ fi
 
 # ---------- plugin list + duplicate detection ----------
 PLAN="$REPORT_DIR/plan-$TS.json"
-python3 - "$REPO_DIR" "$HOME/.claude/plugins/installed_plugins.json" "$FORCE" "$MARKET" > "$PLAN" <<'PY'
+python3 - "$REPO_DIR" "$HOME/.claude/plugins/installed_plugins.json" "$FORCE" "$MARKET" "$HOME/.claude/settings.json" > "$PLAN" <<'PY'
 import json, sys, os
-repo, inst_path, force, market = sys.argv[1], sys.argv[2], sys.argv[3] == "1", sys.argv[4]
+repo, inst_path, force, market, settings_path = sys.argv[1], sys.argv[2], sys.argv[3] == "1", sys.argv[4], sys.argv[5]
 mk = json.load(open(os.path.join(repo, ".claude-plugin", "marketplace.json")))
 installed = {}
 if os.path.exists(inst_path):
@@ -56,12 +56,21 @@ if os.path.exists(inst_path):
         if "@" in key:
             name, mkt = key.rsplit("@", 1)
             installed.setdefault(name, []).append(mkt)
+# Only a plugin that is ENABLED from another marketplace counts as a duplicate:
+# an installed-but-disabled copy elsewhere never loads, so we still install ours.
+enabled = {}
+if os.path.exists(settings_path):
+    for key, on in (json.load(open(settings_path)).get("enabledPlugins") or {}).items():
+        if on and "@" in key:
+            name, mkt = key.rsplit("@", 1)
+            enabled.setdefault(name, []).append(mkt)
 plan = []
 for p in mk["plugins"]:
-    other = [m for m in installed.get(p["name"], []) if m != market]
-    already = market in installed.get(p["name"], [])
-    action = "already-installed" if already else ("skip-duplicate" if other and not force else "install")
-    plan.append({"name": p["name"], "action": action, "other_marketplaces": other})
+    other_enabled = [m for m in enabled.get(p["name"], []) if m != market]
+    already = market in enabled.get(p["name"], [])
+    action = "already-installed" if already else ("skip-duplicate" if other_enabled and not force else "install")
+    plan.append({"name": p["name"], "action": action, "enabled_elsewhere": other_enabled,
+                 "installed_elsewhere": [m for m in installed.get(p["name"], []) if m != market]})
 print(json.dumps(plan, indent=2))
 PY
 N_INSTALL=$(python3 -c "import json,sys;print(sum(p['action']=='install' for p in json.load(open('$PLAN'))))")
