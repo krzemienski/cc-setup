@@ -1,7 +1,7 @@
 ---
 name: safe-effects
 description: Use when preparing a deploy, message, charge, migration, destructive query, DNS change, external API write, or any action with a real-world side effect.
-when_to_use: "Trigger phrases: deploy, push to production, send the message or email, run the migration, delete rows, change DNS, call the payment API, post the comment, publish, logout or delete the account. Any command whose effect leaves this machine."
+when_to_use: "Trigger phrases: deploy, push to production, send the message or email, run the migration, delete rows, change DNS, call the payment API, post the comment, publish, logout or delete the account, merge a PR (gh pr merge, gh api .../merge), create, close or comment on an issue, delete a remote branch (git push --delete), create an account, install a launchd or cron job. Any command whose effect leaves this machine."
 metadata:
   short-description: Authority and read-back for real-world side effects
 ---
@@ -24,14 +24,16 @@ systems, blast radius, reversibility and real rollback, approval provenance,
 and intended outcome. Observe or simulate first when a meaningful preview
 exists. After a retry or crash, reconcile prior attempts before acting again.
 Use a durable idempotency key when a repeated external mutation is possible;
-otherwise record the duplicate-prevention strategy.
+otherwise record the duplicate-prevention strategy. Accounts created at a third-party identity provider, schedulers installed on a machine (launchd, cron) and tracker items (issues, labels, comments) are effects too.
+
+For any standing account the run creates, record who controls its credential and its recovery path (for example a disposable inbox), and put that to the user before keeping or promoting the account.
 
 A brief that hands an effect to a subagent quotes the user's authorizing words
 and names the turn they came from. The subagent stays inside that quote. Never
-write "the owner approved" into a brief without the quote.
+write "the owner approved" into a brief without the quote. The same rule binds prompts the agent schedules for itself (cron jobs, /loop prompts, check-ins): none may assert an approval without the user's quoted words.
 
 Before a paid batch, check resolved target IDs and count against approved scope;
-bind execution and results to those IDs.
+bind execution and results to those IDs. The same holds for any batch the user delegates (moderation, dedupe, cleanup): resolve the IDs, re-check each row's state before acting, and report any decision rule the agent invented as a proposed policy, not as the user's.
 
 Proceed only inside the approved boundary. Irreversible, weakly compensable,
 sensitive, or high-blast actions need explicit approval immediately before

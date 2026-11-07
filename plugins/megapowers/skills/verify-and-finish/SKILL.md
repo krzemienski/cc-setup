@@ -42,7 +42,9 @@ build a repeatable [verification driver](references/verification-driver.md).
 
 Reconcile each affected repository-owned specification with verified behavior.
 Resolve every requirement to fresh evidence or a remaining gap; a plan is not
-implementation evidence.
+implementation evidence. Closing a tracker item is a completion claim: each of its
+finish lines needs fresh evidence, or the item stays open with a comment naming
+the gap.
 
 Account for every requested review, including queued and running requests.
 Join them and resolve credible findings. One approval does not cancel another
@@ -61,7 +63,7 @@ Before you list any action for the owner, record the route an agent tried for it
 (SSH, an MCP tool, a cached account, a scratch environment) and why that route
 failed. Keep running every stage that does not depend on what remains. When a
 value must come from the owner, name the Secret or env key it belongs in and
-give a set/unset check; never ask for a secret in chat.
+give a set/unset check; never ask for a secret in chat. Dry-run any command you hand the owner with a dummy secret first, and show that it reaches the credential check (for example a 401, not a 403 from a missing header) before the owner spends a real attempt.
 
 Open the report with `VERIFIED: <claim>` only when every required criterion has
 fresh oracle evidence. Otherwise use `NOT VERIFIED. Remaining: <gap>`.
