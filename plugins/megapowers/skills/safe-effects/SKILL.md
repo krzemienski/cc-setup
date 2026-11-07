@@ -26,6 +26,10 @@ exists. After a retry or crash, reconcile prior attempts before acting again.
 Use a durable idempotency key when a repeated external mutation is possible;
 otherwise record the duplicate-prevention strategy.
 
+A brief that hands an effect to a subagent quotes the user's authorizing words
+and names the turn they came from. The subagent stays inside that quote. Never
+write "the owner approved" into a brief without the quote.
+
 Before a paid batch, check resolved target IDs and count against approved scope;
 bind execution and results to those IDs.
 

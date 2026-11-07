@@ -57,5 +57,11 @@ authority for that destination. Destructive cleanup requires target
 confirmation and ownership evidence. For a handoff to another harness,
 directory, or person, write a [handoff note](references/handoff.md).
 
+Before you list any action for the owner, record the route an agent tried for it
+(SSH, an MCP tool, a cached account, a scratch environment) and why that route
+failed. Keep running every stage that does not depend on what remains. When a
+value must come from the owner, name the Secret or env key it belongs in and
+give a set/unset check; never ask for a secret in chat.
+
 Open the report with `VERIFIED: <claim>` only when every required criterion has
 fresh oracle evidence. Otherwise use `NOT VERIFIED. Remaining: <gap>`.
